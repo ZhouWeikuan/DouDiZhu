@@ -50,9 +50,29 @@ git commit 提交改动，
 * iOS & android 运行成功
 
 对于iOS项目，在MacOS下点击 DouDiZhu/code/frameworks/runtime-src/proj.ios_mac/DouDiZhu.xcodeproj，编译运行即可。同时我们需要更新图标，产品名称等。
-对于android项目，我们使用的是Android Studio，导入目录DouDiZhu/code/frameworks/runtime-src/proj.android-studio 。由于环境和参数不同，编译时有很多错误。
-    
+对于android项目，我们使用的是Android Studio，导入目录DouDiZhu/code/frameworks/runtime-src/proj.android-studio 。由于环境和参数不同，编译时有很多错误。根据当前环境修改gradle.build，多个properties文件和AndroidManifest.xml，更新图标等，最终保证可以编译成功，并运行在测试机器上。
+
+此时提交改动:
+
+    commit acc5f9ef24e4f608f22a331e8bfcbc2cb392d48f (HEAD -> chap1_environment)
+    Author: Zhou Weikuan <zhouweikuan@gmail.com>
+    Date:   Tue May 22 13:22:01 2018 +0800
+
+        更改图标，产品名称，保证可以运行在iOS & android上; 使用的是Android Studio
+
 ### 升级lua到5.3
+
+我们的服务器是基于skynet，而skynet使用的lua版本为5.3。为了更好的复用lua代码，我们需要把cocos2d-x的lua版本也升级到[lua 5.3](http://www.lua.org/ftp/lua-5.3.4.tar.gz)。在code目录下新建3rd目录，并且下载lua后解压缩src到3rd/lua目录，去掉Makefile文件。结构如下:
+    
+    code/3rd/lua/
+        ├── lapi.c
+        ├── lapi.h
+        ├── lauxlib.c
+        ├── lauxlib.h
+        ├── ...
+
+提交所有lua文件，    
+    
 ### 加入protobuf
 ### 加入游戏资源
 ### 一些公用函数库
