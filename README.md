@@ -1,6 +1,6 @@
 # 斗地主AI设计与实现
 
-![宽立斗地主](http://www.cronlygames.com/image/landlord.png) [宽立斗地主](http://www.cronlygames.com/download/download.php?p=com.cronlygames.landlord) 是 [上海宽立信息技术有限公司](http://www.cronlygames.com/)出品的一款斗地主游戏，内置了基于权重的斗地主游戏AI算法。这种算法是我们过去几年在棋牌游戏上的经验体现，稍加修改，算法可以很容易的拓展到其他类似棋牌游戏上，如掼蛋，争上游，拖拉机等。
+![宽立斗地主](http://www.cronlygames.com/image/landlord.png) [宽立斗地主](http://www.cronlygames.com/download/download.php?p=com.cronlygames.landlord) 是 [上海宽立信息技术有限公司](http://www.cronlygames.com/)出品的一款斗地主游戏，内置了基于权重的斗地主游戏AI算法。这种算法是我们过去几年在棋牌游戏上的经验体现，稍加修改，算法可以很容易的拓展到其他类似棋牌游戏上，如掼蛋，争上游，拖拉机等。本文将详细介绍从头开始，如何一步一步建立一个比较高智力的斗地主游戏算法。
 
 This repository will talk about AI algorithms for a chinese famous card game - landlord or DouDiZhu, it is based on weights.
 
@@ -97,36 +97,67 @@ lua升级到5.3时，参考了网友的[心得](http://yestein.com/2015/06/09/%e
 6. DouDiZhu/code/frameworks/cocos2d-x/plugin 这个目录基本没用，删除！ 所有Deprecated的lua文件基本没用，删除！ lua 5.3有自己的位操作，以前的bitExtend也不要了！
 
 以上修改提交信息如下:
-    
+
+    commit 2778dd451e94f5ce6a825bb89c28b4538dc1e101 (HEAD -> chap1_environment)
+    Author: Zhou Weikuan <zhouweikuan@gmail.com>
+    Date:   Tue May 22 16:08:16 2018 +0800
+
+        升级 lua 5.3
 
 ### 加入protobuf
+客户端与服务器交互时，使用的是protobuf，版本是2.x 。首先我们需要下载Google提供的protobuf，编译安装后得到protoc命令，用来编译.proto文件到.pb 。然后在lua里支持protobuf，我们用的是pbc这个库。从github上下载pbc后，放在 code/3rd/protobuf，针对lua5.3剪裁文件。
+
+对于iOS，需要在项目里加入protobuf整个目录；对于android，需要把所有.c文件 和.h的路径 加入Android.mk，同时把脚本文件 protobuf.lua加入build.gradle，这样编译时就会自动拷贝到assets目录。
+
+以上修改提交后显示如下:
+   
+
 ### 加入游戏资源
+
+
 ### 一些公用函数库
+
+
 ### 各场景划分
+
 
 ## 第二章、实现游戏的流程
 
 ### 联网版本的接口
+
 ### C库到lua的接口
+
 ### 手牌的一些规定
+
 ### 游戏的基本流程
+
 ### 完成简单AI版的整个游戏
 
 ## 第三章、核心AI逻辑
 
 ### 牌型说明
+
 ### 牌型权重
+
 ### 手牌的拆分
+
 ### 出牌与跟牌
+
 ### 角色定位
+
 ### 尾牌打法
 
-## 第四章、深度学习畅想
+### 癞子算法
+
+## 第四章、深度学习优化
 
 ### 使用模型获得牌型的权重
+
 ### 分清角色特征 地主 上家 下家 相互配合或者压制
+
 ### 自动根据牌局状况，调整出牌容忍度
-### 最后尾牌阶段的拆牌，引诱，欺骗
+
+### 平时的接牌，防止地主出牌，和最后尾牌阶段的拆牌，引诱，欺骗
 
 
 

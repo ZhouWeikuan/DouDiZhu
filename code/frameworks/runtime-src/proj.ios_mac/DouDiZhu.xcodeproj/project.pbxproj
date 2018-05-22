@@ -37,6 +37,36 @@
 		5BB495E020B3D2EA00199E68 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495DE20B3D2EA00199E68 /* Localizable.strings */; };
 		5BB495E120B3D2EA00199E68 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495DF20B3D2EA00199E68 /* InfoPlist.strings */; };
 		5BB495E320B3D41E00199E68 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495E220B3D41E00199E68 /* Launch Screen.storyboard */; };
+		5BB4970320B413A200199E68 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496E920B413A200199E68 /* array.c */; };
+		5BB4970420B413A200199E68 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496E920B413A200199E68 /* array.c */; };
+		5BB4970520B413A200199E68 /* rmessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EB20B413A200199E68 /* rmessage.c */; };
+		5BB4970620B413A200199E68 /* rmessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EB20B413A200199E68 /* rmessage.c */; };
+		5BB4970720B413A200199E68 /* register.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EC20B413A200199E68 /* register.c */; };
+		5BB4970820B413A200199E68 /* register.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EC20B413A200199E68 /* register.c */; };
+		5BB4970920B413A200199E68 /* decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EE20B413A200199E68 /* decode.c */; };
+		5BB4970A20B413A200199E68 /* decode.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EE20B413A200199E68 /* decode.c */; };
+		5BB4970B20B413A200199E68 /* stringpool.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EF20B413A200199E68 /* stringpool.c */; };
+		5BB4970C20B413A200199E68 /* stringpool.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496EF20B413A200199E68 /* stringpool.c */; };
+		5BB4970D20B413A200199E68 /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F220B413A200199E68 /* alloc.c */; };
+		5BB4970E20B413A200199E68 /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F220B413A200199E68 /* alloc.c */; };
+		5BB4970F20B413A200199E68 /* protobuf.lua in Resources */ = {isa = PBXBuildFile; fileRef = 5BB496F420B413A200199E68 /* protobuf.lua */; };
+		5BB4971020B413A200199E68 /* protobuf.lua in Resources */ = {isa = PBXBuildFile; fileRef = 5BB496F420B413A200199E68 /* protobuf.lua */; };
+		5BB4971120B413A200199E68 /* varint.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F520B413A200199E68 /* varint.c */; };
+		5BB4971220B413A200199E68 /* varint.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F520B413A200199E68 /* varint.c */; };
+		5BB4971320B413A200199E68 /* pbc-lua.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F620B413A200199E68 /* pbc-lua.c */; };
+		5BB4971420B413A200199E68 /* pbc-lua.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F620B413A200199E68 /* pbc-lua.c */; };
+		5BB4971520B413A200199E68 /* map.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F820B413A200199E68 /* map.c */; };
+		5BB4971620B413A200199E68 /* map.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F820B413A200199E68 /* map.c */; };
+		5BB4971720B413A200199E68 /* proto.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F920B413A200199E68 /* proto.c */; };
+		5BB4971820B413A200199E68 /* proto.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496F920B413A200199E68 /* proto.c */; };
+		5BB4971920B413A200199E68 /* context.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FA20B413A200199E68 /* context.c */; };
+		5BB4971A20B413A200199E68 /* context.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FA20B413A200199E68 /* context.c */; };
+		5BB4971B20B413A200199E68 /* wmessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FC20B413A200199E68 /* wmessage.c */; };
+		5BB4971C20B413A200199E68 /* wmessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FC20B413A200199E68 /* wmessage.c */; };
+		5BB4971D20B413A200199E68 /* pattern.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FE20B413A200199E68 /* pattern.c */; };
+		5BB4971E20B413A200199E68 /* pattern.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FE20B413A200199E68 /* pattern.c */; };
+		5BB4971F20B413A200199E68 /* bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FF20B413A200199E68 /* bootstrap.c */; };
+		5BB4972020B413A200199E68 /* bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB496FF20B413A200199E68 /* bootstrap.c */; };
 		9FA3AE4E1BE9BCC900FC9645 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FA3AE4D1BE9BCC900FC9645 /* CFNetwork.framework */; };
 		9FF504841A5E87B100AFDA55 /* ConsoleWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9FF504811A5E87B100AFDA55 /* ConsoleWindow.xib */; };
 		9FF504851A5E87B100AFDA55 /* ConsoleWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FF504831A5E87B100AFDA55 /* ConsoleWindowController.m */; };
@@ -195,6 +225,33 @@
 		5BB495DE20B3D2EA00199E68 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = SOURCE_ROOT; };
 		5BB495DF20B3D2EA00199E68 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		5BB495E220B3D41E00199E68 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		5BB496E520B413A200199E68 /* pbc-lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "pbc-lua.h"; sourceTree = "<group>"; };
+		5BB496E620B413A200199E68 /* varint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = varint.h; sourceTree = "<group>"; };
+		5BB496E720B413A200199E68 /* proto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = proto.h; sourceTree = "<group>"; };
+		5BB496E820B413A200199E68 /* descriptor.pbc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = descriptor.pbc.h; sourceTree = "<group>"; };
+		5BB496E920B413A200199E68 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array.c; sourceTree = "<group>"; };
+		5BB496EA20B413A200199E68 /* map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = map.h; sourceTree = "<group>"; };
+		5BB496EB20B413A200199E68 /* rmessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rmessage.c; sourceTree = "<group>"; };
+		5BB496EC20B413A200199E68 /* register.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = register.c; sourceTree = "<group>"; };
+		5BB496ED20B413A200199E68 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
+		5BB496EE20B413A200199E68 /* decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = decode.c; sourceTree = "<group>"; };
+		5BB496EF20B413A200199E68 /* stringpool.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stringpool.c; sourceTree = "<group>"; };
+		5BB496F020B413A200199E68 /* bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bootstrap.h; sourceTree = "<group>"; };
+		5BB496F120B413A200199E68 /* pattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pattern.h; sourceTree = "<group>"; };
+		5BB496F220B413A200199E68 /* alloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
+		5BB496F420B413A200199E68 /* protobuf.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = protobuf.lua; sourceTree = "<group>"; };
+		5BB496F520B413A200199E68 /* varint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = varint.c; sourceTree = "<group>"; };
+		5BB496F620B413A200199E68 /* pbc-lua.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "pbc-lua.c"; sourceTree = "<group>"; };
+		5BB496F720B413A200199E68 /* array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
+		5BB496F820B413A200199E68 /* map.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = map.c; sourceTree = "<group>"; };
+		5BB496F920B413A200199E68 /* proto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = proto.c; sourceTree = "<group>"; };
+		5BB496FA20B413A200199E68 /* context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = context.c; sourceTree = "<group>"; };
+		5BB496FB20B413A200199E68 /* pbc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pbc.h; sourceTree = "<group>"; };
+		5BB496FC20B413A200199E68 /* wmessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wmessage.c; sourceTree = "<group>"; };
+		5BB496FD20B413A200199E68 /* alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = alloc.h; sourceTree = "<group>"; };
+		5BB496FE20B413A200199E68 /* pattern.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pattern.c; sourceTree = "<group>"; };
+		5BB496FF20B413A200199E68 /* bootstrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bootstrap.c; sourceTree = "<group>"; };
+		5BB4970020B413A200199E68 /* stringpool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stringpool.h; sourceTree = "<group>"; };
 		9FA3AE4D1BE9BCC900FC9645 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
 		9FF504781A5E86D600AFDA55 /* libsimulator.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libsimulator.xcodeproj; path = "../../cocos2d-x/tools/simulator/libsimulator/proj.ios_mac/libsimulator.xcodeproj"; sourceTree = "<group>"; };
 		9FF504811A5E87B100AFDA55 /* ConsoleWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConsoleWindow.xib; sourceTree = "<group>"; };
@@ -321,6 +378,49 @@
 			path = mac;
 			sourceTree = "<group>";
 		};
+		5BB496E420B413A200199E68 /* protobuf */ = {
+			isa = PBXGroup;
+			children = (
+				5BB496E520B413A200199E68 /* pbc-lua.h */,
+				5BB496E620B413A200199E68 /* varint.h */,
+				5BB496E720B413A200199E68 /* proto.h */,
+				5BB496E820B413A200199E68 /* descriptor.pbc.h */,
+				5BB496E920B413A200199E68 /* array.c */,
+				5BB496EA20B413A200199E68 /* map.h */,
+				5BB496EB20B413A200199E68 /* rmessage.c */,
+				5BB496EC20B413A200199E68 /* register.c */,
+				5BB496ED20B413A200199E68 /* context.h */,
+				5BB496EE20B413A200199E68 /* decode.c */,
+				5BB496EF20B413A200199E68 /* stringpool.c */,
+				5BB496F020B413A200199E68 /* bootstrap.h */,
+				5BB496F120B413A200199E68 /* pattern.h */,
+				5BB496F220B413A200199E68 /* alloc.c */,
+				5BB496F320B413A200199E68 /* script */,
+				5BB496F520B413A200199E68 /* varint.c */,
+				5BB496F620B413A200199E68 /* pbc-lua.c */,
+				5BB496F720B413A200199E68 /* array.h */,
+				5BB496F820B413A200199E68 /* map.c */,
+				5BB496F920B413A200199E68 /* proto.c */,
+				5BB496FA20B413A200199E68 /* context.c */,
+				5BB496FB20B413A200199E68 /* pbc.h */,
+				5BB496FC20B413A200199E68 /* wmessage.c */,
+				5BB496FD20B413A200199E68 /* alloc.h */,
+				5BB496FE20B413A200199E68 /* pattern.c */,
+				5BB496FF20B413A200199E68 /* bootstrap.c */,
+				5BB4970020B413A200199E68 /* stringpool.h */,
+			);
+			name = protobuf;
+			path = ../../../3rd/protobuf;
+			sourceTree = "<group>";
+		};
+		5BB496F320B413A200199E68 /* script */ = {
+			isa = PBXGroup;
+			children = (
+				5BB496F420B413A200199E68 /* protobuf.lua */,
+			);
+			path = script;
+			sourceTree = "<group>";
+		};
 		9FF504791A5E86D600AFDA55 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -343,6 +443,7 @@
 		F293B3BD15EB7BE500256477 = {
 			isa = PBXGroup;
 			children = (
+				5BB496E420B413A200199E68 /* protobuf */,
 				9FF504781A5E86D600AFDA55 /* libsimulator.xcodeproj */,
 				C03781AE18BF654500FE4F13 /* cocos2d_lua_bindings.xcodeproj */,
 				15A8A4031834BDA200142BE0 /* cocos2d_libs.xcodeproj */,
@@ -579,6 +680,7 @@
 				9FF504841A5E87B100AFDA55 /* ConsoleWindow.xib in Resources */,
 				5023817617EBBE3400990C9B /* Icon.icns in Resources */,
 				9FFC07361A4A764100AED399 /* MainMenu.xib in Resources */,
+				5BB4971020B413A200199E68 /* protobuf.lua in Resources */,
 				C05D1C131923449100B808A4 /* config.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -588,6 +690,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C03781B918BF655400FE4F13 /* res in Resources */,
+				5BB4970F20B413A200199E68 /* protobuf.lua in Resources */,
 				5BB495E120B3D2EA00199E68 /* InfoPlist.strings in Resources */,
 				5BB495E320B3D41E00199E68 /* Launch Screen.storyboard in Resources */,
 				5BB495E020B3D2EA00199E68 /* Localizable.strings in Resources */,
@@ -621,10 +724,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BB4970820B413A200199E68 /* register.c in Sources */,
+				5BB4971620B413A200199E68 /* map.c in Sources */,
+				5BB4971820B413A200199E68 /* proto.c in Sources */,
 				C07828FA18B4D72E00BD2287 /* SimulatorApp.mm in Sources */,
+				5BB4971420B413A200199E68 /* pbc-lua.c in Sources */,
+				5BB4970C20B413A200199E68 /* stringpool.c in Sources */,
+				5BB4972020B413A200199E68 /* bootstrap.c in Sources */,
+				5BB4971A20B413A200199E68 /* context.c in Sources */,
+				5BB4971C20B413A200199E68 /* wmessage.c in Sources */,
+				5BB4971220B413A200199E68 /* varint.c in Sources */,
+				5BB4970E20B413A200199E68 /* alloc.c in Sources */,
 				5023813317EBBCE400990C9B /* AppDelegate.cpp in Sources */,
+				5BB4970620B413A200199E68 /* rmessage.c in Sources */,
 				9FF504851A5E87B100AFDA55 /* ConsoleWindowController.m in Sources */,
+				5BB4970A20B413A200199E68 /* decode.c in Sources */,
+				5BB4971E20B413A200199E68 /* pattern.c in Sources */,
 				C07828F818B4D72E00BD2287 /* main.m in Sources */,
+				5BB4970420B413A200199E68 /* array.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -632,10 +749,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BB4970720B413A200199E68 /* register.c in Sources */,
+				5BB4971520B413A200199E68 /* map.c in Sources */,
+				5BB4971720B413A200199E68 /* proto.c in Sources */,
 				5023812517EBBCAC00990C9B /* RootViewController.mm in Sources */,
+				5BB4971320B413A200199E68 /* pbc-lua.c in Sources */,
+				5BB4970B20B413A200199E68 /* stringpool.c in Sources */,
+				5BB4971F20B413A200199E68 /* bootstrap.c in Sources */,
+				5BB4971920B413A200199E68 /* context.c in Sources */,
+				5BB4971B20B413A200199E68 /* wmessage.c in Sources */,
+				5BB4971120B413A200199E68 /* varint.c in Sources */,
+				5BB4970D20B413A200199E68 /* alloc.c in Sources */,
 				F293BB9C15EB831F00256477 /* AppDelegate.cpp in Sources */,
+				5BB4970520B413A200199E68 /* rmessage.c in Sources */,
 				5023812417EBBCAC00990C9B /* main.m in Sources */,
+				5BB4970920B413A200199E68 /* decode.c in Sources */,
+				5BB4971D20B413A200199E68 /* pattern.c in Sources */,
 				5023811817EBBCAC00990C9B /* AppController.mm in Sources */,
+				5BB4970320B413A200199E68 /* array.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

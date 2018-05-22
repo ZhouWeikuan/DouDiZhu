@@ -249,7 +249,7 @@ dependencies {
 
 task copyFiles(type: Copy) {
     from '../../../../config.json'
-    from '../../../../project.manifest'
+    from '../../../../3rd/protobuf/script/protobuf.lua'
     from '../../../../Default-Landscape.png'
     into { 'assets' }
 }
