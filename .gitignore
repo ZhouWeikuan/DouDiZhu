@@ -1,0 +1,9 @@
+xcuserdata
+project.xcworkspace
+.gradle
+.idea
+build
+*.iml
+.externalNativeBuild
+.DS_Store
+

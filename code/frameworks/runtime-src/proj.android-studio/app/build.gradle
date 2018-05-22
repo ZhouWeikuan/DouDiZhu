@@ -3,15 +3,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
-    buildToolsVersion "25.0.0"
-
+    compileSdkVersion 23
+    buildToolsVersion "26.0.2"
     defaultConfig {
-        applicationId "com.cronlygames.landlord"
-        minSdkVersion PROP_MIN_SDK_VERSION
-        targetSdkVersion PROP_TARGET_SDK_VERSION
-        versionCode 1
-        versionName "1.0"
 
         externalNativeBuild {
             ndkBuild {
@@ -19,34 +13,32 @@ android {
                     // skip the NDK Build step if PROP_NDK_MODE is none
                     targets 'cocos2dlua'
                     arguments 'NDK_TOOLCHAIN_VERSION=4.9'
-                    arguments 'APP_PLATFORM=android-'+PROP_APP_PLATFORM
+                    arguments 'APP_PLATFORM=android-' + PROP_TARGET_SDK_VERSION
 
                     def module_paths = [project.file("../../../cocos2d-x").absolutePath,
                                         project.file("../../../cocos2d-x/cocos").absolutePath,
                                         project.file("../../../cocos2d-x/external").absolutePath]
                     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                         // should use '/'
-                        module_paths = module_paths.collect {it.replaceAll('\\\\', '/')}
+                        module_paths = module_paths.collect { it.replaceAll('\\\\', '/') }
                         arguments 'NDK_MODULE_PATH=' + module_paths.join(";")
-                    }
-                    else {
+                    } else {
                         arguments 'NDK_MODULE_PATH=' + module_paths.join(':')
                     }
 
                     arguments '-j' + Runtime.runtime.availableProcessors()
-                    abiFilters.addAll(PROP_APP_ABI.split(':').collect{it as String})
+                    abiFilters.addAll(PROP_APP_ABI.split(':').collect { it as String })
                 }
             }
         }
     }
-
     sourceSets.main {
         java.srcDir "src"
         res.srcDir "res"
         jniLibs.srcDir "libs"
         manifest.srcFile "AndroidManifest.xml"
+        assets.srcDirs = ['assets']
     }
-
     externalNativeBuild {
         ndkBuild {
             if (!project.hasProperty("PROP_NDK_MODE") || PROP_NDK_MODE.compareTo('none') != 0) {
@@ -55,7 +47,6 @@ android {
             }
         }
     }
-
     signingConfigs {
 
        release {
@@ -71,6 +62,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.release
@@ -81,15 +73,28 @@ android {
                     arguments 'NDK_DEBUG=0'
                 }
             }
+            signingConfig signingConfigs.release
         }
 
         debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (project.hasProperty("RELEASE_STORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
             externalNativeBuild {
                 ndkBuild {
                     arguments 'NDK_DEBUG=1'
                 }
             }
+            jniDebuggable true
         }
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
     }
 }
 
@@ -238,6 +243,18 @@ android.applicationVariants.all { variant ->
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':libcocos2dx')
 }
+
+task copyFiles(type: Copy) {
+    from '../../../../config.json'
+    from '../../../../project.manifest'
+    from '../../../../Default-Landscape.png'
+    into { 'assets' }
+}
+
+gradle.projectsEvaluated {
+    preBuild.dependsOn(copyFiles)
+}
+
