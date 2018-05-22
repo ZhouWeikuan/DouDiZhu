@@ -332,7 +332,10 @@
 
 /* Incompatibilities from 5.2 -> 5.3 */
 #define LUA_COMPAT_MATHLIB
+
+#ifndef LUA_COMPAT_APIINTCASTS
 #define LUA_COMPAT_APIINTCASTS
+#endif
 
 /*
 @@ LUA_COMPAT_UNPACK controls the presence of global 'unpack'.
@@ -670,7 +673,11 @@
 ** macro must include header 'locale.h'.)
 */
 #if !defined(lua_getlocaledecpoint)
+#ifdef WIN32
 #define lua_getlocaledecpoint()		(localeconv()->decimal_point[0])
+#else
+#define lua_getlocaledecpoint()		('.')
+#endif
 #endif
 
 /* }================================================================== */

@@ -8,10 +8,13 @@ LOCAL_MODULE_FILENAME := libluacocos2dandroid
 
 LOCAL_ARM_MODE := arm
 
+LUASRC := $(LOCAL_PATH)/../../../../../../3rd/lua
+
 LOCAL_SRC_FILES := ../manual/platform/android/CCLuaJavaBridge.cpp \
                    ../manual/platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxLuaJavaBridge.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../.. \
+					$(LUASRC) \
                     $(LOCAL_PATH)/../manual \
                     $(LOCAL_PATH)/../../../../external/lua/tolua \
                     $(LOCAL_PATH)/../manual/platform/android \
@@ -21,11 +24,7 @@ LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -llog \
                        -landroid
 
-LUA_STATIC_LIB := luajit_static
-LUA_IMPORT_PATH := lua/luajit/prebuilt/android
-LUA_INCLUDE_PATH := $(LOCAL_PATH)/../../../../external/lua/luajit/include
 
-LOCAL_STATIC_LIBRARIES := $(LUA_STATIC_LIB)
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -38,6 +37,8 @@ LOCAL_MODULE    := cocos2d_lua_static
 LOCAL_MODULE_FILENAME := libluacocos2d
 
 LOCAL_ARM_MODE := arm
+
+LUASRC := $(LOCAL_PATH)/../../../../../../3rd/lua
 
 LOCAL_SRC_FILES := ../manual/CCLuaBridge.cpp \
           ../manual/CCLuaEngine.cpp \
@@ -62,7 +63,41 @@ LOCAL_SRC_FILES := ../manual/CCLuaBridge.cpp \
           ../../../../external/lua/tolua/tolua_push.c \
           ../../../../external/lua/tolua/tolua_to.c \
           ../../../../external/xxtea/xxtea.cpp \
-          ../auto/lua_cocos2dx_audioengine_auto.cpp \
+		  $(LUASRC)/lapi.c \
+		  $(LUASRC)/lauxlib.c \
+		  $(LUASRC)/lbaselib.c \
+		  $(LUASRC)/lbitlib.c \
+		  $(LUASRC)/lcode.c \
+		  $(LUASRC)/lcorolib.c \
+		  $(LUASRC)/lctype.c \
+		  $(LUASRC)/ldblib.c \
+		  $(LUASRC)/ldebug.c \
+		  $(LUASRC)/ldo.c \
+		  $(LUASRC)/ldump.c \
+		  $(LUASRC)/lfunc.c \
+		  $(LUASRC)/lgc.c \
+		  $(LUASRC)/linit.c \
+		  $(LUASRC)/liolib.c \
+		  $(LUASRC)/llex.c \
+		  $(LUASRC)/lmathlib.c \
+		  $(LUASRC)/lmem.c \
+		  $(LUASRC)/loadlib.c \
+		  $(LUASRC)/lobject.c \
+		  $(LUASRC)/lopcodes.c \
+		  $(LUASRC)/loslib.c \
+		  $(LUASRC)/lparser.c \
+		  $(LUASRC)/lstate.c \
+		  $(LUASRC)/lstring.c \
+		  $(LUASRC)/lstrlib.c \
+		  $(LUASRC)/ltable.c \
+		  $(LUASRC)/ltablib.c \
+		  $(LUASRC)/ltm.c \
+		  $(LUASRC)/lua.c \
+		  $(LUASRC)/lundump.c \
+		  $(LUASRC)/lutf8lib.c \
+		  $(LUASRC)/lvm.c \
+		  $(LUASRC)/lzio.c \
+		  ../auto/lua_cocos2dx_audioengine_auto.cpp \
           ../manual/audioengine/lua_cocos2dx_audioengine_manual.cpp
 
 #Component
@@ -138,7 +173,7 @@ LOCAL_SRC_FILES += ../manual/navmesh/lua_cocos2dx_navmesh_conversions.cpp \
                    ../auto/lua_cocos2dx_navmesh_auto.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../../external/lua/tolua \
-                    $(LUA_INCLUDE_PATH) \
+					$(LUASRC) \
                     $(LOCAL_PATH)/../../../2d \
                     $(LOCAL_PATH)/../../../3d \
                     $(LOCAL_PATH)/../../../network \
@@ -168,7 +203,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../../external/lua/tolua \
                     $(LOCAL_PATH)/../../../../external/lua
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../external/lua/tolua \
-						   $(LUA_INCLUDE_PATH) \
+							$(LUASRC) \
                            $(LOCAL_PATH)/../auto \
                            $(LOCAL_PATH)/../manual \
                            $(LOCAL_PATH)/../manual/cocos2d \
@@ -188,7 +223,13 @@ LOCAL_WHOLE_STATIC_LIBRARIES := cocos2d_lua_android_static
 
 LOCAL_STATIC_LIBRARIES := cocos2dx_static
 
+LOCAL_CFLAGS += -Wno-psabi
+LOCAL_CFLAGS += -DLUA_COMPAT_5_1
+LOCAL_CFLAGS += -DLUA_COMPAT_APIINTCASTS
+LOCAL_EXPORT_CFLAGS += -DLUA_COMPAT_5_1
+LOCAL_EXPORT_CFLAGS += -DLUA_COMPAT_APIINTCASTS
+
 include $(BUILD_STATIC_LIBRARY)
 
-$(call import-module,$(LUA_IMPORT_PATH))
 $(call import-module,.)
+

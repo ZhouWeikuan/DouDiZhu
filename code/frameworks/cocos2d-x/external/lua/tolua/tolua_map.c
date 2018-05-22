@@ -39,12 +39,12 @@ static int tolua_newmetatable (lua_State* L, const char* name)
 
     if (r)
         tolua_classevents(L); /* set meta events */
-    
+
     // metatable[".classname"] = name
     lua_pushliteral(L, ".classname");   // stack: metatable ".classname"
     lua_pushstring(L, name);            // stack: metatable ".classname" name
     lua_rawset(L, -3);                  // stack: metatable
-    
+
     lua_pop(L,1);
     return r;
 }
@@ -281,7 +281,12 @@ static int tolua_bnd_setpeer(lua_State* L) {
         lua_pop(L, 1);
         lua_pushvalue(L, TOLUA_NOPEER);
     };
+#if LUA_VERSION_NUM > 501
+    lua_setuservalue(L, -2);
+#else
     lua_setfenv(L, -2);
+#endif
+
 
     return 0;
 };
@@ -289,7 +294,11 @@ static int tolua_bnd_setpeer(lua_State* L) {
 static int tolua_bnd_getpeer(lua_State* L) {
 
     /* stack: userdata */
+#if LUA_VERSION_NUM > 501
+    lua_getuservalue(L, -1);
+#else
     lua_getfenv(L, -1);
+#endif
     if (lua_rawequal(L, -1, TOLUA_NOPEER)) {
         lua_pop(L, 1);
         lua_pushnil(L);
@@ -306,12 +315,12 @@ static int tolua_bnd_getcfunction(lua_State* L) {
         lua_pushstring(L, "Invalid argument #2 to getcfunction: string expected.");
         lua_error(L);
     }
-    
+
     if (!lua_getmetatable(L, 1)) {
         lua_pushstring(L, "Invalid argument #1 to getcfunction: class or object expected.");
         lua_error(L);
     }
-    
+
     /* stack: class key mt */
     while (1) {
         lua_pushstring(L, ".backup");
@@ -325,14 +334,14 @@ static int tolua_bnd_getcfunction(lua_State* L) {
             lua_pop(L, 1);
         }
         lua_pop(L, 1);  /* stack: class key mt */
-        
+
         if (!lua_getmetatable(L, -1)) {
             break;
         }
         /* stack: class key mt base_mt */
         lua_remove(L, -2);  /* stack: class key base_mt */
     }
-    
+
     return 0;
 }
 
@@ -350,7 +359,7 @@ static int tolua_bnd_iskindof(lua_State *L)
         lua_pushstring(L, "Invalid argument #1 to iskindof: class or object expected.");
         lua_error(L);
     }
-    
+
     if (!type)
     {
         lua_pushstring(L, "Invalid argument #2 to iskindof: string expected.");
@@ -372,7 +381,7 @@ TOLUA_API void tolua_open (lua_State* L)
         lua_pushstring(L,"tolua_opened");
         lua_pushboolean(L,1);
         lua_rawset(L,LUA_REGISTRYINDEX);
-        
+
         // create value root table
         lua_pushstring(L, TOLUA_VALUE_ROOT);
         lua_newtable(L);
@@ -402,7 +411,7 @@ TOLUA_API void tolua_open (lua_State* L)
         lua_rawset(L, -3);               /* stack: string ubox mt */
         lua_setmetatable(L, -2);  /* stack: string ubox */
         lua_rawset(L,LUA_REGISTRYINDEX);
-        
+
 //        /* create object ptr -> class type mapping table */
 //        lua_pushstring(L, "tolua_ptr2type");
 //        lua_newtable(L);
@@ -531,7 +540,11 @@ TOLUA_API void tolua_beginmodule (lua_State* L, const char* name)
         }
 //---- by SunLightJuly, 2014.6.5
     } else {
+#if LUA_VERSION_NUM > 501
+        lua_pushglobaltable(L);
+#else
         lua_pushvalue(L,LUA_GLOBALSINDEX);
+#endif
     }
 }
 
@@ -566,7 +579,11 @@ TOLUA_API void tolua_module (lua_State* L, const char* name, int hasvar)
     else
     {
         /* global table */
+#if LUA_VERSION_NUM > 501
+        lua_pushglobaltable(L);
+#else
         lua_pushvalue(L,LUA_GLOBALSINDEX);
+#endif
     }
     if (hasvar)
     {
@@ -594,7 +611,11 @@ TOLUA_API void tolua_module (lua_State* L, const char* name, int hasvar)
     else
     {
         /* global table */
+#if LUA_VERSION_NUM > 501
+        lua_pushglobaltable(L);
+#else
         lua_pushvalue(L,LUA_GLOBALSINDEX);
+#endif
     }
     if (hasvar)
     {

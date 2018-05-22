@@ -19,14 +19,11 @@ void luaopen_lua_extensions(lua_State *L)
 {
     // load extensions
     luaL_Reg* lib = luax_exts;
-    lua_getglobal(L, "package");
-    lua_getfield(L, -1, "preload");
     for (; lib->func; lib++)
     {
-        lua_pushcfunction(L, lib->func);
-        lua_setfield(L, -2, lib->name);
+        luaL_requiref(L, lib->name, lib->func, 1);
+        lua_pop(L, 1);  /* remove lib */
     }
-    lua_pop(L, 2);
 
     luaopen_luasocket_scripts(L);
 }

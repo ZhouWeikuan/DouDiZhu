@@ -34,7 +34,7 @@ TOLUA_API int toluafix_pushusertype_ccobject(lua_State* L,
         lua_pushnil(L);
         return -1;
     }
-    
+
     Ref* vPtr = static_cast<Ref*>(ptr);
     const char* vType = getLuaTypeName(vPtr, type);
 
@@ -61,7 +61,7 @@ TOLUA_API int toluafix_pushusertype_ccobject(lua_State* L,
     }
 
     tolua_pushusertype_and_addtoroot(L, vPtr, vType);
-    
+
     return 0;
 }
 
@@ -126,8 +126,8 @@ TOLUA_API int toluafix_remove_ccobject_by_refid(lua_State* L, int refid)
         lua_pushstring(L, "tolua_ubox");                            /* stack: mt key */
         lua_rawget(L, LUA_REGISTRYINDEX);                           /* stack: mt ubox */
     };
-    
-    
+
+
     // cleanup root
     tolua_remove_value_from_root(L, ptr);
 
@@ -143,7 +143,11 @@ TOLUA_API int toluafix_remove_ccobject_by_refid(lua_State* L, int refid)
 
     // cleanup peertable
     lua_pushvalue(L, LUA_REGISTRYINDEX);
-    lua_setfenv(L, -2);
+#if LUA_VERSION_NUM > 501
+    lua_setuservalue(L, -2); /* stack: k,v,table */
+#else
+    lua_setfenv(L, -2); /* stack: k,v,table */
+#endif
 
     ud = (void**)lua_touserdata(L, -1);
     lua_pop(L, 1);                                                  /* stack: mt ubox */

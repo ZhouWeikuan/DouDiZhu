@@ -130,12 +130,12 @@ LuaStack *LuaStack::attach(lua_State *L)
 
 bool LuaStack::init(void)
 {
-    _state = lua_open();
+    _state = luaL_newstate();
     luaL_openlibs(_state);
     toluafix_open(_state);
 
     // Register our version of the global "print" function
-    const luaL_reg global_functions [] = {
+    const luaL_Reg global_functions [] = {
         {"print", lua_print},
         {"release_print",lua_release_print},
         {nullptr, nullptr}
@@ -202,7 +202,7 @@ void LuaStack::addLuaLoader(lua_CFunction func)
 
     // insert loader into index 2
     lua_pushcfunction(_state, func);                                   /* L: package, loaders, func */
-    for (int i = (int)(lua_objlen(_state, -2) + 1); i > 2; --i)
+    for (int i = (int)(lua_rawlen(_state, -2) + 1); i > 2; --i)
     {
         lua_rawgeti(_state, -2, i - 1);                                /* L: package, loaders, func, function */
         // we call lua_rawgeti, so the loader table now is at -3

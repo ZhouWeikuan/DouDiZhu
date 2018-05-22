@@ -13,14 +13,24 @@ CC_DISABLE_GLOBAL = true
 
 -- for module display
 CC_DESIGN_RESOLUTION = {
-    width = 960,
-    height = 640,
-    autoscale = "FIXED_HEIGHT",
+    width = 1920,
+    height = 1080,
+    autoscale = "SHOW_ALL",
+    background = "Default-Landscape.png",
+    backgroundAngle = 0,
+
     callback = function(framesize)
-        local ratio = framesize.width / framesize.height
-        if ratio <= 1.34 then
+        local ratio = math.max(framesize.width, framesize.height) / math.min(framesize.width, framesize.height)
+        if ratio <= 1.4 then
             -- iPad 768*1024(1536*2048) is 4:3 screen
-            return {autoscale = "FIXED_WIDTH"}
+            return {
+                width = 2048,
+                height= 1536,
+                autoscale = "SHOW_ALL",
+                background = "Default-Landscape.png",
+                backgroundAngle = 0,
+            }
         end
+        return CC_DESIGN_RESOLUTION
     end
 }

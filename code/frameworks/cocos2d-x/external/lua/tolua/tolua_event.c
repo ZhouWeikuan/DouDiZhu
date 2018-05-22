@@ -23,12 +23,20 @@
 static void storeatubox (lua_State* L, int lo)
 {
 #ifdef LUA_VERSION_NUM
+#if LUA_VERSION_NUM > 501
+    lua_getuservalue(L, lo);
+#else
     lua_getfenv(L, lo);
+#endif
     if (lua_rawequal(L, -1, TOLUA_NOPEER)) {
         lua_pop(L, 1);
         lua_newtable(L);
         lua_pushvalue(L, -1);
-        lua_setfenv(L, lo);    /* stack: k,v,table  */
+#if LUA_VERSION_NUM > 501
+        lua_setuservalue(L, lo); /* stack: k,v,table */
+#else
+        lua_setfenv(L, lo); /* stack: k,v,table */
+#endif
     };
     lua_insert(L, -3);
     lua_settable(L, -3); /* on lua 5.1, we trade the "tolua_peers" lookup for a settable call */
@@ -133,10 +141,10 @@ static int module_newindex_event (lua_State* L)
 static int class_table_get_index (lua_State* L)
 {
     // stack:  obj key ... obj
-    
+
     while (lua_getmetatable(L,-1)) {   /* stack: obj key obj mt */
         lua_remove(L,-2);                      /* stack: ... mt */
-        
+
         lua_pushvalue(L,2);                    /* stack: ... mt key */
         lua_rawget(L,-2);                      /* stack: ... mt value */
         if (!lua_isnil(L,-1)) {
@@ -144,7 +152,7 @@ static int class_table_get_index (lua_State* L)
         } else {
             lua_pop(L,1);
         }
-        
+
         /* try C/C++ variable */
         lua_pushstring(L,".get");
         lua_rawget(L,-2);                   /* stack: obj key ... mt tget */
@@ -175,7 +183,11 @@ static int class_index_event (lua_State* L)
     {
         /* Access alternative table */
 #ifdef LUA_VERSION_NUM /* new macro on version 5.1 */
+#if LUA_VERSION_NUM > 501
+        lua_getuservalue(L, 1);
+#else
         lua_getfenv(L,1);
+#endif
         if (!lua_rawequal(L, -1, TOLUA_NOPEER)) {
             lua_pushvalue(L, 2); /* key */
             lua_gettable(L, -2); /* on lua 5.1, we trade the "tolua_peers" lookup for a gettable call */
@@ -273,7 +285,7 @@ static int class_backup_before_newindex (lua_State* L)
 {
     /* stack: t k v */
     int m;
-    
+
     lua_pushvalue(L, 1);
     m = lua_getmetatable(L,-1);  /* stack: t k v t mt */
     while (m>0 && lua_istable(L,-1)) {
@@ -291,7 +303,7 @@ static int class_backup_before_newindex (lua_State* L)
             lua_pop(L, 1);
         }
         lua_pop(L, 1);  /* stack: t k v mt */
-        
+
         //Check if key is exist in mt
         lua_pushvalue(L, 2);
         lua_rawget(L, -2);  /* stack: t k v mt mt[k] */
@@ -316,7 +328,7 @@ static int class_backup_before_newindex (lua_State* L)
         lua_pop(L, 1);  /* stack: t k v mt */
         m = lua_getmetatable(L,-1);  /* stack: t k v mt base_mt */
     }
-    
+
     return 0;
 }
 
@@ -410,10 +422,10 @@ static int class_call_event(lua_State* L) {
             lua_pushstring(L, ".call");
             lua_rawget(L, 1);
             if (lua_isfunction(L, -1)) {
-                
+
                 lua_insert(L, 1);
                 lua_call(L, lua_gettop(L)-1, 1);
-                
+
                 return 1;
             }
         }
@@ -528,7 +540,11 @@ static int class_gc_event (lua_State* L)
 */
 TOLUA_API int class_gc_event (lua_State* L)
 {
-    void* u = *((void**)lua_touserdata(L,1));
+    void * u = NULL;
+    if (!lua_isuserdata(L, 1)) {
+        return 0;
+    }
+    u = *((void**)lua_touserdata(L,1));
     int top;
     /*fprintf(stderr, "collecting: looking at %p\n", u);*/
     /*

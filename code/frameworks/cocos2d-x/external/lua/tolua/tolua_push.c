@@ -35,10 +35,10 @@ void tolua_pushusertype_internal (lua_State* L, void* value, const char* type, i
             lua_pushstring(L, "tolua_ubox");
             lua_rawget(L, LUA_REGISTRYINDEX);
         };
-        
+
         lua_pushlightuserdata(L,value);                             /* stack: mt ubox key<value> */
         lua_rawget(L,-2);                                           /* stack: mt ubox ubox[value] */
-        
+
         if (lua_isnil(L,-1))
         {
             lua_pop(L,1);                                           /* stack: mt ubox */
@@ -51,10 +51,17 @@ void tolua_pushusertype_internal (lua_State* L, void* value, const char* type, i
             /*luaL_getmetatable(L,type);*/
             lua_pushvalue(L, -2);                                   /* stack: mt newud mt */
             lua_setmetatable(L,-2);                      /* update mt, stack: mt newud */
-            
+
 #ifdef LUA_VERSION_NUM
             lua_pushvalue(L, TOLUA_NOPEER);             /* stack: mt newud peer */
-            lua_setfenv(L, -2);                         /* stack: mt newud */
+
+            /* stack: mt newud */
+#if LUA_VERSION_NUM > 501
+            lua_setuservalue(L, -2);
+#else
+            lua_setfenv(L, -2);
+#endif
+
 #endif
         }
         else
@@ -84,13 +91,13 @@ void tolua_pushusertype_internal (lua_State* L, void* value, const char* type, i
             lua_pop(L,3);                          /* stack: mt ubox[u] */
         }
         lua_remove(L, -2);    /* stack: ubox[u]*/
-        
+
         if (0 != addToRoot)
         {
             lua_pushvalue(L, -1);
             tolua_add_value_to_root(L, value);
         }
-    } 
+    }
 }
 
 TOLUA_API void tolua_pushvalue (lua_State* L, int lo)
@@ -142,7 +149,7 @@ TOLUA_API void tolua_pushusertype_and_takeownership (lua_State* L, void* value, 
 
 TOLUA_API void tolua_add_value_to_root(lua_State* L, void* ptr)
 {
-    
+
     lua_pushstring(L, TOLUA_VALUE_ROOT);
     lua_rawget(L, LUA_REGISTRYINDEX);                               /* stack: value root */
     lua_insert(L, -2);                                              /* stack: root value */
@@ -158,7 +165,7 @@ TOLUA_API void tolua_remove_value_from_root (lua_State* L, void* ptr)
     lua_pushstring(L, TOLUA_VALUE_ROOT);
     lua_rawget(L, LUA_REGISTRYINDEX);                               /* stack: root */
     lua_pushlightuserdata(L, ptr);                                  /* stack: root ptr */
-    
+
     lua_pushnil(L);                                                 /* stack: root ptr nil */
     lua_rawset(L, -3);                                              /* root[ptr] = nil, stack: root */
     lua_pop(L, 1);
