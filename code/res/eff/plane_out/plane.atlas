@@ -1,0 +1,20 @@
+
+plane.png
+size: 2048,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+eff_airplane
+  rotate: false
+  xy: 2, 74
+  size: 633, 111
+  orig: 633, 111
+  offset: 0, 0
+  index: -1
+飞机
+  rotate: false
+  xy: 637, 2
+  size: 400, 183
+  orig: 400, 183
+  offset: 0, 0
+  index: -1

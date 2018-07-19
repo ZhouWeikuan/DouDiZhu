@@ -1,0 +1,153 @@
+
+picture.png
+size: 408,141
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+caidai01
+  rotate: true
+  xy: 349, 16
+  size: 15, 23
+  orig: 15, 23
+  offset: 0, 0
+  index: -1
+caidai02
+  rotate: true
+  xy: 375, 31
+  size: 15, 23
+  orig: 15, 23
+  offset: 0, 0
+  index: -1
+caidai03
+  rotate: true
+  xy: 226, 2
+  size: 17, 30
+  orig: 17, 30
+  offset: 0, 0
+  index: -1
+caidai04
+  rotate: false
+  xy: 367, 73
+  size: 29, 27
+  orig: 29, 27
+  offset: 0, 0
+  index: -1
+caidai05
+  rotate: false
+  xy: 319, 2
+  size: 14, 12
+  orig: 14, 12
+  offset: 0, 0
+  index: -1
+caidai06
+  rotate: true
+  xy: 340, 68
+  size: 37, 25
+  orig: 37, 25
+  offset: 0, 0
+  index: -1
+caidai07
+  rotate: false
+  xy: 326, 22
+  size: 21, 34
+  orig: 21, 34
+  offset: 0, 0
+  index: -1
+caidai08
+  rotate: true
+  xy: 286, 10
+  size: 9, 31
+  orig: 9, 31
+  offset: 0, 0
+  index: -1
+caidai09
+  rotate: false
+  xy: 258, 4
+  size: 26, 15
+  orig: 26, 15
+  offset: 0, 0
+  index: -1
+caidai10
+  rotate: true
+  xy: 396, 54
+  size: 17, 10
+  orig: 17, 10
+  offset: 0, 0
+  index: -1
+caidai11
+  rotate: true
+  xy: 375, 48
+  size: 23, 19
+  orig: 23, 19
+  offset: 0, 0
+  index: -1
+caidai12
+  rotate: true
+  xy: 340, 59
+  size: 7, 24
+  orig: 7, 24
+  offset: 0, 0
+  index: -1
+caidai13
+  rotate: false
+  xy: 374, 16
+  size: 22, 13
+  orig: 22, 13
+  offset: 0, 0
+  index: -1
+caidai14
+  rotate: false
+  xy: 349, 33
+  size: 24, 24
+  orig: 24, 24
+  offset: 0, 0
+  index: -1
+caidai15
+  rotate: true
+  xy: 374, 102
+  size: 37, 25
+  orig: 37, 25
+  offset: 0, 0
+  index: -1
+gift_1
+  rotate: false
+  xy: 137, 58
+  size: 100, 81
+  orig: 100, 81
+  offset: 0, 0
+  index: -1
+gift_2
+  rotate: false
+  xy: 239, 58
+  size: 99, 81
+  orig: 99, 81
+  offset: 0, 0
+  index: -1
+gift_3
+  rotate: false
+  xy: 226, 21
+  size: 98, 35
+  orig: 98, 35
+  offset: 0, 0
+  index: -1
+giftopen_eff
+  rotate: false
+  xy: 340, 107
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+light1
+  rotate: false
+  xy: 2, 3
+  size: 133, 136
+  orig: 133, 136
+  offset: 0, 0
+  index: -1
+ligth2
+  rotate: false
+  xy: 137, 3
+  size: 87, 53
+  orig: 87, 53
+  offset: 0, 0
+  index: -1

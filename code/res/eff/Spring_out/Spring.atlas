@@ -1,0 +1,167 @@
+
+Spring.png
+size: 2048,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+11
+  rotate: true
+  xy: 1231, 170
+  size: 32, 50
+  orig: 32, 50
+  offset: 0, 0
+  index: -1
+12
+  rotate: true
+  xy: 1112, 127
+  size: 36, 55
+  orig: 36, 55
+  offset: 0, 0
+  index: -1
+13
+  rotate: false
+  xy: 1343, 197
+  size: 70, 57
+  orig: 70, 57
+  offset: 0, 0
+  index: -1
+14
+  rotate: true
+  xy: 1415, 196
+  size: 58, 61
+  orig: 58, 61
+  offset: 0, 0
+  index: -1
+15
+  rotate: false
+  xy: 966, 43
+  size: 74, 63
+  orig: 74, 63
+  offset: 0, 0
+  index: -1
+16
+  rotate: false
+  xy: 876, 47
+  size: 88, 59
+  orig: 88, 59
+  offset: 0, 0
+  index: -1
+17
+  rotate: false
+  xy: 1231, 204
+  size: 110, 50
+  orig: 110, 50
+  offset: 0, 0
+  index: -1
+FP-0299
+  rotate: false
+  xy: 2, 58
+  size: 665, 196
+  orig: 665, 196
+  offset: 0, 0
+  index: -1
+chuntian
+  rotate: false
+  xy: 669, 108
+  size: 307, 146
+  orig: 307, 146
+  offset: 0, 0
+  index: -1
+huaban1
+  rotate: false
+  xy: 978, 127
+  size: 132, 127
+  orig: 132, 127
+  offset: 0, 0
+  index: -1
+huaban2
+  rotate: true
+  xy: 669, 2
+  size: 104, 86
+  orig: 104, 86
+  offset: 0, 0
+  index: -1
+huaban3
+  rotate: false
+  xy: 1112, 165
+  size: 117, 89
+  orig: 117, 89
+  offset: 0, 0
+  index: -1
+huaban4
+  rotate: false
+  xy: 757, 17
+  size: 117, 89
+  orig: 117, 89
+  offset: 0, 0
+  index: -1
+shuye1
+  rotate: false
+  xy: 1478, 216
+  size: 45, 38
+  orig: 45, 38
+  offset: 0, 0
+  index: -1
+shuye2
+  rotate: true
+  xy: 1042, 50
+  size: 56, 34
+  orig: 56, 34
+  offset: 0, 0
+  index: -1
+shuye3
+  rotate: false
+  xy: 1525, 223
+  size: 36, 31
+  orig: 36, 31
+  offset: 0, 0
+  index: -1
+shuye4
+  rotate: false
+  xy: 1169, 131
+  size: 47, 32
+  orig: 47, 32
+  offset: 0, 0
+  index: -1
+shuye5
+  rotate: false
+  xy: 446, 45
+  size: 17, 11
+  orig: 17, 11
+  offset: 0, 0
+  index: -1
+shuye6
+  rotate: false
+  xy: 2, 8
+  size: 18, 16
+  orig: 18, 16
+  offset: 0, 0
+  index: -1
+shuzhi1
+  rotate: true
+  xy: 2, 26
+  size: 30, 259
+  orig: 30, 259
+  offset: 0, 0
+  index: -1
+shuzhi2
+  rotate: true
+  xy: 263, 32
+  size: 24, 181
+  orig: 24, 181
+  offset: 0, 0
+  index: -1
+shuzhi3
+  rotate: true
+  xy: 757, 2
+  size: 13, 137
+  orig: 13, 137
+  offset: 0, 0
+  index: -1
+shuzhi4
+  rotate: true
+  xy: 978, 108
+  size: 17, 117
+  orig: 17, 117
+  offset: 0, 0
+  index: -1

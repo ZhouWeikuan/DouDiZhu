@@ -1,0 +1,146 @@
+
+MagnateWin.png
+size: 2048,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+MagnateWin_farmer1_teard1
+  rotate: false
+  xy: 648, 172
+  size: 236, 78
+  orig: 236, 78
+  offset: 0, 0
+  index: -1
+MagnateWin_farmer1_teard2
+  rotate: false
+  xy: 2, 38
+  size: 240, 94
+  orig: 240, 94
+  offset: 0, 0
+  index: -1
+MagnateWin_farmer_teard1
+  rotate: false
+  xy: 1873, 55
+  size: 85, 40
+  orig: 85, 40
+  offset: 0, 0
+  index: -1
+farmer1_coat
+  rotate: false
+  xy: 1663, 97
+  size: 174, 153
+  orig: 174, 153
+  offset: 0, 0
+  index: -1
+farmer1_head1
+  rotate: false
+  xy: 1281, 83
+  size: 189, 167
+  orig: 189, 167
+  offset: 0, 0
+  index: -1
+farmer1_head2
+  rotate: false
+  xy: 1472, 83
+  size: 189, 167
+  orig: 189, 167
+  offset: 0, 0
+  index: -1
+farmer_armL
+  rotate: false
+  xy: 886, 49
+  size: 122, 49
+  orig: 122, 49
+  offset: 0, 0
+  index: -1
+farmer_armL1
+  rotate: false
+  xy: 2, 2
+  size: 58, 34
+  orig: 58, 34
+  offset: 0, 0
+  index: -1
+farmer_coat
+  rotate: false
+  xy: 244, 34
+  size: 165, 98
+  orig: 165, 98
+  offset: 0, 0
+  index: -1
+farmer_head
+  rotate: false
+  xy: 1839, 97
+  size: 174, 153
+  orig: 174, 153
+  offset: 0, 0
+  index: -1
+magnate_arm1R
+  rotate: false
+  xy: 411, 7
+  size: 110, 68
+  orig: 110, 68
+  offset: 0, 0
+  index: -1
+magnate_arm2R
+  rotate: true
+  xy: 523, 15
+  size: 60, 94
+  orig: 60, 94
+  offset: 0, 0
+  index: -1
+magnate_armL
+  rotate: true
+  xy: 648, 43
+  size: 127, 156
+  orig: 127, 156
+  offset: 0, 0
+  index: -1
+magnate_coat
+  rotate: true
+  xy: 1084, 75
+  size: 175, 195
+  orig: 175, 195
+  offset: 0, 0
+  index: -1
+magnate_fan
+  rotate: false
+  xy: 1780, 6
+  size: 91, 89
+  orig: 91, 89
+  offset: 0, 0
+  index: -1
+magnate_head
+  rotate: true
+  xy: 886, 100
+  size: 150, 196
+  orig: 150, 196
+  offset: 0, 0
+  index: -1
+magnate_legL
+  rotate: false
+  xy: 806, 52
+  size: 78, 118
+  orig: 78, 118
+  offset: 0, 0
+  index: -1
+magnate_legR
+  rotate: true
+  xy: 1663, 15
+  size: 80, 115
+  orig: 80, 115
+  offset: 0, 0
+  index: -1
+magnate_pigtail
+  rotate: true
+  xy: 411, 77
+  size: 55, 202
+  orig: 55, 202
+  offset: 0, 0
+  index: -1
+money
+  rotate: false
+  xy: 2, 134
+  size: 644, 116
+  orig: 644, 116
+  offset: 0, 0
+  index: -1

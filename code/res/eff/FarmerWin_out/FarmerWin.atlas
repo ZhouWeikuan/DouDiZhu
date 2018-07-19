@@ -1,0 +1,139 @@
+
+FarmerWin.png
+size: 2048,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+farmer1_armL
+  rotate: false
+  xy: 1843, 152
+  size: 151, 102
+  orig: 151, 102
+  offset: 0, 0
+  index: -1
+farmer1_armR
+  rotate: false
+  xy: 441, 34
+  size: 142, 100
+  orig: 142, 100
+  offset: 0, 0
+  index: -1
+farmer1_body1
+  rotate: true
+  xy: 2, 2
+  size: 132, 135
+  orig: 132, 135
+  offset: 0, 0
+  index: -1
+farmer1_body2
+  rotate: false
+  xy: 1494, 105
+  size: 178, 149
+  orig: 178, 149
+  offset: 0, 0
+  index: -1
+farmer1_head
+  rotate: false
+  xy: 1318, 91
+  size: 174, 163
+  orig: 174, 163
+  offset: 0, 0
+  index: -1
+farmer2_armL
+  rotate: false
+  xy: 1996, 200
+  size: 42, 54
+  orig: 42, 54
+  offset: 0, 0
+  index: -1
+farmer2_armR
+  rotate: false
+  xy: 803, 115
+  size: 55, 33
+  orig: 55, 33
+  offset: 0, 0
+  index: -1
+farmer2_body1
+  rotate: true
+  xy: 1843, 39
+  size: 111, 120
+  orig: 111, 120
+  offset: 0, 0
+  index: -1
+farmer2_body2
+  rotate: false
+  xy: 139, 28
+  size: 154, 106
+  orig: 154, 106
+  offset: 0, 0
+  index: -1
+farmer2_handL
+  rotate: false
+  xy: 663, 53
+  size: 70, 95
+  orig: 70, 95
+  offset: 0, 0
+  index: -1
+farmer2_handR1
+  rotate: false
+  xy: 735, 82
+  size: 66, 66
+  orig: 66, 66
+  offset: 0, 0
+  index: -1
+farmer2_handR2
+  rotate: false
+  xy: 139, 5
+  size: 25, 21
+  orig: 25, 21
+  offset: 0, 0
+  index: -1
+farmer2_head
+  rotate: false
+  xy: 1674, 95
+  size: 167, 159
+  orig: 167, 159
+  offset: 0, 0
+  index: -1
+farmer2_trumpet
+  rotate: false
+  xy: 295, 35
+  size: 144, 99
+  orig: 144, 99
+  offset: 0, 0
+  index: -1
+gold
+  rotate: false
+  xy: 2, 136
+  size: 647, 118
+  orig: 647, 118
+  offset: 0, 0
+  index: -1
+magnate_body
+  rotate: false
+  xy: 651, 150
+  size: 264, 104
+  orig: 264, 104
+  offset: 0, 0
+  index: -1
+magnate_handL
+  rotate: false
+  xy: 585, 35
+  size: 76, 99
+  orig: 76, 99
+  offset: 0, 0
+  index: -1
+magnate_handR
+  rotate: false
+  xy: 917, 65
+  size: 203, 189
+  orig: 203, 189
+  offset: 0, 0
+  index: -1
+magnate_head
+  rotate: true
+  xy: 1122, 87
+  size: 167, 194
+  orig: 167, 194
+  offset: 0, 0
+  index: -1

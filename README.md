@@ -110,20 +110,69 @@ lua升级到5.3时，参考了网友的[心得](http://yestein.com/2015/06/09/%e
 对于iOS，需要在项目里加入protobuf整个目录；对于android，需要把所有.c文件 和.h的路径 加入Android.mk，同时把脚本文件 protobuf.lua加入build.gradle，这样编译时就会自动拷贝到assets目录。
 
 以上修改提交后显示如下:
-   
+
+    commit 624d8c8f0076b307e75baca7913660d4086c8476 (HEAD -> chap1_environment)
+    Author: Zhou Weikuan <zhouweikuan@gmail.com>
+    Date:   Tue May 22 17:22:44 2018 +0800
+
+        加入protobuf相关文件
 
 ### 加入游戏资源
+关于资源文件，我们用的是之前运城斗地主的资源，放在res目录下，子目录有:
 
+    all         游戏中的背景图片和本地化字符串文件
+    both        TexturePacker打包后的图片文件
+    eff         游戏内的spine动画效果
+    gift        与其他玩家互动的礼物效果
+    music       不同场合下的背景音乐
+    protos      protobuf的pb文件和本地的cfg游戏相关配置文件
+    sounds      声音效果，包括男女音效和触发的场合音效等
+    
+以上资源文件版权归属上海宽立和周为宽共同所有，可以在本地学习使用，但不得再发布，更禁止在商业环境使用；版权所有，违法必究！
 
 ### 一些公用函数库
+同时，游戏里也有一些公用的库和函数，这里列出如下：
+
+    Algos       算法和数据结构
+        \ -     NumArray.lua            可以获得元素个数的数值
+        \ -     NumSet.lua              可以获得元素个数的集合
+        \ -     PriorityQueue.lua       有优先级的队列
+        \ -     Queue.lua               先进先出的队列
+        \ -     SeatArray.lua           可以获得元素个数的座位
+
+    Helpers
+        \ -     DBHelper.lua            数据库处理
+        \ -     DebugHelper.lua         调试打印信息
+        \ -     FilterHelper.lua        过滤
+        \ -     PacketHelper.lua        protobuf处理
+        \ -     StringHelper.lua        字符串处理
+        \ -     TableHelper.lua         处理lua的table
+        
+    Classes
+        \ -     GameTable.lua           棋牌游戏的通用接口
+        \ -     HallInterface.lua       通用游戏大厅的接口
+        \ -     ProtoTypes.lua          通用的属性定义
+        \ -     RoomInterface.lua       继承自HallInterface, 棋牌类游戏大厅的实现
+        \ -     Const_YunCheng.lua      运城斗地主的通用常量定义
+        \ -     Table_YunCheng.lua      运城斗地主的服务器端流程处理，继承自GameTable
+        
+    utils
+        \ -     AIPlayer.lua            本地的人物属性
+        \ -     Constants.lua           常量和UI通用函数 
+        \ -     Settings.lua            保存本地数据
+        \ -     SoundApp.lua            声音
+        \ -     YunCheng_BotPlayer.lua  客户端回调处理
 
 
 ### 各场景划分
+对于单机斗地主，场景比较少。游戏开始时，调用MainScene.lua显示启动界面，然后自动跳转到LineScene.lua，点击游客登录后，进入GameScene.lua，开始游戏。
+GameScene.lua主要是初始化游戏玩家信息，实现一个周期性tick函数来驱动游戏流程，然后在CommonLayer.lua里显示界面。
+CommonLayer.lua再调用ClockLayer.lua显示时钟倒计时，PlayerInfoLayer.lua显示玩家信息，SettingLayer.lua进行设置，UIHelper.lua辅助处理，MsgBox.lua显示弹窗等。
 
+### 本章总结
+由于本文主要内容是介绍单机斗地主的AI实现，本章介绍的是实现AI前的环境设置，告诉读者有哪些内容，需要哪些实现，但具体的实现细节和说明比较简略，以后有时间再完善。
 
 ## 第二章、实现游戏的流程
-
-### 联网版本的接口
 
 ### C库到lua的接口
 

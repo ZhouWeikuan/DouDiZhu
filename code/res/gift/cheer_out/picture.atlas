@@ -1,0 +1,83 @@
+
+picture.png
+size: 855,106
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+01
+  rotate: false
+  xy: 436, 58
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+02
+  rotate: false
+  xy: 436, 9
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+03
+  rotate: false
+  xy: 576, 58
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+04
+  rotate: false
+  xy: 576, 9
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+05
+  rotate: false
+  xy: 716, 58
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+06
+  rotate: false
+  xy: 716, 9
+  size: 138, 47
+  orig: 138, 47
+  offset: 0, 0
+  index: -1
+beer
+  rotate: false
+  xy: 1, 1
+  size: 85, 104
+  orig: 85, 104
+  offset: 0, 0
+  index: -1
+beer_01
+  rotate: false
+  xy: 88, 1
+  size: 85, 104
+  orig: 85, 104
+  offset: 0, 0
+  index: -1
+beer_02
+  rotate: false
+  xy: 175, 1
+  size: 85, 104
+  orig: 85, 104
+  offset: 0, 0
+  index: -1
+beer_03
+  rotate: false
+  xy: 262, 1
+  size: 85, 104
+  orig: 85, 104
+  offset: 0, 0
+  index: -1
+beer_04
+  rotate: false
+  xy: 349, 1
+  size: 85, 104
+  orig: 85, 104
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,111 @@
+
+picture.png
+size: 171,518
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+car01
+  rotate: false
+  xy: 2, 261
+  size: 162, 69
+  orig: 162, 69
+  offset: 0, 0
+  index: -1
+car_scene
+  rotate: true
+  xy: 2, 67
+  size: 192, 42
+  orig: 192, 42
+  offset: 0, 0
+  index: -1
+light06
+  rotate: true
+  xy: 2, 332
+  size: 184, 163
+  orig: 184, 163
+  offset: 0, 0
+  index: -1
+light1
+  rotate: false
+  xy: 85, 58
+  size: 67, 57
+  orig: 67, 57
+  offset: 0, 0
+  index: -1
+light2
+  rotate: false
+  xy: 85, 188
+  size: 84, 71
+  orig: 84, 71
+  offset: 0, 0
+  index: -1
+light3
+  rotate: false
+  xy: 78, 117
+  size: 89, 69
+  orig: 89, 69
+  offset: 0, 0
+  index: -1
+light4
+  rotate: false
+  xy: 2, 5
+  size: 81, 60
+  orig: 81, 60
+  offset: 0, 0
+  index: -1
+light5
+  rotate: false
+  xy: 115, 5
+  size: 53, 51
+  orig: 53, 51
+  offset: 0, 0
+  index: -1
+luntai1
+  rotate: false
+  xy: 46, 122
+  size: 28, 54
+  orig: 28, 54
+  offset: 0, 0
+  index: -1
+luntai2
+  rotate: false
+  xy: 85, 2
+  size: 28, 54
+  orig: 28, 54
+  offset: 0, 0
+  index: -1
+luntai3
+  rotate: true
+  xy: 46, 194
+  size: 14, 30
+  orig: 14, 30
+  offset: 0, 0
+  index: -1
+luntai4
+  rotate: true
+  xy: 46, 178
+  size: 14, 30
+  orig: 14, 30
+  offset: 0, 0
+  index: -1
+luntai5
+  rotate: false
+  xy: 46, 210
+  size: 31, 15
+  orig: 31, 15
+  offset: 0, 0
+  index: -1
+yanwu1
+  rotate: true
+  xy: 46, 227
+  size: 32, 35
+  orig: 32, 35
+  offset: 0, 0
+  index: -1
+yanwu2
+  rotate: false
+  xy: 46, 82
+  size: 24, 38
+  orig: 24, 38
+  offset: 0, 0
+  index: -1

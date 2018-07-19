@@ -1,0 +1,34 @@
+
+loading.png
+size: 2048,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+beijing
+  rotate: false
+  xy: 2, 349
+  size: 632, 630
+  orig: 632, 630
+  offset: 0, 0
+  index: -1
+qugan
+  rotate: false
+  xy: 636, 500
+  size: 701, 479
+  orig: 701, 479
+  offset: 0, 0
+  index: -1
+shou
+  rotate: true
+  xy: 636, 369
+  size: 129, 250
+  orig: 129, 250
+  offset: 0, 0
+  index: -1
+tou
+  rotate: false
+  xy: 2, 2
+  size: 269, 345
+  orig: 269, 345
+  offset: 0, 0
+  index: -1
