@@ -271,7 +271,7 @@ class.isDeviceAndroid = isDeviceAndroid
 
 local getAclErrText = function(acl)
     local strMsgId = string.format("msgErr%d", acl or 0)
-    local strErr = OSNative.getUTF8LocaleString(strMsgId)
+    local strErr = getUTF8LocaleString(strMsgId)
 
     return strErr
 end

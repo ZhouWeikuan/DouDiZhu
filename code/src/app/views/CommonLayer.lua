@@ -905,7 +905,7 @@ function CommonLayer:showGameOverRoomTip(msg)
 
     local bgSize = bgBar:getContentSize()
 
-    local strMsg = OSNative.getUTF8LocaleString(msg)
+    local strMsg = getUTF8LocaleString(msg)
     local lbMsg = Constants.getLabel(strMsg, Constants.kBoldFontName, 42,
                             cc.p(bgSize.width * 0.5, bgSize.height * 0.5), bgBar)
 
@@ -1426,9 +1426,6 @@ function CommonLayer:tickFrame (dt)
     if self.runHandCards and self.runHandCards ~= {} then
         self:doAction()
     end
-
-    self:updateNetorkStatus()
-    self:updateBatteryStatus()
 end
 
 function CommonLayer:repaintBottomCards(topCards)
@@ -1614,11 +1611,11 @@ function CommonLayer:clickInvite()
 
         local title, body
         if code == ShareResultCode.kShareSuccess then
-            title = OSNative.getUTF8LocaleString("msgShareSuccess")
-            body  = OSNative.getUTF8LocaleString("msgShareOK")
+            title = getUTF8LocaleString("msgShareSuccess")
+            body  = getUTF8LocaleString("msgShareOK")
         else
-            title = OSNative.getUTF8LocaleString("msgShareFailed")
-            body  = OSNative.getUTF8LocaleString("msgShareFailInfo") .. msg
+            title = getUTF8LocaleString("msgShareFailed")
+            body  = getUTF8LocaleString("msgShareFailInfo") .. msg
         end
 
         UIHelper.popMsg(self, title..","..body)
@@ -2349,87 +2346,6 @@ function CommonLayer:showTalkBubble(seatId, strType, wordCnt)
     UIHelper.showTalkBubble(viewId, strType, wordCnt, self, Constants.kLayerText)
 end
 
-function CommonLayer:initLeftTopPanel()
-    local winSize = display.size
-    local bg = Constants.get9Sprite("bg_wifi.png",
-                                    cc.size(305, 0),
-                                    cc.p(480, winSize.height - 45),
-                                    self)
-    self.m_leftTopPanel = bg
-end
-
-function CommonLayer:updateNetorkStatus()
-    if not self.m_leftTopPanel then
-        self:initLeftTopPanel()
-    end
-
-    local bg = self.m_leftTopPanel
-    if bg.netUpTime and (skynet.time() - bg.netUpTime < 3) then
-        return
-    end
-
-    if bg.spNet then
-        bg.spNet:removeFromParent()
-        bg.spNet = nil
-    end
-
-    local netType = OSNative.getNetworkType() or ""
-    local strPath = nil
-    if netType == "WIFI" then
-        strPath = "net_wifi.png"
-    elseif netType == "4G" then
-        strPath = "net_mobile.png"
-    else
-        strPath = "net_none.png"
-    end
-
-    if strPath then
-        local bgSize = bg:getContentSize()
-        bg.spNet = Constants.getSprite(strPath, cc.p(110, bgSize.height * 0.5), bg)
-        bg.spNet:setScale(0.6)
-    end
-
-    bg.netUpTime = skynet.time()
-end
-
-function CommonLayer:updateBatteryStatus()
-    if not self.m_leftTopPanel then
-        self:initLeftTopPanel()
-    end
-
-    local bg = self.m_leftTopPanel
-    local bgSize = bg:getContentSize()
-
-    if not bg.lblTime then
-        bg.lblTime = Constants.getLabel("", Constants.kBoldFontNamePF, 36,cc.p(140, bgSize.height * 0.5), bg)
-        bg.lblTime:setAnchorPoint(0, 0.5)
-    end
-    bg.lblTime:setString(""..os.date("%X"))
-
-    if bg.btUpTime and (skynet.time() - bg.btUpTime < 3) then
-        return
-    end
-
-    if bg.spBattery then
-        bg.spBattery:removeFromParent()
-        bg.spBattery = nil
-    end
-
-    local batteryLvl = OSNative.getBatteryLevel() or 0
-    bg.spBattery = Constants.getSprite("bg_battery.png", cc.p(50, bgSize.height * 0.5), bg)
-    bg.spBattery:setScale(0.6)
-
-    local prgrs = cc.ProgressTimer:create(cc.Sprite:createWithSpriteFrameName("battery_prgrs.png"))
-    prgrs:setType(cc.PROGRESS_TIMER_TYPE_BAR)
-    prgrs:setBarChangeRate(cc.p(1, 0))
-    prgrs:setMidpoint(cc.p(0, 1))
-    prgrs:setPosition(cc.p(43, 18))
-    prgrs:setPercentage(100 * batteryLvl)
-    bg.spBattery:addChild(prgrs)
-
-    bg.btUpTime = skynet.time()
-end
-
 function CommonLayer:checkPass()
     local winSize = display.size
     local gameInfo = self.agent.tableInfo.gameInfo
@@ -2440,11 +2356,9 @@ function CommonLayer:checkPass()
         if not winCards then
             userdata:updateSeats(gameInfo.masterSeatId, self.agent.selfSeatId)
             self.prompts = self.agent:run_long_func("getDirectPrompts")
-            --userdata:getDirectPrompts()
         else
             userdata:updateSeats(gameInfo.masterSeatId, self.agent.selfSeatId)
             self.prompts = self.agent:run_long_func("getFollowPrompts", gameInfo.winCards.cards)
-            -- userdata:getFollowPrompts(gameInfo.winCards.cards)
         end
         self.promptCount = #self.prompts
         self.promptIndex = 0

@@ -34,9 +34,9 @@ class.create = create
 ---! @brief  make sure the protoFile is registered
 local function registerProtoName (self, protoFile)
     if not msgFiles[protoFile] then
-        local buffer = OSNative.getFileData(protoFile)
+        local buffer = cc.FileUtils:getInstance():getStringFromFile(protoFile)
         protobuf.register(buffer)
-        
+
         msgFiles[protoFile] = true
     end
 end
@@ -45,7 +45,7 @@ class.registerProtoName  = registerProtoName
 ---! @brief make a general proto data for client - server.
 local function makeProtoData (self, main, sub, body)
     local msg = {
-        mainType = main, 
+        mainType = main,
         subType  = sub,
         msgBody  = body
     }
@@ -73,7 +73,7 @@ class.extractMsg = extractMsg
 
 ---! @brief 加载配置文件, 文件名为从 backend目录计算的路径
 local function load_config(filename)
-    local source = OSNative.getFileData(filename)
+    local source = cc.FileUtils:getInstance():getStringFromFile(filename)
     local tmp = {}
     assert(load(source, "@"..filename, "t", tmp))()
 

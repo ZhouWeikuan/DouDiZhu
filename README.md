@@ -169,16 +169,38 @@ lua升级到5.3时，参考了网友的[心得](http://yestein.com/2015/06/09/%e
 GameScene.lua主要是初始化游戏玩家信息，实现一个周期性tick函数来驱动游戏流程，然后在CommonLayer.lua里显示界面。
 CommonLayer.lua再调用ClockLayer.lua显示时钟倒计时，PlayerInfoLayer.lua显示玩家信息，SettingLayer.lua进行设置，UIHelper.lua辅助处理，MsgBox.lua显示弹窗等。
 
+### C/C++相关文件
+同时对code/frameworks/runtime-src/Classes下增加如下文件:
+
+    AutoLock.h/cpp                  线程锁，防止多线程重入
+    LuaCall.h/cpp                   向lua中注册c/cpp库
+    luaproc.h/c                     lua异步线程库，避免AI算法太耗时，锁住UI线程
+    PermutationCombine.h/cpp        从N个数中选M的算法 (M <= N)
+    YunChengAI.h/cpp                斗地主的AI核心算法
+    LuaYunCheng.h/cpp               斗地主的游戏流程包装，供lua调用
+
+YunChengAI和LuaYunCheng中目前为空，或者被注释，我们下一章会先写一个最简化的游戏AI，然后再优化。
+
 ### 本章总结
-由于本文主要内容是介绍单机斗地主的AI实现，本章介绍的是实现AI前的环境设置，告诉读者有哪些内容，需要哪些实现，但具体的实现细节和说明比较简略，以后有时间再完善。
+由于本文主要内容是介绍单机斗地主的AI实现，本章介绍的是实现AI前的环境设置，告诉读者有哪些内容，需要哪些实现，但具体的实现细节和说明比较简略，以后有时间再完善。 本章最后提交信息如下:
+
+    commit e48fdb66d4ca16dc7bf4b3b4345f5db397560c58 (HEAD -> chap1_environment)
+    Author: Zhou Weikuan <zhouweikuan@gmail.com>
+    Date:   Thu Jul 19 13:41:30 2018 +0800
+
+        第一章，前提环境介绍完成
+
+
 
 ## 第二章、实现游戏的流程
-
-### C库到lua的接口
+由于之前的游戏是一个整体，我分拆移植到现在的项目后，目前仍然不能通过编译，无法运行。我们在本章将逐步完善YunChengAI.h/cpp，让它通过编译；并实现一个最简单版本的AI，即每次开始新一轮出牌时，只出一张手上有的最小的牌；跟牌时，也是出那张可以打过上次出牌的最小的那张牌。也就是说，本章完成后，会有一个AI最小化的运行版本。
 
 ### 手牌的一些规定
 
+
 ### 游戏的基本流程
+
+### C库到lua的接口
 
 ### 完成简单AI版的整个游戏
 

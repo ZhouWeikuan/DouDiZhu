@@ -32,6 +32,13 @@
 		50D7C96E17EBBEE6005D0B91 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D7C96D17EBBEE6005D0B91 /* AppKit.framework */; };
 		50D7C97017EBBEEC005D0B91 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D7C96F17EBBEEC005D0B91 /* IOKit.framework */; };
 		5200BECA1A53D9A500AC45E4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5200BEC91A53D9A500AC45E4 /* Security.framework */; };
+		5B6B3BA32100669D00E3C7B6 /* luaproc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3B9D2100669C00E3C7B6 /* luaproc.c */; };
+		5B6B3BA42100669D00E3C7B6 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3B9E2100669C00E3C7B6 /* Settings.cpp */; };
+		5B6B3BA52100669D00E3C7B6 /* LuaCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BA02100669D00E3C7B6 /* LuaCall.cpp */; };
+		5B6B3BAA2100673E00E3C7B6 /* YunChengAI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BA62100673E00E3C7B6 /* YunChengAI.cpp */; };
+		5B6B3BAB2100673E00E3C7B6 /* LuaYunCheng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BA72100673E00E3C7B6 /* LuaYunCheng.cpp */; };
+		5B6B3BAE210067B000E3C7B6 /* PermutationCombine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BAD210067B000E3C7B6 /* PermutationCombine.cpp */; };
+		5B6B3BB12100694200E3C7B6 /* AutoLock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BAF2100694100E3C7B6 /* AutoLock.cpp */; };
 		5BB495DB20B3D1F700199E68 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495DA20B3D1F700199E68 /* Images.xcassets */; };
 		5BB495DD20B3D29F00199E68 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495DC20B3D29F00199E68 /* Default-Landscape.png */; };
 		5BB495E020B3D2EA00199E68 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5BB495DE20B3D2EA00199E68 /* Localizable.strings */; };
@@ -220,6 +227,21 @@
 		50D7C96D17EBBEE6005D0B91 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		50D7C96F17EBBEEC005D0B91 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		5200BEC91A53D9A500AC45E4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		5B6B3B9A2100669C00E3C7B6 /* luaproc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = luaproc.h; path = ../Classes/luaproc.h; sourceTree = "<group>"; };
+		5B6B3B9D2100669C00E3C7B6 /* luaproc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = luaproc.c; path = ../Classes/luaproc.c; sourceTree = "<group>"; };
+		5B6B3B9E2100669C00E3C7B6 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Settings.cpp; path = ../Classes/Settings.cpp; sourceTree = "<group>"; };
+		5B6B3B9F2100669D00E3C7B6 /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Settings.h; path = ../Classes/Settings.h; sourceTree = "<group>"; };
+		5B6B3BA02100669D00E3C7B6 /* LuaCall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaCall.cpp; path = ../Classes/LuaCall.cpp; sourceTree = "<group>"; };
+		5B6B3BA12100669D00E3C7B6 /* LuaCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaCall.h; path = ../Classes/LuaCall.h; sourceTree = "<group>"; };
+		5B6B3BA22100669D00E3C7B6 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = ../Classes/Constants.h; sourceTree = "<group>"; };
+		5B6B3BA62100673E00E3C7B6 /* YunChengAI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = YunChengAI.cpp; path = ../Classes/YunChengAI.cpp; sourceTree = "<group>"; };
+		5B6B3BA72100673E00E3C7B6 /* LuaYunCheng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaYunCheng.cpp; path = ../Classes/LuaYunCheng.cpp; sourceTree = "<group>"; };
+		5B6B3BA82100673E00E3C7B6 /* YunChengAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YunChengAI.h; path = ../Classes/YunChengAI.h; sourceTree = "<group>"; };
+		5B6B3BA92100673E00E3C7B6 /* LuaYunCheng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaYunCheng.h; path = ../Classes/LuaYunCheng.h; sourceTree = "<group>"; };
+		5B6B3BAC210067AF00E3C7B6 /* PermutationCombine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PermutationCombine.h; path = ../Classes/PermutationCombine.h; sourceTree = "<group>"; };
+		5B6B3BAD210067B000E3C7B6 /* PermutationCombine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PermutationCombine.cpp; path = ../Classes/PermutationCombine.cpp; sourceTree = "<group>"; };
+		5B6B3BAF2100694100E3C7B6 /* AutoLock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AutoLock.cpp; path = ../Classes/AutoLock.cpp; sourceTree = "<group>"; };
+		5B6B3BB02100694100E3C7B6 /* AutoLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoLock.h; path = ../Classes/AutoLock.h; sourceTree = "<group>"; };
 		5BB495DA20B3D1F700199E68 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "DouDiZhu-mobile/Images.xcassets"; sourceTree = SOURCE_ROOT; };
 		5BB495DC20B3D29F00199E68 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape.png"; path = "../../../Default-Landscape.png"; sourceTree = "<group>"; };
 		5BB495DE20B3D2EA00199E68 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = SOURCE_ROOT; };
@@ -502,6 +524,21 @@
 				15427CE2198F237300DC375D /* lua_module_register.h */,
 				F293BB7E15EB831F00256477 /* AppDelegate.cpp */,
 				F293BB7F15EB831F00256477 /* AppDelegate.h */,
+				5B6B3BA22100669D00E3C7B6 /* Constants.h */,
+				5B6B3BA02100669D00E3C7B6 /* LuaCall.cpp */,
+				5B6B3BA12100669D00E3C7B6 /* LuaCall.h */,
+				5B6B3B9D2100669C00E3C7B6 /* luaproc.c */,
+				5B6B3B9A2100669C00E3C7B6 /* luaproc.h */,
+				5B6B3B9E2100669C00E3C7B6 /* Settings.cpp */,
+				5B6B3B9F2100669D00E3C7B6 /* Settings.h */,
+				5B6B3BA72100673E00E3C7B6 /* LuaYunCheng.cpp */,
+				5B6B3BA92100673E00E3C7B6 /* LuaYunCheng.h */,
+				5B6B3BA62100673E00E3C7B6 /* YunChengAI.cpp */,
+				5B6B3BA82100673E00E3C7B6 /* YunChengAI.h */,
+				5B6B3BAD210067B000E3C7B6 /* PermutationCombine.cpp */,
+				5B6B3BAC210067AF00E3C7B6 /* PermutationCombine.h */,
+				5B6B3BAF2100694100E3C7B6 /* AutoLock.cpp */,
+				5B6B3BB02100694100E3C7B6 /* AutoLock.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -570,7 +607,7 @@
 		F293B3BF15EB7BE500256477 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0940;
 				TargetAttributes = {
 					F293B3C715EB7BE500256477 = {
 						DevelopmentTeam = 6HM5389T6D;
@@ -750,20 +787,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				5BB4970720B413A200199E68 /* register.c in Sources */,
+				5B6B3BA52100669D00E3C7B6 /* LuaCall.cpp in Sources */,
+				5B6B3BB12100694200E3C7B6 /* AutoLock.cpp in Sources */,
 				5BB4971520B413A200199E68 /* map.c in Sources */,
+				5B6B3BA42100669D00E3C7B6 /* Settings.cpp in Sources */,
 				5BB4971720B413A200199E68 /* proto.c in Sources */,
 				5023812517EBBCAC00990C9B /* RootViewController.mm in Sources */,
+				5B6B3BAA2100673E00E3C7B6 /* YunChengAI.cpp in Sources */,
 				5BB4971320B413A200199E68 /* pbc-lua.c in Sources */,
 				5BB4970B20B413A200199E68 /* stringpool.c in Sources */,
+				5B6B3BA32100669D00E3C7B6 /* luaproc.c in Sources */,
 				5BB4971F20B413A200199E68 /* bootstrap.c in Sources */,
 				5BB4971920B413A200199E68 /* context.c in Sources */,
 				5BB4971B20B413A200199E68 /* wmessage.c in Sources */,
 				5BB4971120B413A200199E68 /* varint.c in Sources */,
+				5B6B3BAB2100673E00E3C7B6 /* LuaYunCheng.cpp in Sources */,
 				5BB4970D20B413A200199E68 /* alloc.c in Sources */,
 				F293BB9C15EB831F00256477 /* AppDelegate.cpp in Sources */,
 				5BB4970520B413A200199E68 /* rmessage.c in Sources */,
 				5023812417EBBCAC00990C9B /* main.m in Sources */,
 				5BB4970920B413A200199E68 /* decode.c in Sources */,
+				5B6B3BAE210067B000E3C7B6 /* PermutationCombine.cpp in Sources */,
 				5BB4971D20B413A200199E68 /* pattern.c in Sources */,
 				5023811817EBBCAC00990C9B /* AppController.mm in Sources */,
 				5BB4970320B413A200199E68 /* array.c in Sources */,
@@ -826,6 +870,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../../runtime/mac;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -862,6 +907,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = mac/Prefix.pch;
@@ -902,11 +948,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -926,6 +974,8 @@
 					"CC_LUA_ENGINE_ENABLED=1",
 					"CC_ENABLE_CHIPMUNK_INTEGRATION=0",
 					GLFW_EXPOSE_NATIVE_COCOA,
+					LUA_COMPAT_5_1,
+					LUA_COMPAT_APIINTCASTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -938,7 +988,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
 			};
 			name = Debug;
 		};
@@ -952,11 +1002,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -971,6 +1023,8 @@
 					USE_FILE32API,
 					"CC_LUA_ENGINE_ENABLED=1",
 					"CC_ENABLE_CHIPMUNK_INTEGRATION=0",
+					LUA_COMPAT_5_1,
+					LUA_COMPAT_APIINTCASTS,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -982,7 +1036,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -992,6 +1046,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				DEVELOPMENT_TEAM = 6HM5389T6D;
@@ -1034,6 +1089,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				DEVELOPMENT_TEAM = 6HM5389T6D;
