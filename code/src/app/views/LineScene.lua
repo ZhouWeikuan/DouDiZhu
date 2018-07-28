@@ -43,19 +43,6 @@ function LineScene:initBtn()
     item:setPosition(winSize.width * 0.5, 288)
     self.m_btnTour = item
 
-    item = Constants.getMenuItem("rank")
-    local itemSize = item:getContentSize()
-    item:registerScriptTapHandler(function()
-        SoundApp.playEffect("sounds/main/click.mp3")
-        OSNative.showRank()
-        end)
-    item:addTo(buttonMenu)
-    item:setPosition(winSize.width  - itemSize.width * 0.6, winSize.height - itemSize.height * 0.6)
-    if Constants.isDeviceAndroid() then
-        item:setEnabled(false)
-        item:setVisible(false)
-    end
-
     item = Constants.getMenuItem("close")
     local itemSize = item:getContentSize()
     item:registerScriptTapHandler(function() self:clickClose() end)

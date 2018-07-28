@@ -4,6 +4,9 @@
 
 This repository will talk about AI algorithms for a chinese famous card game - landlord or DouDiZhu, it is based on weights.
 
+## 第0章、致敬BlueDJ
+本人自2011年开始进入移动行业创业，开始做的是连连看，满天星等休闲小游戏，对棋牌游戏很感兴趣但一直无法入门。后来在网上找到一套开源的棋牌游戏大厅和客户端，即bluedj；经过一段时间的尝试，先在Linux平台上搭建好服务器，再花了一段时间把客户端从QT移植到iOS的ObjC下，终于踉踉跄跄开始棋牌游戏开发生涯。可以说，没有bluedj，很大可能上就没有本文的诞生。
+
 
 ## 第一章、环境初始化
 为了演示斗地主算法的内容，我们需要创建好一个相关的cocos2d-x项目，并加入相关的代码，声音，图片等。与斗地主客户端对应的服务器端是基于skynet写的一个分布式游戏框架，为了代码复用方便和网络通讯需要，我们需要把lua升级到5.3，并在本地加入protobuf相关的解析库(我们使用的是pbc)。有些通用的函数库是游戏中必不可少的，我们也需要加入。
@@ -195,14 +198,107 @@ YunChengAI和LuaYunCheng中目前为空，或者被注释，我们下一章会�
 ## 第二章、实现游戏的流程
 由于之前的游戏是一个整体，我分拆移植到现在的项目后，目前仍然不能通过编译，无法运行。我们在本章将逐步完善YunChengAI.h/cpp，让它通过编译；并实现一个最简单版本的AI，即每次开始新一轮出牌时，只出一张手上有的最小的牌；跟牌时，也是出那张可以打过上次出牌的最小的那张牌。也就是说，本章完成后，会有一个AI最小化的运行版本。
 
-### 手牌的一些规定
+### 文件功能说明
+HallInterface.lua 实现了一个通用的棋牌游戏、休闲游戏的大厅接口；RoomInterface.lua继承自HallInterface.lua，实现棋牌游戏大厅内桌位的管理，换桌等功能。GameTable.lua则实现一个棋牌游戏桌与用户交户和游戏时的各种接口。ProtoTypes.lua则规定了所有游戏都通用的属性定义和通讯协议。
 
+对于斗地主游戏，我们可以不用太多关注上面的实现细节，把主要精力放在 Const_YunCheng.lua, Table_YunCheng.lua, YunCheng_BotPlayer.lua 这三个文件上面。
 
-### 游戏的基本流程
+### Const_YunCheng.lua 
+本文件是对斗地主游戏的常量定义。
+
+1. 首先设置const的metatable，避免引用到未定义的空值；
+2. 然后定义游戏的ID和版本号；
+3. 再定义游戏的特殊牌值和常量，以及面值和牌型等；
+4. 然后是游戏客户端服务器端相互沟通时的协议数值，游戏桌的状态和各状态的等候时间; 
+5. 再后是游戏的各种出错情况定义；
+6. 再后是各种辅助函数；
+7. 最后是等级说明。
+
+### Table_YunCheng.lua
+本文件是游戏的服务器核心模块。
+
+玩家在加入游戏，进入桌子，等到足够的准备好的玩家后，游戏从本文件的gameStart函数正式开始。gameStart初始化整个游戏所需要的信息，并用gametrace发送给桌上的玩家，然后进入各种不同的等候状态。再等候时，接收玩家的输入并进行相关的处理，如果等候超时，会自动按默认输入处理。处理完成后，进入下一状态。如此循环往复，最后等某个玩家所有的牌出完，游戏终止，进入yunchengGameOver函数。
+
+本文件的主要函数如下:
+
+1. gameStart           游戏开始，初始化数据
+2. yunchengGameOver    游戏结束，处理各玩家得分
+3. yunchengGameTrace   接收用户输入，并进行相关处理
+4. yunchengTimeout     各状态超时，自动处理
+
+在游戏过程中，主要分成 发牌阶段，叫地主阶段，出牌阶段，结束阶段等。
+
+### YunCheng_BotPlayer.lua
+本文件主要是客户端的通讯处理和机器人AI部分。
+
+主要包括收发包，发包的简单包装，对接收到的信息的进行处理，再判断服务的对象，是玩家通知UI更新，是机器人进行AI处理等。
+
+由于AI比较耗时，为了不卡顿UI，我们用luaproc另起一个线程处理AI部分。主线程每隔一段时间检查luaproc结果，有结果再继续。对luaproc包装后，必须新建一个coroutine来调用 run_long_func，然后在主线程里调用check_long_func使得coroutine可以在有结果后继续进行。
 
 ### C库到lua的接口
+LuaYunCheng.h/cpp 为整个游戏流程提供了来自C++的完整AI库。包括以下几个部分
 
-### 完成简单AI版的整个游戏
+1. 环境设置类
+
+    updateSeats     更新地主和当前玩家
+    
+    addHistCards    出牌历史记录
+    
+    setHandCards    玩家具体的手牌
+    
+    getHandCards
+    
+    setHandCount    手牌设置，只知道别人的牌数
+        
+2. 牌面排序调试
+    
+    sortMyCards         手上的牌按面值排序
+    
+    removeSubset        根据子集，移除那部分手牌
+    
+    debugSnakeInfo      可视化输出手牌信息
+    
+3. 叫地主辅助
+
+    getWinPossible      做地主的胜率猜测
+    
+    bigEnough           手牌太大？必须做地主！
+    
+4. 出牌提示
+
+    getNodeType             之前所出牌的牌型
+    
+    calcPowerValue          计算手上所有牌的权重
+    
+    canPlayCards            选择的牌可以打过之前的牌吗？
+    
+    getDirectPrompts        直接出牌时的所有可能
+    
+    getFollowPrompts        跟打别人的牌的所有可能
+    
+5. 机器人出牌
+
+    robotFirstPlay          机器人直接出牌
+    
+    robotFollowCards        机器人跟牌
+
+值得注意的是，由于calcPowerValue, getDirectPrompts, getFollowPrompts, robotFirstPlay, robotFollowCards这些函数执行时有可能会花费比较长一点的时间，为了避免卡顿UI，我们可以使用luaproc另起一个线程。这个可以通过getLight函数获取YunChengGame的数据裸指针，在luaproc里调用相关函数执行。
+
+### 简单的AI版
+目前YunChengAI.h/cpp还是阉割版，只包括可以支持LuaYunCheng.h/cpp的最小代码。
+
+为了方便介绍斗地主的AI如何实现，我们现在所写的代码只能按照一个最简单的逻辑来执行：每次出牌时，选择手牌里最小的那张可出牌，即如果是直接出牌，就选择面值最小的那张牌，如果是跟牌，选择可以打过对方的面值最小的牌，找不到的话就不出。
+
+目前AI里实现的模块有:
+
+1. 最基本的常量数值定义，包括基本的面值，和一些特殊的牌值，牌型等;
+2. AINode，每次出手的牌型结构
+3. OneHand, 计算手牌权重时的辅助结构
+4. LordCards, 每个人的手牌
+5. YunChengGame, 游戏的结构定义
+
+### 目前游戏的整体情况
+由于UI方面的lua代码基本没动，因此现在游戏可以正常运行，每人每次只出一张牌，打过上家；无牌可打时，上一轮的赢家开始下一轮，直到有人出完牌为止。现在AI的核心代码基本上达到了我们的预期，具体细节我们下一章再解释。
 
 ## 第三章、核心AI逻辑
 

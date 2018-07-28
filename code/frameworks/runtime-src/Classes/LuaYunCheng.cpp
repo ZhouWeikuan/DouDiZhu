@@ -78,8 +78,8 @@ extern "C"{
         int masterId            = (int)lua_tointeger(L, 2);
         int curSeatId           = (int)lua_tointeger(L, 3);
 
-         game->masterSeatId  = masterId;
-         game->curSeatId     = curSeatId;
+        game->masterSeatId  = masterId;
+        game->curSeatId     = curSeatId;
 
         return 0;
     }
@@ -175,10 +175,10 @@ extern "C"{
 
         assert(cnt1 <= 21 && cnt2 <= 21 && cnt3 <= 21);
 
-//        game->seatHands[1].num = cnt1;
-//        game->seatHands[2].num = cnt2;
-//        game->seatHands[3].num = cnt3;
-//
+        //        game->seatHands[1].num = cnt1;
+        //        game->seatHands[2].num = cnt2;
+        //        game->seatHands[3].num = cnt3;
+        //
         return 0;
     }
 
@@ -671,8 +671,8 @@ extern "C"{
         readIntArray(L, 2, cards);
 
         // test
-//        cards.clear();
-//        cards.push_back(4);
+        //        cards.clear();
+        //        cards.push_back(4);
         // end test
 
         LordCards prevLords(game, cards);
@@ -682,11 +682,11 @@ extern "C"{
         LordCards & playerCards = *game->seatHands[game->curSeatId];
 
         // test
-//        {
-//            int arr[] = {55, 2, 14, 13, 39, 10, 23, 7, 33, 46, 45, 44, 31, 18, 5, 43, 29};
-//            int len = sizeof(arr)/sizeof(arr[0]);
-//            playerCards.theCards.assign(arr, arr + len);
-//        }
+        //        {
+        //            int arr[] = {55, 2, 14, 13, 39, 10, 23, 7, 33, 46, 45, 44, 31, 18, 5, 43, 29};
+        //            int len = sizeof(arr)/sizeof(arr[0]);
+        //            playerCards.theCards.assign(arr, arr + len);
+        //        }
         //end test
 
         std::vector<AINode > prompts = playerCards.getNodesGreaterThan(prevNode);
@@ -782,12 +782,13 @@ extern "C"{
 
         {"debugSnakeInfo",      ldebugSnakeInfo},
 
-        // 扣底
+        // 叫地主
         {"getWinPossible",      lgetWinPossible},
         {"bigEnough",           lbigEnough},
-        {"getNodeType",         lgetNodeType},
 
         // 出牌选择
+        {"getNodeType",         lgetNodeType},
+        
         {"getLight",            lgetLight},
 
         {"robotFirstPlay",      lrobotFirstPlay},

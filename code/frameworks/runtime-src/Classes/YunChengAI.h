@@ -80,7 +80,28 @@ struct AINode {
 
     std::vector<int>  cards;
 
+
+public:
+    AINode();
+    AINode(int type, int val, int mainN, int len, int sub);
+    AINode(const AINode &other);
+    AINode & operator = (const AINode &other);
+
+    bool isValidNode() const;
+    void resetNode();
+
+    int getTopValue() const;
+    bool isRocket() const;
+    bool isBomb() const;
+    bool isExactLessThan(const AINode & other) const;
+    bool isStrictLessThan(const AINode &other) const;
+
+    bool operator < (const AINode & other) const;
+    bool isEqualTo(const AINode & other) const;
+
 };
+
+bool AINode_Compare_Aggregate_Reversed(const AINode &a, const AINode &b);
 
 struct OneHand {
     float   totalPower;
@@ -89,7 +110,7 @@ struct OneHand {
 
 public:
     OneHand():bestNode() {
-        totalPower = kMinPowerValue;
+        totalPower = 0;
         handNum = 0;
     }
 };
@@ -120,6 +141,14 @@ public:
 
     std::vector<int> removeSubset(const std::vector<int> & subset);
 
+public:
+    OneHand    calcPowerValue(bool checkFlower);
+
+    AINode     typeAndValueFind();
+
+public:
+
+    std::vector<AINode>  getNodesGreaterThan(const AINode & node);
 
 public:
     class YunChengGame * theGame;

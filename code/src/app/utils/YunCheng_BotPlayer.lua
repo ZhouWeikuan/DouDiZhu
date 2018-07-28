@@ -89,16 +89,6 @@ class.sendMsgOptions = function(self, chatText, chatType)
     self:sendPacket(packet, 0)
 end
 
-class.sendRoomOptions = function(self, subType, body, delay)
-    local msg = {}
-    msg.mainType    = protoTypes.CGGAME_PROTO_TYPE_ROOMDATA
-    msg.subType     = subType
-    msg.msgBody     = body
-
-    local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
-    self:sendPacket(packet, delay)
-end
-
 class.sendTableOptions = function(self, subTypeInfo, reqSeatId, delay)
     local msg = {}
     msg.mainType    = protoTypes.CGGAME_PROTO_TYPE_GAMEDATA
@@ -106,16 +96,6 @@ class.sendTableOptions = function(self, subTypeInfo, reqSeatId, delay)
     if reqSeatId then
         msg.msgBody     = tostring(reqSeatId)
     end
-
-    local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
-    self:sendPacket(packet, delay)
-end
-
-class.sendRoomSeatOptions = function(self, seatId, delay)
-    local msg = {}
-    msg.mainType    = protoTypes.CGGAME_PROTO_TYPE_GAMEDATA
-    msg.subType     = protoTypes.CGGAME_PROTO_SUBTYPE_ROOMSEAT
-    msg.msgBody     = tostring(seatId)
 
     local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
     self:sendPacket(packet, delay)
@@ -192,7 +172,13 @@ class.tickFrame = function (self, dt)
     while obj and obj.timeout <= now do
         obj = self.send_list:popFront()
 
-        self.delegate:command_handler(user, obj.packet)
+        xpcall(function()
+            self.delegate:command_handler(user, obj.packet)
+        end,
+        function(err)
+            print(err)
+            print(debug.traceback())
+        end)
 
         obj = self.send_list:front()
     end
@@ -232,8 +218,6 @@ class.handlePacket = function (self, packet)
         list = list.server_list
     elseif msg.mainType == protoTypes.CGGAME_PROTO_TYPE_GAMEDATA then
         self:handle_gamedata(msg)
-    elseif msg.mainType == protoTypes.CGGAME_PROTO_TYPE_ROOMDATA then
-        self:handle_roomdata(msg)
     else
         print ("unknown proto data ", msg.mainType, msg.subType)
     end
@@ -351,49 +335,6 @@ class.handle_gamedata = function(self,msg)
         self:GameGift(msg)
     else
         print("Unkown game data ".. typeId)
-    end
-end
-
-class.handle_roomdata = function (self, msg)
-    local hp = require "TableHelper"
-
-    local typeId = msg.subType
-    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_INFO then
-        self.m_thisResult = ""
-
-        local roomInfo = packetHelper:decodeMsg("CGGame.RoomInfo", msg.msgBody)
-        roomInfo = hp.copyTable(roomInfo)
-
-        local roomDetails = packetHelper:decodeMsg("YunCheng.RoomDetails", roomInfo.roomDetails)
-        roomInfo.passCount = roomDetails.passCount
-
-        self.tableInfo.roomInfo = roomInfo
-        roomInfo.roomDetails = roomDetails
-        self.handler:handleRoomInfo(roomInfo, roomDetails)
-    elseif typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RELEASE then
-        local exitInfo = packetHelper:decodeMsg("CGGame.ExitInfo", msg.msgBody)
-        exitInfo = hp.copyTable(exitInfo)
-
-        if exitInfo.ownerId == "" then
-            self.tableInfo.roomInfo.exitInfo = nil
-        else
-            self.tableInfo.roomInfo.exitInfo = exitInfo
-        end
-
-        if exitInfo.timeout and exitInfo.timeout > 0 then
-            exitInfo.timeout = exitInfo.timeout + os.time()
-        end
-
-        self.handler:handleRoomRelease(exitInfo)
-    elseif typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RESULT then
-        self.m_thisResult = (self.m_thisResult or "") .. msg.msgBody
-
-        local hp = require "TableHelper"
-        local curRoomResult = hp.decode(self.m_thisResult)
-        if curRoomResult then
-            self.handler:handleRoomResult(self.m_thisResult, self.selfSeatId)
-            self.m_thisResult = ""
-        end
     end
 end
 
@@ -675,7 +616,7 @@ class.UpdateGameOverData = function(self,info)
         sites[k] = v
 
         local user = self:GetUserAtSeat(k)
-        if user and not self.tableInfo.roomInfo then
+        if user then
             user.FCounter = (user.FCounter or 0) + v.deltaChips
             user.FScore   = (user.FScore or 0) + v.deltaScore
             if v.deltaScore > 0 then
@@ -864,7 +805,6 @@ class.run_long_func = function (self, funcName, ...)
 
         local funcBody = self:genFuncBody(light, funcName, name, data)
 
-
         s, m = luaproc.newproc(funcBody)
         if not s then
             print("luaproc start failed", tostring(m))
@@ -881,15 +821,6 @@ class.run_long_func = function (self, funcName, ...)
 end
 
 ----------------UI & AI handlers -----------------------
-class.handleRoomInfo = function (self, roomInfo, roomDetails)
-end
-
-class.handleRoomRelease = function (self, exitInfo)
-end
-
-class.handleRoomResult = function (self, msg, seatId)
-end
-
 class.handleACL =  function (self, aclType)
     if aclType == const.YUNCHENG_ACL_STATUS_RESTART_NO_MASTER then
     elseif aclType == const.YUNCHENG_ACL_STATUS_NO_SELECT_CARDS then

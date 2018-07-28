@@ -34,7 +34,7 @@ function GameScene:initAgentList()
     local players = AIPlayer.shufflePlayers()
 
     local agent_list = {}
-    local count = 4
+    local count = 3
     for i = 1, count do
         local handler = nil
         local p = players[i]

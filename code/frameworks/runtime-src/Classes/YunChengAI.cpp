@@ -12,6 +12,169 @@ int getMaskValue (int card) {
     return (card & kCardMask_CardValue);
 }
 
+#pragma mark - compares
+bool AINode_Compare_Aggregate_Reversed(const AINode &a, const AINode &b) {
+    float absValue = fabs(a.aggregate - b.aggregate);
+    if (absValue < 0.01) {
+        return a.cards < b.cards;
+    }
+
+    return a.aggregate > b.aggregate;
+}
+
+#pragma mark - AINode
+AINode::AINode() {
+    resetNode();
+}
+
+AINode::AINode(int type, int val, int mainN, int len, int sub) {
+    cardType = type;
+    value = val;
+    mainNum = mainN;
+    seralNum = len;
+    subNum = sub;
+
+    aggregate = 0.0f;
+
+    cards.clear();
+}
+
+AINode::AINode(const AINode &other) {
+    cardType = other.cardType;
+    mainNum = other.mainNum;
+    value = other.value;
+    seralNum = other.seralNum;
+    subNum = other.subNum;
+
+    aggregate = other.aggregate;
+
+    cards = other.cards;
+}
+
+AINode & AINode::operator = (const AINode &other) {
+    cardType = other.cardType;
+    mainNum = other.mainNum;
+    value = other.value;
+    seralNum = other.seralNum;
+    subNum = other.subNum;
+
+    aggregate = other.aggregate;
+
+    cards = other.cards;
+
+    return *this;
+}
+
+bool AINode::isValidNode() const {
+    return mainNum != 0;
+}
+
+void AINode::resetNode() {
+    cardType = 0;
+    value = 0;
+    mainNum = 0;
+    seralNum = 0;
+    subNum = 0;
+
+    aggregate = 0.0f;
+
+    cards.clear();
+}
+
+int AINode::getTopValue() const {
+    int top = value;
+    if (cardType == kCardType_Serial) {
+        top = value + seralNum - 1;
+    }
+
+    return top;
+}
+
+bool AINode::isRocket() const {
+    return cardType == kCardType_Rocket;
+}
+
+bool AINode::isBomb() const {
+    return (seralNum==1 && mainNum >= 4 && subNum == 0);
+}
+
+
+// same type less than
+bool AINode::isExactLessThan(const AINode & other) const {
+    if (!isValidNode()) {
+        return true;
+    }
+    return (cardType == other.cardType && mainNum == other.mainNum
+        && subNum == other.subNum && seralNum == other.seralNum
+        && getTopValue() < other.getTopValue());
+}
+
+// same type or big bomb
+bool AINode::isStrictLessThan(const AINode &other) const {
+    if (!isValidNode())
+        return true;
+
+    if (isRocket()) {
+        return false;
+    }
+    if (other.isRocket()) {
+        return true;
+    }
+
+    if (isBomb() && other.isBomb()) {
+        return getTopValue() < other.getTopValue();
+    } else if (isBomb()) {
+        return false;
+    } else if (other.isBomb()) {
+        return true;
+    }
+
+    return isExactLessThan(other);
+}
+
+
+bool AINode::operator < (const AINode & other) const {
+    if (mainNum != other.mainNum) {
+        return mainNum > other.mainNum;
+    }
+
+    if (value != other.value) {
+        return value < other.value;
+    }
+
+    if (cardType != other.cardType) {
+        return cardType < other.cardType;
+    }
+
+    if (seralNum != other.seralNum) {
+        return seralNum < other.seralNum;
+    }
+
+    if (cards.size() != other.cards.size()) {
+        return cards.size() < other.cards.size();
+    }
+
+    for (int i=0; i<cards.size(); ++i) {
+        if (cards[i] != other.cards[i]) {
+            return cards[i] < other.cards[i];
+        }
+    }
+    return false;
+}
+
+bool AINode::isEqualTo(const AINode & other) const {
+    if (isRocket() && other.isRocket()) {
+        return true;
+    }
+
+    if (mainNum == other.mainNum && value == other.value
+        && seralNum == other.seralNum && subNum == other.subNum) {
+        return cards == other.cards;
+    } else {
+        return false;
+    }
+}
+
 
 static const char * cardSuits[] = {"♣️", "♦️", "♥️", "♠️"};
 static const char * cardValues[] = {"", "1", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A", "2"};
@@ -97,57 +260,11 @@ LordCards & LordCards::operator = (const LordCards & other) {
 
 #pragma mark - search find
 float LordCards::winRateIfLord() {
-    float score = 0.0f;
-
-    int count = this->scanToTable();
-
-    if (cardsTable[0][kCard_ValueJoker1] && cardsTable[0][kCard_ValueJoker2]) {
-        score += 8;
-    } else if (cardsTable[0][kCard_ValueJoker2]) {
-        score += 4;
-    } else if (cardsTable[0][kCard_ValueJoker1]) {
-        score += 3;
-    }
-
-    if (count) {
-        score += 3;
-    }
-
-    score += cardsTable[0][kCard_Value2] * 2;
-    for (int i=kCard_Value4; i<=kCard_ValueA; ++i) {
-        score += (cardsTable[0][i] >= 4) * 6;
-    }
-
-    if (theGame->pair3BombLevel >= kPair3Bomb_DiffColor) {
-        score += (cardsTable[0][kCard_Value3] / 2) * 6;
-    } else if (theGame->pair3BombLevel >= kPair3Bomb_SameColor) {
-        count = (bomb3[0] + bomb3[3]) >= 2;
-        count += (bomb3[1] + bomb3[2]) >= 2;
-        score += count * 6;
-    } else {
-        score += (cardsTable[0][kCard_Value3] >= 4) * 6;
-    }
-
-    const float maxValue = 30.0f;
-    if (score > maxValue) {
-        score = maxValue;
-    }
-    score /= maxValue;
-
+    float score = 0.5f;
     return score;
 }
 
 bool LordCards::bigEnough() {
-    int count = this->scanToTable();
-
-    if (cardsTable[0][kCard_ValueJoker1] && cardsTable[0][kCard_ValueJoker2]) {
-        return true;
-    }
-
-    if (cardsTable[0][kCard_Value2] >= 4) {
-        return true;
-    }
-
     return false;
 }
 
@@ -175,6 +292,42 @@ std::vector<int> LordCards::removeSubset(const std::vector<int> & subset) {
     return affected;
 }
 
+OneHand LordCards::calcPowerValue(bool checkFlower) {
+    OneHand one;
+    return one;
+}
+
+AINode   LordCards::typeAndValueFind() {
+    AINode node;
+    std::vector<AINode> all = getNodesGreaterThan(node);
+    for (int i=0; i<all.size(); ++i) {
+        if (theCards.size() == all[i].cards.size()) {
+            if (node.isStrictLessThan(all[i])) {
+                node = all[i];
+            }
+        }
+    }
+
+    return node;
+}
+
+std::vector<AINode>  LordCards::getNodesGreaterThan(const AINode & other) {
+    // 收集所有可能性
+    std::set<AINode> possNodes;
+    for (auto card : theCards) {
+        int val = getCardValue(card);
+        AINode one(kCardType_Single, val, 1, 1, 0);
+        if (other.isStrictLessThan(one)) {
+            one.cards.push_back(card);
+            possNodes.insert(one);
+        }
+    }
+    // 根据aggregate调整各节点顺序
+    std::vector<AINode> outNodes(possNodes.begin(), possNodes.end());
+    possNodes.clear();
+
+    return outNodes;
+}
 
 
 #pragma mark - YunChengGame

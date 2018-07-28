@@ -388,9 +388,7 @@ function CommonLayer:seatStatusChange (seatId, newStatus)
     self:RepaintPlayerInfo(seatId, newStatus)
 
     if seatId == self.agent.selfSeatId and newStatus == protoTypes.CGGAME_USER_STATUS_STANDUP then
-        if self.agent.tableInfo.roomInfo then
-            self:changeSysMenuStatus("invite", false, false)
-        elseif not self.is_offline then
+        if not self.is_offline then
             self:changeSysMenuStatus("switch", true, true)
         end
     end
@@ -710,270 +708,6 @@ function CommonLayer:handleBuyChip (msg)
     UIHelper.popMsg(self, str)
 end
 
-function CommonLayer:showQuitRoomConfirmLayer ()
-    local quitLayer = require "QuitRoomConfirmLayer"
-
-    local hasPlayRecord = false
-    local roomInfKeys = Settings.getRoomResults()
-    for k,v in ipairs(roomInfKeys) do
-        local oneRoomRslt = Settings.getOneRoomResult(v)
-        if oneRoomRslt and oneRoomRslt.roomId == self.m_curRoomId then
-            hasPlayRecord = true
-            break
-        end
-    end
-
-    local gameInfo = self.agent.tableInfo.gameInfo
-    local started = (gameInfo.seatInfo ~= nil) or hasPlayRecord
-
-    local layer = quitLayer.create(self, started)
-    layer:setPosition(cc.p(0, 0))
-        :addTo(self, Constants.kLayerPopUp)
-end
-
-function CommonLayer:voteExit ()
-    SoundApp.playEffect("sounds/main/click.mp3")
-
-    local agent = self.agent
-    local roomInfo = agent.tableInfo.roomInfo
-
-    local info = {}
-    info.roomId         = roomInfo.roomId
-    info.seatId         = agent.selfSeatId
-    info.mask           = 1 << info.seatId
-    info.ownerId        = agent.selfUserId
-    local packet  = packetHelper:encodeMsg("CGGame.ExitInfo", info)
-
-    agent:sendRoomOptions(protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RELEASE, packet)
-end
-
-function CommonLayer:voteKeep ()
-    SoundApp.playEffect("sounds/main/click.mp3")
-
-    local agent = self.agent
-    local roomInfo = agent.tableInfo.roomInfo
-
-    local info = {}
-    info.roomId         = roomInfo.roomId
-    info.seatId         = agent.selfSeatId
-    info.mask           = 0
-    info.ownerId        = agent.selfUserId
-    local packet  = packetHelper:encodeMsg("CGGame.ExitInfo", info)
-
-    agent:sendRoomOptions(protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RELEASE, packet)
-end
-
-function CommonLayer:removeQuitRoomWaitLayer ()
-    if self.m_quitRoomWaitLayer then
-        self.m_quitRoomWaitLayer:removeFromParent()
-        self.m_quitRoomWaitLayer = nil
-    end
-end
-
-function CommonLayer:showAllOver()
-    local roomInfKeys = Settings.getRoomResults()
-    local curRoomRslt = nil
-    for k,v in ipairs(roomInfKeys) do
-        local oneRoomRslt = Settings.getOneRoomResult(v)
-        if oneRoomRslt and oneRoomRslt.roomId == self.m_curRoomId then
-            curRoomRslt = oneRoomRslt
-            break
-        end
-    end
-
-    if curRoomRslt then
-        local AllGameOverLayer = require "AllGameOverLayer"
-        self.m_allOverLayer = AllGameOverLayer.create(self);
-        self:addChild(self.m_allOverLayer, Constants.kLayerResult);
-        self.m_allOverLayer:initLayer(curRoomRslt)
-    else
-        self:quitGame()
-    end
-end
-
-function CommonLayer:handleRoomRelease (exitInfo)
-    if exitInfo.timeout and exitInfo.timeout == -1 then
-        Settings.setRoomId(0)
-        Settings.rmvFromRoomList(self.m_curRoomId)
-        self:showAllOver()
-    end
-
-    if (not exitInfo.seatId or exitInfo.seatId == 0) then
-        if not exitInfo.mask or exitInfo.mask == 0 then
-            if self.m_quitRoomWaitLayer then
-                self.m_quitRoomWaitLayer:closeLayer()
-            end
-            return
-        end
-    end
-
-    if not self.m_quitRoomWaitLayer then
-        local quitLayer = require "QuitRoomWaitLayer"
-
-        local layer = quitLayer.create(self)
-        self.m_quitRoomWaitLayer = layer
-
-        layer:setPosition(cc.p(0, 0))
-            :addTo(self, Constants.kLayerPopUp)
-    end
-
-    self.m_quitRoomWaitLayer:update(exitInfo)
-end
-
-function CommonLayer:addRoomResult(msg, seatId)
-    if not msg or msg == "" then
-        return
-    end
-
-    local hp = require "TableHelper"
-    local one = hp.decode(msg)
-
-    -- print("add Room Result")
-    -- local debugHelper = require "DebugHelper"
-    -- debugHelper.printDeepTable(one)
-
-    if one and one.roomId then
-        one.selfSeatId = seatId
-
-        local key = string.format("%d.%d", one.roomId, one.openTime)
-        local  all = Settings.getRoomResults() or {}
-        local last = all[#all]
-        if not last or last ~= key then
-            table.insert(all, key)
-        end
-        Settings.setRoomResults(all)
-
-        local roomInfo = Settings.getOneRoomResult(key)
-        if not roomInfo then
-            roomInfo = one
-            roomInfo.gameInfo = {one.gameInfo}
-        else
-            roomInfo.gameCount = one.gameCount
-            roomInfo.seatScore = one.seatScore
-            table.insert(roomInfo.gameInfo, one.gameInfo)
-        end
-
-        -- print("Room full info is")
-        -- local debugHelper = require "DebugHelper"
-        -- debugHelper.printDeepTable(roomInfo)
-
-        Settings.setOneRoomResult(key, roomInfo)
-    end
-end
-
-function CommonLayer:handleRoomResult (msg, seatId)
-    self:addRoomResult(msg, seatId)
-
-    local hp = require "TableHelper"
-    local curRoomResult = hp.decode(msg)
-
-    if curRoomResult.gameOver then
-        Settings.setRoomId(0)
-
-        self:showGameOverRoomTip("msgAllGameOverTip")
-
-        self:changeSysMenuStatus("zhanji", true, true)
-
-        Settings.rmvFromRoomList(self.m_curRoomId)
-    else
-        self:showGameOverRoomTip("msgDontLeaveTip")
-    end
-
-    if self.m_roomInfoPanel then
-        local gameIndex = curRoomResult.gameInfo.gameIndex + 1
-        if gameIndex > curRoomResult.passCount then
-            gameIndex = curRoomResult.passCount
-        end
-        local strGameCnt = string.format("局数: %d/%d", gameIndex,curRoomResult.passCount)
-        self.lblGameCnt:setString(strGameCnt)
-    end
-end
-
-function CommonLayer:quitAllOverLayer ()
-    self.m_allOverLayer:removeFromParent()
-    self.m_allOverLayer = nil
-
-    self:quitGame()
-end
-
-function CommonLayer:showGameOverRoomTip(msg)
-    local winSize = display.size
-
-    local bgBar = Constants.getSprite("bg_error.png", cc.p(winSize.width * 0.5, winSize.height * 0.08), self)
-    bgBar:setLocalZOrder(Constants.kLayerResult)
-         :setCascadeOpacityEnabled(true)
-
-    local bgSize = bgBar:getContentSize()
-
-    local strMsg = getUTF8LocaleString(msg)
-    local lbMsg = Constants.getLabel(strMsg, Constants.kBoldFontName, 42,
-                            cc.p(bgSize.width * 0.5, bgSize.height * 0.5), bgBar)
-
-    lbMsg:setColor(cc.c3b(255, 193, 47))
-
-    self.m_roomOverTip = bgBar
-end
-
-function CommonLayer:handleRoomInfo (roomInfo, roomDetails)
-    Settings.setRoomId(roomInfo.roomId)
-    Settings.addToRoomList(roomInfo)
-
-    local winSize = display.size
-
-    roomDetails.passCount = roomDetails.passCount or 0
-    roomDetails.costCoins = roomDetails.costCoins or 0
-    roomDetails.payType = roomDetails.payType or 0
-    roomDetails.playRule = roomDetails.playRule or 0
-    roomDetails.same3Bomb = roomDetails.same3Bomb or 0
-    roomDetails.bombMax = roomDetails.bombMax or 0
-    roomDetails.bottomScore = roomDetails.bottomScore or 0
-
-    local strDetails = UIHelper.parseRoomDetail(roomDetails)
-    local lbDetail = Constants.getLabel(strDetails, Constants.kBoldFontName, 40,
-                                        cc.p(winSize.width * 0.5, winSize.height * 0.48),self)
-    lbDetail:setColor(cc.c3b(120, 79, 37))
-
-    self.m_curRoomId = roomInfo.roomId
-    local strRoomId = string.format("房间号: %d", roomInfo.roomId)
-
-    local gameIndex = 1
-    local roomInfKeys = Settings.getRoomResults()
-    for k,v in ipairs(roomInfKeys) do
-        local oneRoomRslt = Settings.getOneRoomResult(v)
-        if oneRoomRslt and oneRoomRslt.roomId == roomInfo.roomId then
-            local count = #oneRoomRslt.gameInfo
-            gameIndex = oneRoomRslt.gameInfo[count].gameIndex + 1
-            break
-        end
-    end
-    local strGameCnt = string.format("局数: %d/%d", gameIndex,roomInfo.passCount)
-
-    if not self.m_roomInfoPanel then
-        local bgRoomInfo = Constants.get9Sprite("bg_wifi.png",
-                                    cc.size(490, 0),
-                                    cc.p(winSize.width - 485, winSize.height - 45),
-                                    self)
-        local bgSize = bgRoomInfo:getContentSize()
-
-        self.m_roomInfoPanel = bgRoomInfo
-
-        self.lblRoomId = Constants.getLabel(strRoomId, Constants.kBoldFontNamePF, 36,cc.p(470, bgSize.height * 0.5),bgRoomInfo)
-        self.lblRoomId:setAnchorPoint(1, 0.5)
-
-        self.lblGameCnt = Constants.getLabel(strGameCnt, Constants.kBoldFontNamePF, 36,cc.p(20, bgSize.height * 0.5),bgRoomInfo)
-        self.lblGameCnt:setAnchorPoint(0, 0.5)
-    end
-
-    self.lblRoomId:setString(strRoomId)
-    self.lblGameCnt:setString(strGameCnt)
-
-    self:changeSysMenuStatus("switch", false, false)
-
-    local cnt = self.agent.tableInfo.playerUsers:getCount()
-    local hasSeat = (cnt < Constants.kMaxPlayers)
-    self:changeSysMenuStatus("invite", hasSeat, hasSeat)
-end
-
 function CommonLayer:GameOverHandler()
     local winSize = display.size
     local gameOverInfo = self.agent.gameOverInfo
@@ -1157,11 +891,7 @@ function CommonLayer:GameWaitHandler(mask, status, timeout)
         elseif status == protoTypes.CGGAME_TABLE_STATUS_WAITSTART then
             self:changeSysMenuStatus("start", true, true)
 
-            if self.agent.tableInfo.roomInfo then
-                local cnt = self.agent.tableInfo.playerUsers:getCount()
-                local hasSeat = (cnt < Constants.kMaxPlayers)
-                self:changeSysMenuStatus("invite", hasSeat, hasSeat)
-            elseif not self.is_offline then
+            if not self.is_offline then
                 self:changeSysMenuStatus("switch", true, true)
             end
 
@@ -1297,14 +1027,6 @@ function CommonLayer:RepaintPlayerInfo (seatId, newStatus)
     bg_info.name:setString(name)
 
     local score = user.FScore or 0
-    if self.agent.tableInfo.roomInfo then
-        score = 0
-        local gameInfo = self.agent.tableInfo.gameInfo
-        if gameInfo and gameInfo.seatInfo then
-            local seatInfo = gameInfo.seatInfo[seatId]
-            score = seatInfo and seatInfo.scoreCard or 0
-        end
-    end
 
     bg_info.bgscore:setVisible(true)
     bg_info.bgscore.score:setString(score)
@@ -1460,9 +1182,6 @@ function CommonLayer:backHome()
 
     if self.is_offline or self:canSwitchTable() then
         self:quitGame()
-
-    elseif self.agent.tableInfo.roomInfo then
-        self:showQuitRoomConfirmLayer()
     else
         UIHelper.popMsg(self, "正在游戏中,请游戏结束后重试")
     end
@@ -1492,11 +1211,6 @@ end
 
 function CommonLayer:canSwitchTable()
     local tableInfo = self.agent.tableInfo
-
-    if tableInfo.roomInfo then
-        return false
-    end
-
     if not tableInfo.status or tableInfo.status <= const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME then
         return true
     end
@@ -1534,18 +1248,7 @@ function CommonLayer:changeTableHandler()
 end
 
 function CommonLayer:shopInfo()
-    do return end
-    SoundApp.playEffect("sounds/main/click.mp3")
-    local ShopLayer = require "ShopLayer"
-
-    local shop = ShopLayer.create(self)
-    if shop then
-        shop:setPosition(cc.p(0, 0))
-        shop:addTo(self, Constants.kLayerPopUp)
-
-        local winSize = display.size
-        shop:showShop(cc.p(winSize.width * 0.5, winSize.height * 0.5))
-    end
+    return
 end
 
 function CommonLayer:clickStart()
@@ -1563,66 +1266,8 @@ function CommonLayer:clickZhanji()
     self:showAllOver()
 end
 
-function CommonLayer:getIconPathInSDCard()
-    local iconPath = "/mnt/sdcard/yuncheng.png";
-    local instance = cc.FileUtils:getInstance()
-
-    if not Constants.cachedImages["icon"] then
-        local path = instance:fullPathForFilename("icon.png")
-        local data = OSNative.getFileData(path)
-        local file = io.open(iconPath, "wb")
-        if file then
-            Constants.cachedImages["icon"] = true
-            file:write(data)
-            file:close()
-        end
-    end
-    return iconPath
-end
-
 function CommonLayer:clickInvite()
     SoundApp.playEffect("sounds/main/click.mp3")
-    local roomInfo = self.agent.tableInfo.roomInfo
-    if not roomInfo then
-        return
-    end
-
-    local title = string.format("房间号: %d", roomInfo.roomId)
-    local text  = UIHelper.parseRoomDetail(roomInfo.roomDetails)
-
-    local url = "www.cronlygames.com/download/download.php?p=com.cronlygames.yuncheng"
-
-    local shareInfo = {
-        title       = title,
-        text        = text,
-        mediaType   = 2,
-        shareTo     = 0,
-        url         = url,
-    }
-    if Constants.isDeviceAndroid() then
-        shareInfo.imagePath = self:getIconPathInSDCard()
-    else
-        shareInfo.thumbImage = "AppIcon60x60@3x.png"
-    end
-
-    local function onSharedResultListener (code, msg )
-        require "opensdkConst3"
-        local ShareResultCode = cc.exports.ShareResultCode
-
-        local title, body
-        if code == ShareResultCode.kShareSuccess then
-            title = getUTF8LocaleString("msgShareSuccess")
-            body  = getUTF8LocaleString("msgShareOK")
-        else
-            title = getUTF8LocaleString("msgShareFailed")
-            body  = getUTF8LocaleString("msgShareFailInfo") .. msg
-        end
-
-        UIHelper.popMsg(self, title..","..body)
-    end
-
-    local sdk = require "OpenSDKWrapper"
-    sdk.showShare(shareInfo, onSharedResultListener)
 end
 
 function CommonLayer:quitTableHandler(uid, seatId)
@@ -1647,19 +1292,7 @@ function CommonLayer:quitTableHandler(uid, seatId)
                         :setString(tostring(seatId))
     end
 
-    if self.agent.tableInfo.roomInfo then
-        if self.agent.selfSeatId == seatId then
-            self:changeSysMenuStatus("invite", false, false)
-            self:changeSysMenuStatus("start", false, false)
-
-            self:HideAllButton()
-
-            if self.m_roomInfoPanel then
-                self.m_roomInfoPanel:removeFromParent()
-                self.m_roomInfoPanel = nil
-            end
-        end
-    elseif not self.is_offline then
+    if not self.is_offline then
         self:changeSysMenuStatus("switch", true, true)
     end
 
