@@ -378,7 +378,7 @@ local
 _____Table_YunCheng_____ = function () end
 
 class.dispatchCards = function (self)
-    local playRule = 0
+    local playRule = 1
 
     local tableCards = {}
     local maxCardValue = (playRule >= 1) and 55 or 54

@@ -22,10 +22,7 @@
 using namespace std;
 
 enum {
-
-    kCard_ValueBombFlower   =   2,
-    kCard_ValueBombPair3    =   1,
-
+    // 以下为牌的面值，从3开始
     kCard_ValueLeast        =   2,
     kCard_Value3            =   3,
     kCard_Value4            =   4,
@@ -47,6 +44,7 @@ enum {
     kCard_TableMax          =   20,
     kCard_KindMax           =   5,
 
+    // 特殊牌值
     kCard_Joker1            =   53,
     kCard_Joker2            =   54,
     kCard_Flower            =   55,
@@ -58,11 +56,19 @@ enum {
     kMaxCardNum             =   56,
     kMaxPlayers             =   3,
 
+    // 牌型定义
     kCardType_Single        =   1,   // 单纯类型, seriaNum == 1
     kCardType_Serial        =   2,   // 单顺, 双顺, 三顺(飞机), 4顺
     kCardType_Rocket        =   3,   // 火箭(大小王)
-
 };
+
+
+// 权重计算
+#define kOneHandPower       (-150)
+#define kPowerUnit          (-100)
+
+#define  kMinPowerValue  (-1000000000.0f)
+
 
 template <typename Ele>
 void mergeTwoVectors(std::vector<Ele> & dest, const std::vector<Ele> &src) {
@@ -91,14 +97,20 @@ public:
     void resetNode();
 
     int getTopValue() const;
+    int getMaxCapacity() const;
+
+    void fillJokers() ;
+    void merge(const AINode & other);
+
     bool isRocket() const;
     bool isBomb() const;
     bool isExactLessThan(const AINode & other) const;
     bool isStrictLessThan(const AINode &other) const;
 
+    float getPower() const;
     bool operator < (const AINode & other) const;
     bool isEqualTo(const AINode & other) const;
-
+    std::string description() const ;
 };
 
 bool AINode_Compare_Aggregate_Reversed(const AINode &a, const AINode &b);
@@ -110,7 +122,7 @@ struct OneHand {
 
 public:
     OneHand():bestNode() {
-        totalPower = 0;
+        totalPower = kMinPowerValue;
         handNum = 0;
     }
 };
@@ -123,8 +135,14 @@ bool cardGreaterThan(const int a, const int b);
 class LordCards
 {
 public:
+    static int getMinSerialLength(int mainNum);
+    static int getMaxSubNum(int mainNum);
+    static int getDupSubNum(int mainNum);
+
     static int getCardSuit(int card);
     static int getCardValue(int v);
+
+    static bool updateHandForNode(OneHand & best, OneHand &left, AINode & node, bool isTrim);
 
 public:
     LordCards(class YunChengGame * game, const std::vector<int>&vec);
@@ -141,14 +159,37 @@ public:
 
     std::vector<int> removeSubset(const std::vector<int> & subset);
 
+    int scanToTable();
+
 public:
+    std::string getKey(bool checkFlower, int &leastValue, int &maxCount);
+
+    bool containsFlower(int value, int num);
+    bool collectNode(AINode & one, int value, int num);
+
+    OneHand    calcPowerByRemoveNode(const AINode & node);
+
+    void       checkRocket (const std::string & key, OneHand & hand);
+
+    void       checkBomb4 (const std::string & key, OneHand & hand, int top);
+    void       checkSerial (const std::string & key, OneHand & hand, int top, int mainNum, int len, int subNum);
+    void       checkSub (const std::string & key, OneHand & hand, int mainNum, int subNum, int poss);
+
+    OneHand    calcPowerValue_noFlower();
+    OneHand    calcPowerValue_expandAny(int countAny, int cardIndex);
     OneHand    calcPowerValue(bool checkFlower);
 
     AINode     typeAndValueFind();
 
 public:
+    void collectAllNodes(std::set<AINode> &possNodes, AINode & node, int dup);
+    void sortByFactorInNodes(std::vector<AINode> &allNodes, const AINode & other, bool isDirect);
 
+    void                 getGreaterNodes_expandAny(int countAny, int cardIndex, std::set<AINode> &possNodes, const AINode &other);
+    void                 getGreaterNodes_possNode(std::set<AINode> &possNodes, const AINode &other);
     std::vector<AINode>  getNodesGreaterThan(const AINode & node);
+
+    void  getGreaterNodes_simple(std::set<AINode> &possNodes, const AINode &other);
 
 public:
     class YunChengGame * theGame;

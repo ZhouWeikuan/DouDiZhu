@@ -749,7 +749,6 @@ function CommonLayer:showOverAnim()
     if winSeatId == 0 then return end
 
     if winSeatId == self.agent.selfSeatId then
-        OSNative.showRate()
         SoundApp.playEffect("sounds/main/win.mp3")
     else
         SoundApp.playEffect("sounds/main/lose.mp3")
