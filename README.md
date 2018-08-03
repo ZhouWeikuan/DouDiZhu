@@ -11,7 +11,7 @@ This repository will talk about AI algorithms for a chinese famous card game - l
 ## 第一章、环境初始化
 为了演示斗地主算法的内容，我们需要创建好一个相关的cocos2d-x项目，并加入相关的代码，声音，图片等。与斗地主客户端对应的服务器端是基于skynet写的一个分布式游戏框架，为了代码复用方便和网络通讯需要，我们需要把lua升级到5.3，并在本地加入protobuf相关的解析库(我们使用的是pbc)。有些通用的函数库是游戏中必不可少的，我们也需要加入。
 
-本游戏中所使用的代码遵守Apache License 2.0，可以在Apache协议规定的范围内使用。但所使用的声音图片等艺术类资源为本公司[上海宽立信息技术有限公司](www.cronlygames.com)和本文作者周为宽共同所有，可以下载学习，但请勿在商业环境下使用！
+本游戏中所使用的代码遵守Apache License 2.0，可以在Apache协议规定的范围内使用。但所使用的声音图片等艺术类资源为本公司[上海宽立信息技术有限公司](http://www.cronlygames.com)和本文作者周为宽共同所有，可以下载学习，但请勿在商业环境下使用！
 
 ### 建立DouDiZhu项目
 * 初始化项目
