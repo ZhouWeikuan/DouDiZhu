@@ -1,6 +1,6 @@
 ---------------------------------------------------
 ---! @file
----! @brief 桌子座位协助库
+---! @brief table相关协助库
 ---------------------------------------------------
 
 ---! TableHelper 模块定义
@@ -28,28 +28,54 @@ local function isArrayEmpty(table)
 end
 class.isArrayEmpty = isArrayEmpty
 
-local function copyArray(arr)
+---! @brief 复制数组部分
+local function cloneArray(arr)
     local test = {}
     for i, v in ipairs(arr) do
         test[i] = v
     end
     return test
 end
-class.copyArray = copyArray
+class.cloneArray = cloneArray
 
-local function copyTable(_table)                                                                                           
+---! @brief 深度复制table
+local function cloneTable(_table)
     local tar = {}
-    for k,v in pairs(_table) do                                                                                              
+    for k,v in pairs(_table) do
         local vt = type(v)
         if vt == "table" then
-            tar[k] = copyTable(v)                                                                                         
+            tar[k] = cloneTable(v)
         else
-            tar[k] = v                                                                                                       
-        end                                                                                                                  
+            tar[k] = v
+        end
     end
-    return tar                                                                                                               
+    return tar
 end
-class.copyTable = copyTable            
+class.cloneTable = cloneTable
+
+---! 合并数组
+local function mergeArray(dst, src)
+    table.move(src, 1, #src, #dst + 1, dst)
+end
+class.mergeArray = mergeArray
+
+---! @brief 把源table的内容复制到目标table,
+---!    如果有keys数组, 以数组的元素为key进行复制
+local function copyTable(dstTable, srcTable, keys)
+    if not srcTable then
+        return
+    end
+    if keys then
+        for _, k in ipairs(keys) do
+            dstTable[k] = srcTable[k]
+        end
+    else
+        for k, v in pairs(srcTable) do
+            dstTable[k] = v
+        end
+    end
+end
+class.copyTable = copyTable
 
 --- encode & decode
 local function table_ser (tablevalue, tablekey, mark, assign)
@@ -60,17 +86,17 @@ local function table_ser (tablevalue, tablekey, mark, assign)
     for k, v in pairs(tablevalue) do
         -- 序列化key
         local keystr = nil
-        if type(k) == "string" then 
+        if type(k) == "string" then
             keystr = string.format("[\"%s\"]", k)
-        elseif type(k) == "number" then 
+        elseif type(k) == "number" then
             keystr = string.format("[%d]", k)
         end
 
         -- 序列化value
         local valuestr = nil
-        if type(v) == "string" then 
+        if type(v) == "string" then
             valuestr = string.format("\"%s\"", tostring(v))
-        elseif type(v) == "number" or type(v) == "boolean" then 
+        elseif type(v) == "number" or type(v) == "boolean" then
             valuestr = tostring(v)
         elseif type(v) == "table" then
             -- 获得从根表到当前表项的完整key， tablekey(代表tablevalue的key)， mark[v]代表table v的key

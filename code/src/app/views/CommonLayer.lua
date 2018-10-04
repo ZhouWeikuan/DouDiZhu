@@ -1,17 +1,17 @@
 local CommonLayer = class("CommonLayer")
 CommonLayer.__index = CommonLayer
 
-local Constants = require("Constants")
-local Settings  = require ("Settings")
-local const = require("Const_YunCheng")
-local protoTypes = require("ProtoTypes")
-local NumSet    = require ("NumSet")
+local Constants = require "Constants"
+local Settings  = require "Settings"
+local const = require "Const_YunCheng"
+local protoTypes = require "ProtoTypes"
+local NumSet    = require "NumSet"
 
 local packetHelper  = require "PacketHelper"
 
-local SoundApp = require("SoundApp")
-local ClockLayer = require("ClockLayer")
-local UIHelper = require("UIHelper")
+local SoundApp = require "SoundApp"
+local ClockLayer = require "ClockLayer"
+local UIHelper = require "UIHelper"
 
 function CommonLayer.extend(target)
     local t = tolua.getpeer(target)
@@ -396,14 +396,14 @@ end
 
 function CommonLayer:UpdateUserStatus (user)
     if self.is_offline and user then
-        local index = string.match(user.FUniqueID, "(%d+)");
+        local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)");
         if index then
             local AIPlayer = require "AIPlayer"
             AIPlayer.savePlayerAtIndex(user, index)
         end
     end
 
-    if user.FUniqueID == self.agent.selfUserId
+    if user.FUserCode == self.agent.selfUserCode
         and (not user.status or user.status ~= protoTypes.CGGAME_USER_STATUS_SITDOWN) then
         local item = self.m_sysMenu.sitdown
         if item then
@@ -418,6 +418,9 @@ function CommonLayer:TableMapHandler()
     for seatId = 1, Constants.kMaxPlayers do
         self:RepaintPlayerInfo(seatId)
     end
+end
+
+function CommonLayer:StandByHandler()
 end
 
 function CommonLayer:gameInfoHandler()
@@ -592,8 +595,9 @@ function CommonLayer:handleOffline()
     self.agent.selfSeatId = nil
 end
 
-function CommonLayer:handleACL(aclType)
+function CommonLayer:handleACL(aclInfo)
     SoundApp.playEffect("sounds/main/error.mp3")
+    local aclType = aclInfo.aclType
     if aclType == const.YUNCHENG_ACL_STATUS_RESTART_NO_MASTER then
         local strInfo = "acl_no_landlord.png"
         local strBack = "bg_again.png"
@@ -628,7 +632,7 @@ function CommonLayer:handleACL(aclType)
         local strBack = "state_down.png"
         self:showACLInfo(strInfo, strBack)
         self:cleanSelectCards()
-    elseif aclType == protoTypes.CGGAME_ACL_STATUS_COUNTER_LACK then
+    elseif aclType == protoTypes.CGGAME_ACL_STATUS_COUNTER_FAILED then
         local strInfo = "acl_gold.png"
         local strBack = "bg_again.png"
         local size = cc.size(924, 113)
@@ -714,7 +718,7 @@ function CommonLayer:GameOverHandler()
     for _, site in pairs (gameOverInfo.sites) do
         local user = self.agent:GetUserAtSeat(site.seatId)
         if self.is_offline and user then
-            local index = string.match(user.FUniqueID, "(%d+)");
+            local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)");
             if index then
                 local AIPlayer = require "AIPlayer"
                 AIPlayer.savePlayerAtIndex(user, index)
@@ -876,7 +880,7 @@ function CommonLayer:GameWaitHandler(mask, status, timeout)
     -- self.m_sysMenu.start:setEnabled(false)
 
     self:HideAllButton()
-    if status == protoTypes.CGGAME_TABLE_STATUS_WAITSTART then
+    if status == protoTypes.CGGAME_TABLE_STATUS_WAITREADY then
         self:resetStartGame(false)
     elseif status == const.YUNCHENG_TABLE_STATUS_WAIT_PICKUP then
     elseif status == const.YUNCHENG_TABLE_STATUS_WAIT_LANDLORD then
@@ -887,7 +891,7 @@ function CommonLayer:GameWaitHandler(mask, status, timeout)
 
     if self.agent:IsWaitingForMe(mask) then
         if status == protoTypes.CGGAME_TABLE_STATUS_IDLE then
-        elseif status == protoTypes.CGGAME_TABLE_STATUS_WAITSTART then
+        elseif status == protoTypes.CGGAME_TABLE_STATUS_WAITREADY then
             self:changeSysMenuStatus("start", true, true)
 
             if not self.is_offline then
@@ -955,7 +959,7 @@ function CommonLayer:GameWaitHandler(mask, status, timeout)
         elseif status == const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME then
             print ("wait for me to new game")
         else
-            print ("wait for me to do evil".. status)
+            print ("wait for me to do evil", status)
         end
     end
 end
@@ -1048,7 +1052,7 @@ function CommonLayer:clickHead (viewId)
     if user then
         self:showPlayerInfo(seatId)
     else
-        self.agent:sendRoomSeatOptions(seatId)
+        self.agent:sendSitDownOptions(nil, seatId)
     end
 end
 
@@ -1200,7 +1204,7 @@ function CommonLayer:quitGame()
     if self.is_offline then
         view.nextSceneName = "LineScene"
     else
-        self.agent:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_QUITTABLE, self:GetSelfSeatId())
+        self.agent:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_QUITTABLE, nil, self:GetSelfSeatId())
 
         Settings.setRoomId(0)
         view.nextSceneName = "HallScene"
@@ -1269,7 +1273,7 @@ function CommonLayer:clickInvite()
     SoundApp.playEffect("sounds/main/click.mp3")
 end
 
-function CommonLayer:quitTableHandler(uid, seatId)
+function CommonLayer:quitTableHandler(code, seatId)
     if self.agent.selfSeatId == seatId then
 
         self:resetStartGame(false)
@@ -1567,7 +1571,10 @@ function CommonLayer:do_ClickTip()
     local count = self.promptCount
     if count == 0 then
         self:ClickPass()
-        self:handleACL(const.YUNCHENG_ACL_STATUS_NO_BIG_CARDS)
+        local aclInfo = {
+            aclType = const.YUNCHENG_ACL_STATUS_NO_BIG_CARDS,
+        }
+        self:handleACL(aclInfo)
         return
     end
 
@@ -2003,7 +2010,10 @@ function CommonLayer:checkPass()
                 :runAction(cc.Sequence:create(cc.DelayTime:create(2),
                                               cc.CallFunc:create(function()
                                                     self:ClickPass()
-                                                    self:handleACL(const.YUNCHENG_ACL_STATUS_NO_BIG_CARDS)
+                                                    local aclInfo = {
+                                                        aclType = const.YUNCHENG_ACL_STATUS_NO_BIG_CARDS,
+                                                    }
+                                                    self:handleACL(aclInfo)
                                                 end),
                                               cc.RemoveSelf:create()))
         return

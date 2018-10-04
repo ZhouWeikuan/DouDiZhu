@@ -1,12 +1,12 @@
 
 local GameScene = class("GameScene", cc.load("mvc").ViewBase)
 
-local protoTypes = require("ProtoTypes")
+local protoTypes = require "ProtoTypes"
 local packetHelper = require "PacketHelper"
 
-local CommonLayer = require("CommonLayer")
-local Constants = require("Constants")
-local UIHelper = require("UIHelper")
+local CommonLayer = require "CommonLayer"
+local Constants = require "Constants"
+local UIHelper = require "UIHelper"
 
 function GameScene:onCreate()
     UIHelper.createSceneBg(self)
@@ -44,14 +44,18 @@ function GameScene:initAgentList()
             p.client_fd = -math.random(1, 1000)
         end
 
-        local BotPlayer = require "YunCheng_BotPlayer"
-        p.agent = BotPlayer.create(self, p.FUniqueID, handler)
+        local BotPlayer = require "BotPlayer_YunCheng"
+        p.agent = BotPlayer.create(self, p, handler)
+        p.agent.selfUserCode = p.FUserCode
+        p.apiLevel = 1
         if handler then
             self.comLayer.agent = p.agent
         end
         p.agent.is_offline = true
 
         self.hallInterface:addPlayer(p)
+        p.agent:sendSitDownOptions()
+        p.agent:request_userinfo(p.FUserCode)
         table.insert(agent_list, p.agent)
     end
 
@@ -86,12 +90,13 @@ end
 --------------------------------------------
 ---! @addtogroup   CommonLayerDelegate
 function GameScene:command_handler (user, packet)
-
     local args = packetHelper:decodeMsg("CGGame.ProtoInfo", packet)
-    if args.mainType == protoTypes.CGGAME_PROTO_TYPE_SUBMIT_GAMEDATA then
-        self.hallInterface:handleGameData(user, args)
+    if args.mainType == protoTypes.CGGAME_PROTO_MAINTYPE_GAME then
+        self.hallInterface:handleGameData(user, args.subType, args.msgBody)
+    elseif args.mainType == protoTypes.CGGAME_PROTO_MAINTYPE_HALL then
+        self.hallInterface:handleHallData(user, args.subType, args.msgBody)
     else
-        print ("unknown data type ", args.mainType)
+        print ("unknown data type ", args.mainType, args.subType, args.msgBody)
     end
 end
 

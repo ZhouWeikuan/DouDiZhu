@@ -12,8 +12,8 @@ setmetatable(const, {
     })
 
 const.GAMEID                = 2013
-const.GAMEVERSION           = 20170101
-const.LOWVERSION            = 20160107
+const.GAMEVERSION           = 20180901
+const.LOWVERSION            = 20180901
 
 
 ---! const values

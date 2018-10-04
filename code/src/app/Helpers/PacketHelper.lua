@@ -1,14 +1,13 @@
 ---------------------------------------------------
 ---! @file
----! @brief 网络打包 解包
+---! @brief 文件和网络读写，打包解包等
 ---------------------------------------------------
 
+---! 依赖库
 local protobuf  = require "protobuf"
 
-local class = {mt = {}}
---! create the class name PacketHelper
-local PacketHelper = class
 --! create the class metatable
+local class = {mt = {}}
 class.mt.__index = class
 
 local msgFiles = {}
@@ -17,9 +16,7 @@ local msgFiles = {}
 --! @brief The creator for PacketHelper
 --! @return return the created object
 local function create (protoFile)
-    local self = {
-        partial = "",
-    }
+    local self = {}
     setmetatable(self, class.mt)
 
     if protoFile then
@@ -29,7 +26,6 @@ local function create (protoFile)
     return self
 end
 class.create = create
-
 
 ---! @brief  make sure the protoFile is registered
 local function registerProtoName (self, protoFile)
@@ -55,21 +51,25 @@ local function makeProtoData (self, main, sub, body)
 end
 class.makeProtoData = makeProtoData
 
+---! 编码
 local function encodeMsg (self, msgFormat, packetData)
     return protobuf.encode(msgFormat, packetData)
 end
 class.encodeMsg = encodeMsg
 
+---! 解码
 local function decodeMsg (self, msgFormat, packet)
     return protobuf.decode(msgFormat, packet)
 end
 class.decodeMsg = decodeMsg
 
+---! 深度递归解码
 local function extractMsg (self, msg)
     protobuf.extract(msg)
     return msg
 end
 class.extractMsg = extractMsg
+
 
 ---! @brief 加载配置文件, 文件名为从 backend目录计算的路径
 local function load_config(filename)
@@ -81,19 +81,11 @@ local function load_config(filename)
 end
 class.load_config = load_config
 
----! @brief 复制表格内容 key - value
-local function copyTable(srcTable, dstTable)
-    for k, v in pairs(srcTable) do
-        dstTable[k] = v
-    end
-end
-class.copyTable = copyTable
-
-
----! @brief create a class object by name
----! @param name the class name
----! for hall interface: TaskHelper.createObject(conf.Interface, conf)
----! for game class:     TaskHelper.createObject(conf.GameClass, conf)
+---! @brief 通过名称，创建类的对象
+---! @param name 类名
+---! @param ...  类的对象创建时所需要的其它参数
+---! for hall interface: PacketHelper.createObject(conf.Interface, conf)
+---! for game class:     PacketHelper.createObject(conf.GameClass, conf)
 local function createObject(name, ...)
     local cls = require(name)
     if not cls then

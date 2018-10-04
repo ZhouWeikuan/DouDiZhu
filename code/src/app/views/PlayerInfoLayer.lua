@@ -1,11 +1,11 @@
 local PlayerInfoLayer = class("PlayerInfoLayer")
 PlayerInfoLayer.__index = PlayerInfoLayer
 
-local Constants = require("Constants")
+local Constants = require "Constants"
 local Settings  = require "Settings"
-local SoundApp  = require("SoundApp")
-local const = require("Const_YunCheng")
-local UIHelper = require("UIHelper")
+local SoundApp  = require "SoundApp"
+local const = require "Const_YunCheng"
+local UIHelper = require "UIHelper"
 
 function PlayerInfoLayer.extend(target)
     local t = tolua.getpeer(target)

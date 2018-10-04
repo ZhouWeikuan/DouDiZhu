@@ -1,93 +1,117 @@
 
-¢
-protos/CGGame.protoCGGame"?
+†
+CGGame.protoCGGame"?
 	ProtoInfo
 mainType (
 subType (
-msgBody ("¢
-GameInfo
-gameId (
-gameName (
-gameVersion (
-
-lowVersion (
-gameMode (
-
-numPlayers (
-
-maxPlayers (
-	FUniqueID
- ("n
-
-ServerInfo
+msgBody ("@
+	MultiBody
+curIndex (
+maxIndex (
+msgBody ("*
+AclInfo
+aclType (
+aclMsg ("0
+	HeartBeat
+fromType (
+	timestamp ("Å
+	AgentList*
+agents (2.CGGame.AgentList.OneAgentH
+OneAgent
 name (
 addr (
 port (
 
-numPlayers ("
-gameInfo (2.CGGame.GameInfo"ë
-UserInfo
-	FUniqueID (
-	FUserName (
-	FNickName (
-FOSType (
-FMobile (
-	FPassword (
-FLastIP (
+numPlayers ("4
 
-FAvatarUrl (
-FAvatarData	 (
-FIDCard
- (
-FEmail (
-FLastLoginTime (
-FRegTime (
-	FAvatarID (
-FBreak (
+NoticeInfo
 
-FTotalTime (
-FTotal (
+noticeType (
 
-FLongitude (
-	FLatitude (
-	FAltitude (
-	FLocation ("X
-InfoList'
-server_list (2.CGGame.ServerInfo#
-	user_list (2.CGGame.UserInfo"z
-ChatInfo
-gameId (
-	speekerId (
-speakerNick (
+noticeText ("ò
+AuthInfo
+playerId (
+password (
+	challenge (
+	clientkey (
+	serverkey (
+hmac (
+etoken (
+	authIndex ("e
+HallInfo
+gameId (
+gameVersion (
+gameMode (
+	FUserCode (
+appName ("ò
+UserInfo
 
-listenerId (
-chatText (
-chatType ("F
+fieldNames (
+	FUserCode (
+	FUniqueID (
+	FPassword (
+	FNickName (
+FOSType (
+FMobile (
+FIDCard (
+FEmail	 (
+FRegTime
+ (
+FLastIP (
+FLastLoginTime (
+
+FTotalTime (
+	FAvatarID (
+
+FAvatarUrl (
+FAvatarData (
+	FLocation (
+
+FLongitude (
+	FLatitude (
+	FAltitude (
+	FNetSpeed ("<
+SeatInfo
+roomId (
+seatId (
+userCode ("F
 WaitUserInfo
 tableStatus (
 timeout (
-waitMask ("å
+waitMask ("|
+ChatInfo
+gameId (
+chatType (
+
+listenerId (
+speekerCode (
+speakerNick (
+chatText ("é
 RoomInfo
 roomId (
 
 expireTime (
 openTime (
-	gameCount (
-ownerId (
+	gameCount (
+	ownerCode (
 	ownerName (
-roomDetails ("Z
+roomDetails ("\
 ExitInfo
 roomId (
-timeout (
-mask (
-seatId (
-ownerId (":
+timeout (
+mask (
+seatId (
+	ownerCode ("?
 TableMapInfo
-field (
-uid (
+field (
+userCode (
 seatId ("T
 GiftInfo
 giftName (
 coinCost (
 	srcSeatId (
-	dstSeatId (
+	dstSeatId ("F
+ShareBonusInfo
+maxCount (
+curCount (
+bonusNum (

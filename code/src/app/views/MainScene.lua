@@ -1,6 +1,6 @@
 local MainScene = class("MainScene", cc.load("mvc").ViewBase)
 
-local Constants = require("Constants")
+local Constants = require "Constants"
 
 function MainScene:onCreate()
     local rot = CC_DESIGN_RESOLUTION.backgroundAngle or 0

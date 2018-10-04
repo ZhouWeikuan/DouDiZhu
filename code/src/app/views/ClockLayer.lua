@@ -1,10 +1,10 @@
 local class = class("ClockLayer")
 class.__index = class
 
-local Constants = require("Constants")
-local SoundApp = require("SoundApp")
-local Settings = require("Settings")
-local protoTypes = require("ProtoTypes")
+local Constants = require "Constants"
+local SoundApp = require "SoundApp"
+local Settings = require "Settings"
+local protoTypes = require "ProtoTypes"
 
 function class.extend(target)
     local t = tolua.getpeer(target)

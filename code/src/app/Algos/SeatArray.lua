@@ -5,13 +5,9 @@
 --! @author hr@cronlygames.com
 -----------------------------------
 
---! create the temp class
-local class = {mt = {}}
-
 --! create the class name SeatArray
-local SeatArray = class
-
 --! create the class metatable
+local class = {mt = {}}
 class.mt.__index = class
 
 --! @brief The creator for SeatArray
@@ -94,8 +90,7 @@ end
 class.clear = clear
 
 --! @brief reset the numarray
-local reset = clear
-class.reset = reset
+class.reset = clear
 
-return SeatArray
+return class
 

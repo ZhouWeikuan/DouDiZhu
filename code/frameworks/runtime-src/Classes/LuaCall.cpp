@@ -117,11 +117,15 @@ extern "C"{
 
         static const struct luaL_Reg Skynet_funcs[] = {
             { "time",       reg_skynet_time},
+            { NULL, NULL }
+        };
 
+        static const struct luaL_Reg Skynet_crypt_funcs[] = {
             { NULL, NULL }
         };
 
         luaL_register(L, "skynet", Skynet_funcs);
+        luaL_register(L, "skynet.crypt", Skynet_crypt_funcs);
 
         lua_register(L, "getUTF8LocaleString", reg_getUTF8LocaleString);
         lua_register(L, "MessageBox", reg_MessageBox);

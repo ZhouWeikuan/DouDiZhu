@@ -3,7 +3,7 @@
 ---! @brief 字符串辅助处理
 ---------------------------------------------------
 
----! StringHelper 模块定义
+---! 模块定义
 local class = {}
 
 ---! @brief 创建一个UUID
@@ -61,6 +61,29 @@ local function join (arr, sep)
     return str
 end
 class.join = join
+
+-- like 10.132.42.12
+class.isInnerAddr = function (addr)
+    if not addr then
+        return false
+    end
+    local checks = {
+        {"10.0.0.0",    "10.999.255.255"},
+        {"172.16.0.0",  "172.31.999.255"},
+        {"192.168.0.0", "192.168.999.255"},
+        {"127.0.0.0",   "127.999.255.255"},
+    }
+    for _, one in ipairs(checks) do
+        if addr >= one[1] and addr <= one[2] then
+            return true
+        end
+    end
+    return false
+end
+
+class.isNullKey = function (key)
+    return not key or key == ""
+end
 
 return class
 

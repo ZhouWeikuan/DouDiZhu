@@ -3,6 +3,8 @@
 ---! @brief 调试辅助库
 ---------------------------------------------------
 
+local filterHelper = require "FilterHelper"
+
 ---! DebugHelper 模块定义
 local class = {}
 
@@ -38,38 +40,35 @@ local function printDeepTable (_origin_info, curDepth,  _space_count, _printed_i
     table.insert(listTable, _origin_info)
     --防止存在互相嵌套的表而无限打印
 
-    do
-        local pre = ""
-        for i = 1, _space_count - 1 do
-            pre = pre .. "  "
-        end
-        class.cclog(pre .. "{")
-
-        if curDepth and  curDepth<1 then
-            class.cclog(pre .." ****over depth****")
-        else
-            if curDepth then
-                curDepth = curDepth - 1
-            end
-            for k,v in pairs(_origin_info) do
-                if type(v) == "table" then
-                    local filter = require "FilterHelper"
-                    if filter.isElementInArray(v, listTable) then
-                        class.cclog(pre .. "  " .. k .. " = " .. "tableCache")
-                    else
-                        class.cclog(pre .. "  " .. k .. " = ")
-                        printDeepTable(v, curDepth, _space_count + 1, listTable)
-                    end
-                else
-                    local str = pre .. "    "
-                    str = str .. k .. " = " .. tostring(v)
-                    class.cclog(str)
-                end
-            end
-        end
-
-        class.cclog(pre .. "}")
+    local pre = ""
+    for i = 1, _space_count - 1 do
+        pre = pre .. "  "
     end
+    class.cclog(pre .. "{")
+
+    if curDepth and  curDepth < 1 then
+        class.cclog(pre .." ****over depth****")
+    else
+        if curDepth then
+            curDepth = curDepth - 1
+        end
+        for k,v in pairs(_origin_info) do
+            if type(v) == "table" then
+                if filterHelper.isElementInArray(v, listTable) then
+                    class.cclog(pre .. "  " .. tostring(k) .. " = " .. "tableCache")
+                else
+                    class.cclog(pre .. "  " .. tostring(k) .. " = ")
+                    printDeepTable(v, curDepth, _space_count + 1, listTable)
+                end
+            else
+                local str = pre .. "    "
+                str = str .. tostring(k) .. " = " .. tostring(v)
+                class.cclog(str)
+            end
+        end
+    end
+
+    class.cclog(pre .. "}")
 end
 class.printDeepTable = printDeepTable
 

@@ -1,4 +1,7 @@
+local skynet    = skynet or require "skynet"
+
 local const         = require "Const_YunCheng"
+local dbHelper      = require "DBHelper"
 local tableHelper   = require "TableHelper"
 
 local protoTypes    = require "ProtoTypes"
@@ -9,13 +12,9 @@ local packetHelper  = (require "PacketHelper").create("protos/YunCheng.pb")
 local baseClass     = require "GameTable"
 
 local class = {mt = {}}
-local Table_YunCheng = class
 class.mt.__index = class
 
 setmetatable(class, baseClass.mt)
-
-local
-_____GameTable_____ = function () end
 
 class.create = function (...)
     local self = baseClass.create(...)
@@ -28,11 +27,12 @@ end
 
 class.UserStatus_ProtoName = "YunCheng.UserStatus"
 class.UserStatus_Fields = {
-    "FUniqueID", "FUserCode", "FAgentCode", "FCounter",
+    "FUserCode", "FAgentCode", "FCounter",
     "FScore", "FWins", "FLoses", "FDraws",
     "FLastGameTime", "FSaveDate", "FSaveCount",
 }
-class.UpdateUserStatus = function (self, user, uid, deltaScore)
+
+class.UpdateUserStatus = function (self, user, code, deltaScore)
     if user then
         user.FScore = (user.FScore or 0) + deltaScore
         if deltaScore > 0 then
@@ -42,30 +42,25 @@ class.UpdateUserStatus = function (self, user, uid, deltaScore)
         end
     end
 
-    if not snax then
+    if not cluster then
         return
     end
 
-    local db = snax.uniqueservice("DBService")
-    user = db.req.loadDB(uid)
+    local keyName = "FUserCode"
+    user = self.room:remoteLoadDB(self.config.DBTableName, keyName, code)
     if user then
         user.FScore = (user.FScore or 0) + deltaScore
+        self.room:remoteDeltaDB(self.config.DBTableName, keyName, code, "FScore", deltaScore)
         if deltaScore > 0 then
             user.FWins = (user.FWins or 0) + 1
+            self.room:remoteDeltaDB(self.config.DBTableName, keyName, code, "FWins", 1)
         else
             user.FLoses = (user.FLoses or 0) + 1
+            self.room:remoteDeltaDB(self.config.DBTableName, keyName, code, "FLoses", 1)
         end
     end
 
-    local dbHelper = require "DBHelper"
-    db.req.updateDB(user.FUniqueID, 'FLastGameTime', dbHelper.timestamp())
-    db.req.updateDB(user.FUniqueID, "FScore", user.FScore)
-
-    if deltaScore > 0 then
-        db.req.updateDB(user.FUniqueID, "FWins", user.FWins)
-    else
-        db.req.updateDB(user.FUniqueID, "FLoses", user.FLoses)
-    end
+    self.room:remoteUpdateDB(self.config.DBTableName, keyName, code, 'FLastGameTime', dbHelper.timestamp())
 end
 
 class.getGiftPrice = function (self, giftName)
@@ -76,7 +71,7 @@ class.getGiftPrice = function (self, giftName)
 end
 
 class.notifyVictory = function (self, user, one)
-    if not snax then
+    if not cluster then
         return
     end
 
@@ -116,7 +111,10 @@ class.canPlayerSitdown = function (self, userInfo)
     return baseClass.canPlayerSitdown(self, userInfo)
 end
 
-class.canPlayerStandUp = function (self, userInfo)
+class.canPlayerStandUp = function (self, userInfo, force)
+    if self.roomInfo and self.roomInfo.histInfo then
+        return force
+    end
     if self.status <= const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME then
         return true
     end
@@ -149,7 +147,7 @@ class.SendGameInfo = function (self, seatId)
     gameInfo.seatInfo           = {}
     for k, seatInfo in pairs(info.seatInfo) do
         local one = {}
-        one.uid     = seatInfo.uid
+        one.userCode = seatInfo.userCode
         one.seatId  = seatInfo.seatId
         one.multiple = seatInfo.multiple
         one.throwCards  = seatInfo.throwCards
@@ -166,9 +164,9 @@ class.SendGameInfo = function (self, seatId)
         gameInfo.seatInfo[k] = one
     end
 
-    local uid = self.playerUsers:getObjectAt(seatId)
+    local code = self.playerUsers:getObjectAt(seatId)
     local packet = packetHelper:encodeMsg("YunCheng.GameInfo", gameInfo)
-    self:SendGameDataToUser(uid, protoTypes.CGGAME_PROTO_SUBTYPE_GAMEINFO, packet)
+    self:SendGameDataToUser(code, protoTypes.CGGAME_PROTO_SUBTYPE_GAMEINFO, packet)
 end
 
 class.gameStart = function (self)
@@ -197,12 +195,12 @@ class.gameStart = function (self)
     info.userdata    = YunCheng.new(info.same3Bomb);
 
     -- print (string.format("tableId %d", self.tableId))
-    self:groupAction("playingUsers", function (sid, uid)
+    self:groupAction("playingUsers", function (sid, code)
         -- print (string.format("seatId =  %d, uid = %s", sid, uid))
 
         local seatInfo = {}
         seatInfo.seatId = sid
-        seatInfo.uid    = uid
+        seatInfo.userCode = code
 
         seatInfo.multiple = 1
 
@@ -230,7 +228,7 @@ class.yunchengGameOver = function (self)
         resType = 0,
     }
     local otherTimes = 0
-    self:groupAction("playingUsers", function (seatId, uid)
+    self:groupAction("playingUsers", function (seatId, code)
         local seatInfo = gameInfo.seatInfo[seatId]
         if seatId ~= gameInfo.curSeatId then
             otherTimes = otherTimes + seatInfo.outTimes
@@ -245,7 +243,7 @@ class.yunchengGameOver = function (self)
     local score = gameInfo.bottomScore * (1 << gameInfo.bombCount)
     local masterUser = nil
     local scores = {}
-    self:groupAction("playingUsers", function (seatId, uid)
+    self:groupAction("playingUsers", function (seatId, code)
         local seatInfo = gameInfo.seatInfo[seatId]
 
         local one = gameOver.sites[seatId]
@@ -266,9 +264,9 @@ class.yunchengGameOver = function (self)
 
         one.handCards = seatInfo.handCards
 
-        local userInfo = self.room:getUserInfo(uid)
+        local userInfo = self.room:getUserInfo(code)
         if one then
-            self:UpdateUserStatus(userInfo, uid, one.deltaScore or 0)
+            self:UpdateUserStatus(userInfo, code, one.deltaScore or 0)
         end
 
         if seatId == gameInfo.masterSeatId and math.abs(one.deltaScore) >= 10 then
@@ -285,15 +283,15 @@ class.yunchengGameOver = function (self)
     self:SendGameWait(0, const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME, const.YUNCHENG_TIMEOUT_WAIT_NEWGAME)
 end
 
-class.handleGameData = function (self, userInfo, data)
+class.handleGameData = function (self, userInfo, gameType, data)
     if not userInfo.seatId then
         return
     end
-    if data.subType == protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE then
-        local traceInfo = packetHelper:decodeMsg("CGGame.ProtoInfo", data.msgBody)
+    if gameType == protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE then
+        local traceInfo = packetHelper:decodeMsg("CGGame.ProtoInfo", data)
         self:yunchengGameTrace(userInfo.seatId, traceInfo)
     else
-        baseClass.handleGameData(self, userInfo, data)
+        baseClass.handleGameData(self, userInfo, gameType, data)
     end
 end
 
@@ -316,7 +314,7 @@ class.yunchengTimeout = function (self)
         end
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_MULTIPLE then
-        self:groupAction("playingUsers", function (seatId, uid)
+        self:groupAction("playingUsers", function (seatId, code)
             if self:IsWaitSeat(seatId) then
                 info.timeoutList[seatId] = true
             end
@@ -335,8 +333,8 @@ class.yunchengTimeout = function (self)
         self:yunchengGameOver()
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME then
-        self.status = protoTypes.CGGAME_TABLE_STATUS_WAITSTART
-        baseClass.AnyPlayer_GameOverWaitStart(self, protoTypes.CGGAME_TIMEOUT_WAITSTART)
+        self.status = protoTypes.CGGAME_TABLE_STATUS_WAITREADY
+        baseClass.AnyPlayer_GameOverWaitStart(self, protoTypes.CGGAME_TIMEOUT_WAITREADY)
 
     else
         return nil
@@ -350,7 +348,7 @@ end
 ---! traceInfo is TRACE_BET, seatId, msgBody
 class.yunchengGameTrace = function (self, seatId, traceInfo)
     local info = self.gameInfo
-    if self.status <= protoTypes.CGGAME_TABLE_STATUS_WAITSTART or not self:IsWaitSeat(seatId) then
+    if self.status <= protoTypes.CGGAME_TABLE_STATUS_WAITREADY or not self:IsWaitSeat(seatId) then
         return
     end
 
@@ -398,7 +396,7 @@ class.dispatchCards = function (self)
     local userdata  = info.userdata
     local s = index
     local playerCardNum = const.YUNCHENG_PLAYER_CARD_NUM
-    self:groupAction("playingUsers", function (sid, uid)
+    self:groupAction("playingUsers", function (sid, code)
         local cards = {}
         for i = 1, playerCardNum do
             cards[i] = tableCards[s]
@@ -418,7 +416,7 @@ class.dispatchCards = function (self)
 
         local data   = packetHelper:encodeMsg("YunCheng.CardInfo", cardInfo)
         local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_PICKUP, sid, data)
-        self:SendGameDataToUser(uid, protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+        self:SendGameDataToUser(code, protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
     end)
 
     local bottomNum = 3 + playRule
@@ -707,8 +705,8 @@ class.yunchengRequestThrow = function (self, cardInfo)
     end
 
     if not cardInfo.cards or #cardInfo.cards == 0 then
-        local uid = self.playingUsers:getObjectAt(gameInfo.curSeatId)
-        self.room:SendACLToUser(const.YUNCHENG_ACL_STATUS_NO_SELECT_CARDS, uid)
+        local code = self.playingUsers:getObjectAt(gameInfo.curSeatId)
+        self.room:SendACLToUser(const.YUNCHENG_ACL_STATUS_NO_SELECT_CARDS, code)
         return
     end
 
@@ -729,26 +727,27 @@ class.yunchengRequestThrow = function (self, cardInfo)
         return
     end
 
-    local testCards = tableHelper.copyArray(seatInfo.handCards)
+    local testCards = tableHelper.cloneArray(seatInfo.handCards)
     local ok = const.removeSubset(testCards, cardInfo.cards)
     if not ok then
-        local uid = self.playingUsers:getObjectAt(gameInfo.curSeatId)
-        self.room:SendACLToUser(const.YUNCHENG_ACL_STATUS_NO_YOUR_CARDS, uid)
+        local code = self.playingUsers:getObjectAt(gameInfo.curSeatId)
+        self.room:SendACLToUser(const.YUNCHENG_ACL_STATUS_NO_YOUR_CARDS, code)
         return
     end
 
     local userdata  = gameInfo.userdata
     userdata:updateSeats(gameInfo.masterSeatId, gameInfo.curSeatId)
+
     local prevCards = gameInfo.winCards and gameInfo.winCards.cards or nil
     local retCode, sorted = userdata:canPlayCards(cardInfo.cards, prevCards)
     if retCode ~= 0  then
-        local uid = self.playingUsers:getObjectAt(gameInfo.curSeatId)
-        self.room:SendACLToUser(retCode, uid)
+        local code = self.playingUsers:getObjectAt(gameInfo.curSeatId)
+        self.room:SendACLToUser(retCode, code)
         return
     end
 
     cardInfo.cards = sorted
-    gameInfo.winCards = tableHelper.copyTable(cardInfo)
+    gameInfo.winCards = tableHelper.cloneTable(cardInfo)
     seatInfo.outTimes = seatInfo.outTimes + 1
 
     local data   = packetHelper:encodeMsg("YunCheng.CardInfo", cardInfo)
@@ -805,7 +804,7 @@ class.refreshUserCards = function (self, seatId)
         backCards[i] = v
     end
 
-    self:groupAction("playingUsers", function (sid, uid)
+    self:groupAction("playingUsers", function (sid, code)
         if sid ~= seatId then
             cardInfo.cards = backCards
         else
@@ -813,7 +812,7 @@ class.refreshUserCards = function (self, seatId)
         end
         local data      = packetHelper:encodeMsg("YunCheng.CardInfo", cardInfo)
         local packet    = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_REFRESH, seatId, data)
-        self:SendGameDataToUser(uid, protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+        self:SendGameDataToUser(code, protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
     end)
 end
 
@@ -847,5 +846,5 @@ class.turnToNextSeat = function (self, seatId)
     self:SendGameWait(mask, const.YUNCHENG_TABLE_STATUS_WAIT_THROW, timeout)
 end
 
-return Table_YunCheng
+return class
 

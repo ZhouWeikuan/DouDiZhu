@@ -1,9 +1,9 @@
 local LineScene = class("LineScene", cc.load("mvc").ViewBase)
 
-local Constants = require("Constants")
-local SoundApp = require ("SoundApp")
-local Settings = require("Settings")
-local UIHelper = require("UIHelper")
+local Constants = require "Constants"
+local SoundApp = require "SoundApp"
+local Settings = require "Settings"
+local UIHelper = require "UIHelper"
 
 function LineScene:onCreate()
     cc.SpriteFrameCache:getInstance():addSpriteFrames("linescene.plist")

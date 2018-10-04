@@ -1,19 +1,19 @@
 ---------------------------------------------------
 ---! @file
----! @brief 用户信息协助库
+---! @brief 数据库相关协助库
 ---------------------------------------------------
 
 ---! DBHelper 模块定义
-local DBHelper = {}
-local class = DBHelper
+local class = {}
 
-local function timestamp()
+---! 时间戳
+class.timestamp = function ()
     local ts = os.date('%Y-%m-%d %H:%M:%S')
     return ts
 end
-class.timestamp = timestamp
 
-local function getDiffDate(old, now)
+---! 传入时间戳，获得相差天数
+class.getDiffDate = function (old, now)
     if not old or not now then
         return 10
     end
@@ -30,10 +30,10 @@ local function getDiffDate(old, now)
 
     return diff
 end
-class.getDiffDate = getDiffDate
 
-class.trimSQL = function (text, length) 
-    if not text then
+---! 去掉不合法的字符，避免干扰sql语句
+class.trimSQL = function (text, length)
+    if not text or type(text) ~= 'string' then
         return text
     end
     local pat = "^$()%[]*+?`'\"!;{}@";
@@ -50,6 +50,7 @@ class.trimSQL = function (text, length)
     return text
 end
 
+---! 处理where的条件 对 值 进行处理
 local function kv_copy (obj)
     local ele = {}
     for k, v in pairs(obj) do
@@ -58,8 +59,10 @@ local function kv_copy (obj)
     return ele
 end
 
+---! 条件合法判断
 local function is_keys_ok (obj, keys)
     local ok = #keys >= 1
+    if not ok then return ok end
     for _, k in pairs(keys) do
         if not obj[k] or obj[k] == '' then
             ok = nil
@@ -69,6 +72,22 @@ local function is_keys_ok (obj, keys)
     return ok
 end
 
+---! 形成 where 子句, {[k] = v, ...}
+class.getKeys = function (keys)
+    local str = ''
+    for k, v in pairs(keys) do
+        local val = class.trimSQL(v)
+        if str == '' then
+            str = string.format("%s='%s'", k, val)
+        else
+            str = str .. string.format(" AND %s='%s'", k, val)
+        end
+    end
+
+    return str
+end
+
+---! 形成 where 子句
 local function get_where (ele, keys)
     local str = ''
     for _, k in ipairs(keys) do
@@ -78,13 +97,13 @@ local function get_where (ele, keys)
             else
                 str = str .. string.format(" AND %s='%s'", k, ele[k])
             end
-            ele[k] = nil
         end
     end
 
     return str
 end
 
+---! 形成插入语句体
 local function get_insert_body (ele)
     -- () values ()
     local ks = ''
@@ -109,6 +128,7 @@ local function get_insert_body (ele)
     return str
 end
 
+---! 形成更新语句体
 local function get_update_body (ele)
     local str = ''
     for k, v in pairs(ele) do
@@ -122,25 +142,47 @@ local function get_update_body (ele)
     return str
 end
 
-class.insert_sql = function (tableName, obj, keys)
-    if not is_keys_ok(obj, keys) then
-        return nil
+---! 形成选择语句体
+local function get_select_body (ele)
+    local str = ''
+    for k, v in pairs(ele) do
+        if str == '' then
+            str = string.format("%s", k)
+        else
+            str = str .. string.format(", %s", k)
+        end
     end
+    if str == '' then
+        str = '*'
+    end
+    return str
+end
 
+---! 形成完整的插入语句
+class.insert_sql = function (tableName, obj, keys)
     local ele = kv_copy(obj)
-
-    --- where condition
-    local ws = get_where(ele, keys)
 
     -- insert command
     local cmd = string.format("INSERT %s ", tableName)
 
     local body = get_insert_body(ele)
 
-    local sql = cmd .. body .. " WHERE " .. ws
+    local sql = cmd .. body
+
+    if keys then
+        if not is_keys_ok(obj, keys) then
+            return nil
+        end
+
+        --- where condition
+        local ws = get_where(ele, keys)
+        sql = sql .. " WHERE " .. ws
+    end
+
     return sql
 end
 
+---! 形成完整的删除语句
 class.delete_sql = function (tableName, obj, keys)
     if not is_keys_ok(obj, keys) then
         return nil
@@ -154,6 +196,7 @@ class.delete_sql = function (tableName, obj, keys)
     return sql
 end
 
+---! 形成完整的更新语句
 class.update_sql = function (tableName, obj, keys)
     if not is_keys_ok(obj, keys) then
         return nil
@@ -168,6 +211,20 @@ class.update_sql = function (tableName, obj, keys)
     return sql
 end
 
+---! 形成完整的选择语句
+class.select_sql = function (tableName, obj, keys)
+    if not is_keys_ok(obj, keys) then
+        return nil
+    end
 
-return DBHelper
+    local ele = kv_copy(obj)
+    local ws  = get_where(ele, keys)
+    local body = get_select_body(ele)
+    local cmd = string.format("SELECT %s FROM %s ", body, tableName)
+
+    local sql = cmd .. " WHERE " .. ws
+    return sql
+end
+
+return class
 

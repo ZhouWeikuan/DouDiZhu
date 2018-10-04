@@ -33,7 +33,6 @@ local setSoundOn = function(play)
 end
 class.setSoundOn = setSoundOn
 
-
 ----------- playerId, playerName --------------
 local keyPlayerId   = "com.cronlygames.playerId"
 local keyPlayerName = "com.cronlygames.playerName"

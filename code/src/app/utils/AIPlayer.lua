@@ -1,27 +1,27 @@
 local class = {}
 
 local raws = {
-    {FUniqueID = "uid101", FNickName = "道哥", FCounter = 0, FAvatarID = 1, isGirl = false, FScore = 5},
-    {FUniqueID = "uid103", FNickName = "发哥", FCounter = 0, FAvatarID = 3, isGirl = false, FScore = 20},
-    {FUniqueID = "uid105", FNickName = "毛哥", FCounter = 0, FAvatarID = 5, isGirl = false, FScore = 40},
-    {FUniqueID = "uid107", FNickName = "胡瓜", FCounter = 0, FAvatarID = 7, isGirl = false, FScore = 80},
-    {FUniqueID = "uid109", FNickName = "猫王", FCounter = 0, FAvatarID = 9, isGirl = false, FScore = 144},
-    {FUniqueID = "uid111", FNickName = "猴子", FCounter = 0, FAvatarID = 11, isGirl = false, FScore = 260},
-    {FUniqueID = "uid113", FNickName = "主任", FCounter = 0, FAvatarID = 13, isGirl = false, FScore = 468},
-    {FUniqueID = "uid115", FNickName = "毛头", FCounter = 0, FAvatarID = 15, isGirl = false, FScore = 843},
-    {FUniqueID = "uid117", FNickName = "老王", FCounter = 0, FAvatarID = 17, isGirl = false, FScore = 1517},
-    {FUniqueID = "uid119", FNickName = "怪叔叔", FCounter = 0, FAvatarID = 19, isGirl = false, FScore = 2731},
-    {FUniqueID = "uid110", FNickName = "萍萍", FCounter = 0, FAvatarID = 10, isGirl = true, FScore = 4916},
-    {FUniqueID = "uid112", FNickName = "依依", FCounter = 0, FAvatarID = 12, isGirl = true, FScore = 9432},
-    {FUniqueID = "uid114", FNickName = "美妍", FCounter = 0, FAvatarID = 14, isGirl = true, FScore = 18064},
-    {FUniqueID = "uid116", FNickName = "少妇", FCounter = 0, FAvatarID = 16, isGirl = true, FScore = 35028},
-    {FUniqueID = "uid118", FNickName = "龙女", FCounter = 0, FAvatarID = 18, isGirl = true, FScore = 68556},
-    {FUniqueID = "uid120", FNickName = "尼姑", FCounter = 0, FAvatarID = 20, isGirl = true, FScore = 132112},
-    {FUniqueID = "uid102", FNickName = "紫兰", FCounter = 0, FAvatarID = 2, isGirl = true, FScore = 234224},
-    {FUniqueID = "uid104", FNickName = "玉玲", FCounter = 0, FAvatarID = 4, isGirl = true, FScore = 460448},
-    {FUniqueID = "uid106", FNickName = "黄晶", FCounter = 0, FAvatarID = 6, isGirl = true, FScore = 726753},
-    {FUniqueID = "uid108", FNickName = "祖儿", FCounter = 0, FAvatarID = 8, isGirl = true, FScore = 1053505},
-    {FUniqueID = "uid100", FNickName = "天天", FCounter = 0,  FAvatarID = 54, isGirl = false, FScore = 0},
+    {FUniqueID = "uid101", FNickName = "道哥", FCounter = 100, FAvatarID = 1, isGirl = false, FScore = 5},
+    {FUniqueID = "uid103", FNickName = "发哥", FCounter = 200, FAvatarID = 3, isGirl = false, FScore = 20},
+    {FUniqueID = "uid105", FNickName = "毛哥", FCounter = 500, FAvatarID = 5, isGirl = false, FScore = 40},
+    {FUniqueID = "uid107", FNickName = "胡瓜", FCounter = 1000, FAvatarID = 7, isGirl = false, FScore = 80},
+    {FUniqueID = "uid109", FNickName = "猫王", FCounter = 2000, FAvatarID = 9, isGirl = false, FScore = 144},
+    {FUniqueID = "uid111", FNickName = "猴子", FCounter = 5000, FAvatarID = 11, isGirl = false, FScore = 260},
+    {FUniqueID = "uid113", FNickName = "主任", FCounter = 10000, FAvatarID = 13, isGirl = false, FScore = 468},
+    {FUniqueID = "uid115", FNickName = "毛头", FCounter = 20000, FAvatarID = 15, isGirl = false, FScore = 843},
+    {FUniqueID = "uid117", FNickName = "老王", FCounter = 50000, FAvatarID = 17, isGirl = false, FScore = 1517},
+    {FUniqueID = "uid119", FNickName = "叔叔", FCounter = 100000, FAvatarID = 19, isGirl = false, FScore = 2731},
+    {FUniqueID = "uid110", FNickName = "萍萍", FCounter = 10, FAvatarID = 10, isGirl = true, FScore = 4916},
+    {FUniqueID = "uid112", FNickName = "依依", FCounter = 20, FAvatarID = 12, isGirl = true, FScore = 9432},
+    {FUniqueID = "uid114", FNickName = "美妍", FCounter = 50, FAvatarID = 14, isGirl = true, FScore = 18064},
+    {FUniqueID = "uid116", FNickName = "少妇", FCounter = 100, FAvatarID = 16, isGirl = true, FScore = 35028},
+    {FUniqueID = "uid118", FNickName = "龙女", FCounter = 200, FAvatarID = 18, isGirl = true, FScore = 68556},
+    {FUniqueID = "uid120", FNickName = "尼姑", FCounter = 500, FAvatarID = 20, isGirl = true, FScore = 132112},
+    {FUniqueID = "uid102", FNickName = "紫兰", FCounter = 1000, FAvatarID = 2, isGirl = true, FScore = 234224},
+    {FUniqueID = "uid104", FNickName = "玉玲", FCounter = 2000, FAvatarID = 4, isGirl = true, FScore = 460448},
+    {FUniqueID = "uid106", FNickName = "黄晶", FCounter = 5000, FAvatarID = 6, isGirl = true, FScore = 726753},
+    {FUniqueID = "uid108", FNickName = "祖儿", FCounter = 10000, FAvatarID = 8, isGirl = true, FScore = 1053505},
+    {FUniqueID = "uid100", FNickName = "天天", FCounter = 500,  FAvatarID = 54, isGirl = false, FScore = 0},
 }
 local rawCount = #raws - 1
 
@@ -160,7 +160,8 @@ function class.loadPlayerAtIndex(index)
         one.FAvatarID = 54
     end
 
-    one.FUniqueID = string.format("uid%03d", index + 100)
+    one.FUserCode = index + 100
+    one.FUniqueID = string.format("uid%03d", one.FUserCode)
     one.address   = "127.0.0.1:888"
 
     key = math.tointeger(index) % 2

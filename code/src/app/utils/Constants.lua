@@ -159,10 +159,10 @@ class.getUserHeadSprite = function (spHead, userInfo)
     end
 
     if userInfo.FAvatarUrl then
-        if class.cachedImages[userInfo.FUniqueID] then
-            class.updateSprite(spHead, userInfo.FUniqueID, s)
+        if class.cachedImages[userInfo.FUserCode] then
+            class.updateSprite(spHead, userInfo.FUserCode, s)
         else
-            class.updateSpriteWithUrl(spHead, userInfo.FUniqueID, userInfo.FAvatarUrl, s)
+            class.updateSpriteWithUrl(spHead, userInfo.FUserCode, userInfo.FAvatarUrl, s)
         end
     end
 

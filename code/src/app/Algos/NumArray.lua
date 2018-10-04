@@ -5,14 +5,11 @@
 --! @author hr@cronlygames.com
 -----------------------------------
 
---! create the temp class
-local class = {mt = {}}
-
---! create the class name NumArray
-local NumArray = class
-
+--! create the class, etc. NumArray
 --! create the class metatable
+local class = {mt = {}}
 class.mt.__index = class
+
 
 --! @brief The creator for NumArray
 --! @return return the created NumArray object
@@ -118,16 +115,15 @@ local function forEach (self, handler)
 end
 class.forEach = forEach
 
---! @brief reset the numarray
+--! @brief reset the NumArray
 local function clear (self)
     self.count = 0
     self.data = {}
 end
 class.clear = clear
 
---! @brief reset the numarray
-local reset = clear
-class.reset = reset
+--! @brief reset the NumArray
+class.reset = clear
 
-return NumArray
+return class
 

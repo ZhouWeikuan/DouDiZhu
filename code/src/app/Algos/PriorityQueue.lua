@@ -4,9 +4,9 @@
 --!     all objects in queue is sorted heap by priority, that is
 --!        the lowest priority value is first
 --!
---!  Object in queue must have three keys, 
+--!  Object in queue must have three keys,
 --!      1) getKey(obj)             to identify itself from others, default the event itself
---!      2) getPriority(obj)        like os.time(), when we should fire this event,  
+--!      2) getPriority(obj)        like os.time(), when we should fire this event,
 --!      3) .queueIndex              index to find/update in queue, only meaningful when it is in queue
 --!
 --------------------------------
@@ -56,7 +56,7 @@ local function addObject (self, obj)
 end
 class.addObject = addObject
 
---! @brief update an existing object with a priority in queue 
+--! @brief update an existing object with a priority in queue
 --! @param self the queue
 --! @param obj  the object
 --! @param setPriorityFunc set new priority for the object, setPriorityFunc(obj)
@@ -82,7 +82,7 @@ local function updateObject (self, obj, setPriorityFunc)
 end
 class.updateObject = updateObject
 
---! @brief remove an existing event from queue 
+--! @brief remove an existing event from queue
 --! @param self, event
 local function removeObject (self, obj)
     local e = self:findObject(obj)
@@ -180,7 +180,7 @@ class.shiftDown = shiftDown
 --! @brief pop the first object in queue
 local function pop (self)
     if self.count <= 0 then
-        return nil 
+        return nil
     end
 
     local e = self.queue[1]

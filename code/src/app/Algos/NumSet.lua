@@ -2,17 +2,14 @@
 --! @file
 --! @addtogroup NumSet
 --! @brief a counted hash map NumSet
---! @author hr@cronlygames.com
+--! @author Zhou Weikuan 3674327@qq.com
 -----------------------------------
 
 --! reference to math library
 local math = math
 
---! create the temp class
+--! create the class, NumSet
 local class = {mt = {}}
-
---! create the class name NumSet
-local NumSet = class
 
 --! create the class metatable
 class.mt.__index = class
@@ -34,16 +31,14 @@ class.create = create
 --! @param self the numset
 --! @param obj the object to add
 --! @param key the key for added object, default the object itself
---! @return 
-
+--! @return
 local function addObject(self, obj, key)
     key = key or obj
     if not self.data[key] then
         self.count = self.count + 1
-        self.data[key] = obj
     end
+    self.data[key] = obj
 end
-
 class.addObject = addObject
 
 --! @brief remove an object from this numset self
@@ -54,8 +49,8 @@ local function removeObject(self, obj, key)
     key = key or obj
     if self.data[key] then
         self.count = self.count - 1
-        self.data[key] = nil
     end
+    self.data[key] = nil
 end
 class.removeObject = removeObject
 
@@ -81,7 +76,7 @@ end
 class.getObject = getObject
 
 --! @brief check one object if exists in the numset
---! @param obj the object to check 
+--! @param obj the object to check
 --! @param key the key for the object to check, default the object itself
 --! @return return true if the object with key exists
 local function hasObject (self, obj, key)
@@ -160,7 +155,7 @@ class.isEqual = isEqual
 
 --! @brief loop elements in this numset to execute function [handler],
 --       until the function [handler] return true or all elements are checked
---! @param handler the function executed 
+--! @param handler the function executed
 --! @return break if any element matches handler, or all elements checked
 local function forEach (self, handler)
     local data = self.data
@@ -180,8 +175,7 @@ end
 class.clear = clear
 
 --! reset the numset
-local reset = clear
-class.reset = reset
+class.reset = clear
 
-return NumSet
+return class
 

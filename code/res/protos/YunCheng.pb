@@ -1,9 +1,9 @@
 
-›
-protos/YunCheng.protoYunCheng"õ
+Ÿ
+YunCheng.protoYunCheng"à
 
 UserStatus
-	FUniqueID (
+	FUserCode (
 status (
 tableId (
 seatId (
@@ -17,23 +17,23 @@ UserStatus
 FLastGameTime (
 	FSaveDate (
 
-FSaveCount (
-	FUserCode (
+FSaveCount (
 
-FAgentCode ("è
+FAgentCode ("†
 RoomDetails
 	passCount (
 	costCoins (
-payType (
+payType (
+AAPrice (
 playRule (
 	same3Bomb (
 bombMax (
 bottomScore	 (")
 CardInfo
 seatId (
-cards ("s
-SeatInfo
-uid (
+cards ("x
+SeatInfo
+userCode (
 seatId (
 multiple (
 	handCards (
