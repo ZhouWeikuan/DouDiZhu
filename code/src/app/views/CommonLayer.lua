@@ -632,6 +632,13 @@ function CommonLayer:handleACL(aclInfo)
         local strBack = "state_down.png"
         self:showACLInfo(strInfo, strBack)
         self:cleanSelectCards()
+    elseif aclType == protoTypes.CGGAME_ACL_STATUS_SERVER_BUSY then
+        MessageBox("msgConnectError", "msgServerIsFull")
+        local app = cc.exports.appInstance
+        local nextScene = "LineScene"
+        local view = app:createView(nextScene)
+        view:showWithScene()
+
     elseif aclType == protoTypes.CGGAME_ACL_STATUS_COUNTER_FAILED then
         local strInfo = "acl_gold.png"
         local strBack = "bg_again.png"
@@ -639,6 +646,7 @@ function CommonLayer:handleACL(aclInfo)
         self:showACLInfo(strInfo, strBack, size)
     elseif aclType == protoTypes.CGGAME_ACL_STATUS_INVALID_INFO then
         UIHelper.popMsg(self, "invalid command, acl invalid")
+    elseif aclType == protoTypes.CGGAME_ACL_STATUS_AUTH_FAILED then
     else
         local strErr = Constants.getAclErrText(aclType)
         if strErr == nil then
@@ -1206,7 +1214,7 @@ function CommonLayer:quitGame()
     else
         self.agent:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_QUITTABLE, nil, self:GetSelfSeatId())
 
-        Settings.setRoomId(0)
+        -- Settings.setRoomId(0)
         view.nextSceneName = "HallScene"
     end
     view:showWithScene()

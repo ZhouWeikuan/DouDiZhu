@@ -1,5 +1,9 @@
 local skynet        = skynet or require "skynet"
 
+-- use skynet.init to determine server or client
+local cluster       = skynet.init and require "skynet.cluster"
+local clsHelper     = skynet.init and require "ClusterHelper"
+
 local prioQueue     = require "PriorityQueue"
 local protoTypes    = require "ProtoTypes"
 
@@ -161,7 +165,7 @@ end
 ---! @param
 ---! is player sit down or not? make it sit down anyway
 class.PlayerContinue = function(self, player)
-    if cluster then
+    if skynet.init then
         self:remoteDelAppGameUser(player)
     end
 
@@ -195,7 +199,7 @@ class.PlayerBreak = function(self, player)
         player.is_offline = true
         if table then
             table:BroadcastMessage(protoTypes.CGGAME_MSG_EVENT_BREAK, player.seatId, player.FUserCode)
-            if cluster then
+            if skynet.init then
                 self:remoteAddAppGameUser(player)
             end
         end
@@ -420,7 +424,7 @@ end
 ---! 房卡场付款
 class.roomTablePayBill = function (self, table, forced)
     local roomInfo = table.roomInfo
-    if not cluster or not roomInfo or roomInfo.isPayed then
+    if not skynet.init or not roomInfo or roomInfo.isPayed then
         return
     end
 

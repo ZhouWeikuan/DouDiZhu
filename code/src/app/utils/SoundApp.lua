@@ -1,7 +1,6 @@
-local Settings = require("Settings")
+local Settings = require "Settings"
 
 local class = {}
-local SoundApp = class
 
 local keyMusicVolume = "com.cronlygames.music.volume"
 local keySoundVolume = "com.cronlygames.sound.volume"
@@ -28,12 +27,12 @@ end
 class.playEffect = playEffect
 
 local unloadEffect = function(key)
-    cc.SimpleAudioEngine:getInstance():unloadEffect(key);
+    cc.SimpleAudioEngine:getInstance():unloadEffect(key)
 end
 class.unloadEffect = unloadEffect
 
 local isBackMusicPlaying = function()
-    return cc.SimpleAudioEngine:getInstance():isMusicPlaying();
+    return cc.SimpleAudioEngine:getInstance():isMusicPlaying()
 end
 class.isBackMusicPlaying = isBackMusicPlaying
 
@@ -49,14 +48,14 @@ local playBackMusic = function(back, isLoop)
        isLoop = true
     end
 
-    class.stopBackMusic();
+    class.stopBackMusic()
 
     if not Settings.isMusicOn() then
-        return;
+        return
     end
 
-    local engine = cc.SimpleAudioEngine:getInstance();
-    engine:playMusic(back, isLoop);
+    local engine = cc.SimpleAudioEngine:getInstance()
+    engine:playMusic(back, isLoop)
 
     local vol = class.getMusicVolume()
     class.setMusicVolume(vol)
@@ -69,7 +68,7 @@ class.getMusicVolume = function()
 end
 
 class.setMusicVolume = function(vol)
-    local engine = cc.SimpleAudioEngine:getInstance();
+    local engine = cc.SimpleAudioEngine:getInstance()
     engine:setMusicVolume(vol)
 
     cc.UserDefault:getInstance():setFloatForKey(keyMusicVolume, vol)

@@ -34,6 +34,8 @@
 	<dict>
 		<key>accelerometer</key>
 		<true/>
+		<key>gamekit</key>
+		<true/>
 		<key>opengles-1</key>
 		<true/>
 	</dict>

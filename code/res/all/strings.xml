@@ -113,42 +113,24 @@
     <key>msgChatSend</key>
     <string>发送</string>
 
-    <key>msgErr1001</key>
+    <key>msgErr1000</key>
     <string>服务器太忙，无法回应</string>
-    <key>msgErr1002</key>
+    <key>msgErr1001</key>
     <string>参数无效</string>
+    <key>msgErr1002</key>
+    <string>未知命令</string>
     <key>msgErr1003</key>
-    <string>房卡场数据库失败</string>
+    <string>授权失败</string>
     <key>msgErr1004</key>
-    <string>房卡场房间创建失败</string>
-    <key>msgErr1005</key>
-    <string>私人场未找到此房间号，请返回大厅重试</string>
-    <key>msgErr1006</key>
-    <string>房间已满，无法加入，请返回后重试</string>
-    <key>msgErr1007</key>
-    <string>暂不支持房卡功能</string>
-    <key>msgErr1008</key>
-    <string>用户信息无效</string>
-    <key>msgErr1009</key>
-    <string>房卡场不支持这种付费模式</string>
-    <key>msgErr1010</key>
-    <string>暂不支持本操作</string>
-    <key>msgErr1011</key>
-    <string>用户授权出错</string>
-    <key>msgErr1012</key>
-    <string>不能重复绑定邀请码</string>
-    <key>msgErr1013</key>
-    <string>用户正在玩呢</string>
-    <key>msgErr1014</key>
-    <string>无效的邀请码</string>
-    <key>msgErr1015</key>
-    <string>服务器出错</string>
-    <key>msgErr1018</key>
-    <string>版本太旧，请及时更新</string>
-    <key>msgErr1028</key>
     <string>缺少元宝</string>
-    <key>msgErr1029</key>
-    <string>元宝不足</string>
+    <key>msgErr1005</key>
+    <string>服务器出错</string>
+    <key>msgErr1006</key>
+    <string>超出每日最大分享次数</string>
+    <key>msgErr1007</key>
+    <string>版本太旧</string>
+    <key>msgErr1010</key>
+    <string>代理码无效</string>
 
     <key>msgShareSuccess</key>
     <string>分享成功</string>

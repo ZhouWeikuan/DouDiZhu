@@ -1,12 +1,14 @@
 
 local GameScene = class("GameScene", cc.load("mvc").ViewBase)
 
-local protoTypes = require "ProtoTypes"
-local packetHelper = require "PacketHelper"
+local Constants     = require "Constants"
 
-local CommonLayer = require "CommonLayer"
-local Constants = require "Constants"
-local UIHelper = require "UIHelper"
+local protoTypes    = require "ProtoTypes"
+
+local packetHelper  = require "PacketHelper"
+local UIHelper      = require "UIHelper"
+
+local CommonLayer   = require "CommonLayer"
 
 function GameScene:onCreate()
     UIHelper.createSceneBg(self)

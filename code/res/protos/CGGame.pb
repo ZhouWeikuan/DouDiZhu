@@ -1,5 +1,5 @@
 
- 
+³
 CGGame.protoCGGame"?
 	ProtoInfo
 mainType (
@@ -43,7 +43,7 @@ noticeText ("˜
 gameVersion (
 gameMode (
 	FUserCode (
-appName ("˜
+appName ("«
 UserInfo
 
 fieldNames (
@@ -51,26 +51,27 @@ fieldNames (
 	FUniqueID (
 	FPassword (
 	FNickName (
-FOSType (
-FMobile (
-FIDCard (
-FEmail	 (
-FRegTime
+FOSType (
+	FPlatform (
+FMobile
  (
-FLastIP (
-FLastLoginTime (
+FIDCard (
+FEmail (
+FRegTime (
+FLastIP (
+FLastLoginTime (
 
-FTotalTime (
-	FAvatarID (
+FTotalTime (
+	FAvatarID (
 
-FAvatarUrl (
-FAvatarData (
-	FLocation (
+FAvatarUrl (
+FAvatarData (
+	FLocation (
 
-FLongitude (
-	FLatitude (
-	FAltitude (
-	FNetSpeed ("<
+FLongitude (
+	FLatitude (
+	FAltitude (
+	FNetSpeed ("<
 SeatInfo
 roomId (
 seatId (

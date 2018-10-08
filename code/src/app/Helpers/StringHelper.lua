@@ -82,7 +82,7 @@ class.isInnerAddr = function (addr)
 end
 
 class.isNullKey = function (key)
-    return not key or key == ""
+    return (not key) or key == ""
 end
 
 return class

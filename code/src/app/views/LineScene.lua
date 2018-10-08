@@ -1,9 +1,9 @@
 local LineScene = class("LineScene", cc.load("mvc").ViewBase)
 
 local Constants = require "Constants"
-local SoundApp = require "SoundApp"
-local Settings = require "Settings"
-local UIHelper = require "UIHelper"
+local SoundApp  = require "SoundApp"
+local Settings  = require "Settings"
+local UIHelper  = require "UIHelper"
 
 function LineScene:onCreate()
     cc.SpriteFrameCache:getInstance():addSpriteFrames("linescene.plist")
@@ -40,8 +40,16 @@ function LineScene:initBtn()
         self:loginTour()
     end)
     item:addTo(buttonMenu)
-    item:setPosition(winSize.width * 0.5, 288)
+    item:setPosition(winSize.width * 0.7, 288)
     self.m_btnTour = item
+
+    item = Constants.getMenuItem("weixin")
+    item:registerScriptTapHandler(function()
+        self:loginWeixin()
+    end)
+    item:addTo(buttonMenu)
+    item:setPosition(winSize.width * 0.3, 288)
+    self.m_btnWeixin = item
 
     item = Constants.getMenuItem("close")
     local itemSize = item:getContentSize()
@@ -57,6 +65,11 @@ end
 function LineScene:loginTour()
     SoundApp.playEffect("sounds/main/click.mp3")
     self:switchScene("GameScene")
+end
+
+function LineScene:loginWeixin()
+    SoundApp.playEffect("sounds/main/click.mp3")
+    self:switchScene("LoginScene")
 end
 
 function LineScene:onEnter_ ()

@@ -8,6 +8,7 @@
 #include "LuaYunCheng.h"
 #include "luaproc.h"
 
+#include "LuaSkynet.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 //ANDROID_HEADER_START
@@ -84,23 +85,6 @@ extern "C"{
         return 1;
     }
 
-    static int reg_skynet_time(lua_State * L) {
-        int n = lua_gettop(L);
-        if (n != 0) {
-            return luaL_error(L, "CurTime: more arguments %d than expected!\n", n);
-        }
-
-        struct timeval now;
-        gettimeofday(&now, NULL);
-
-        double milli = now.tv_sec;
-        milli += now.tv_usec / 1000000.0f;
-
-        lua_pushnumber(L, milli);
-
-        return 1;
-    }
-
     void registerLuaCFuncs() {
         lua_State * L = cocos2d::LuaEngine::getInstance()->getLuaStack()->getLuaState();
 
@@ -115,17 +99,7 @@ extern "C"{
         //APPLE_LIB_END
 #endif
 
-        static const struct luaL_Reg Skynet_funcs[] = {
-            { "time",       reg_skynet_time},
-            { NULL, NULL }
-        };
-
-        static const struct luaL_Reg Skynet_crypt_funcs[] = {
-            { NULL, NULL }
-        };
-
-        luaL_register(L, "skynet", Skynet_funcs);
-        luaL_register(L, "skynet.crypt", Skynet_crypt_funcs);
+        register_skynet_libs(L);
 
         lua_register(L, "getUTF8LocaleString", reg_getUTF8LocaleString);
         lua_register(L, "MessageBox", reg_MessageBox);

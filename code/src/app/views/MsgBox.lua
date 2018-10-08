@@ -2,9 +2,8 @@ local class = class("MsgBox")
 class.__index = class
 
 local Constants = require "Constants"
-local SoundApp = require "SoundApp"
-local Settings = require "Settings"
-local protoTypes = require "ProtoTypes"
+local SoundApp  = require "SoundApp"
+local Settings  = require "Settings"
 
 function class.extend(target)
     local t = tolua.getpeer(target)
@@ -50,7 +49,7 @@ function class:onEnter()
             end
         end
         return true
-    end,cc.Handler.EVENT_TOUCH_BEGAN)
+    end, cc.Handler.EVENT_TOUCH_BEGAN)
     local eventDispatcher = self:getEventDispatcher()
     eventDispatcher:addEventListenerWithSceneGraphPriority(listenner, self)
 end
@@ -115,3 +114,4 @@ function class:closeLayer()
 end
 
 return class
+

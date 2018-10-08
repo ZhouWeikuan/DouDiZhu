@@ -32,6 +32,12 @@
 		50D7C96E17EBBEE6005D0B91 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D7C96D17EBBEE6005D0B91 /* AppKit.framework */; };
 		50D7C97017EBBEEC005D0B91 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50D7C96F17EBBEEC005D0B91 /* IOKit.framework */; };
 		5200BECA1A53D9A500AC45E4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5200BEC91A53D9A500AC45E4 /* Security.framework */; };
+		5B25A5552168581C001E2CC6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B25A5542168581C001E2CC6 /* StoreKit.framework */; };
+		5B25A5572168581F001E2CC6 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B25A5562168581F001E2CC6 /* GameKit.framework */; };
+		5B25A55A21685922001E2CC6 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B25A55921685922001E2CC6 /* GameKit.framework */; };
+		5B25A55C21685926001E2CC6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B25A55B21685926001E2CC6 /* StoreKit.framework */; };
+		5B25A55F21685C1C001E2CC6 /* LuaSkynet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B25A55D21685C1C001E2CC6 /* LuaSkynet.cpp */; };
+		5B25A56021685C1C001E2CC6 /* LuaSkynet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B25A55D21685C1C001E2CC6 /* LuaSkynet.cpp */; };
 		5B6B3BA32100669D00E3C7B6 /* luaproc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3B9D2100669C00E3C7B6 /* luaproc.c */; };
 		5B6B3BA42100669D00E3C7B6 /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3B9E2100669C00E3C7B6 /* Settings.cpp */; };
 		5B6B3BA52100669D00E3C7B6 /* LuaCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B6B3BA02100669D00E3C7B6 /* LuaCall.cpp */; };
@@ -227,6 +233,13 @@
 		50D7C96D17EBBEE6005D0B91 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		50D7C96F17EBBEEC005D0B91 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		5200BEC91A53D9A500AC45E4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		5B25A5542168581C001E2CC6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
+		5B25A5562168581F001E2CC6 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
+		5B25A55821685914001E2CC6 /* DouDiZhu-desktop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DouDiZhu-desktop.entitlements"; sourceTree = "<group>"; };
+		5B25A55921685922001E2CC6 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		5B25A55B21685926001E2CC6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		5B25A55D21685C1C001E2CC6 /* LuaSkynet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaSkynet.cpp; path = ../Classes/LuaSkynet.cpp; sourceTree = "<group>"; };
+		5B25A55E21685C1C001E2CC6 /* LuaSkynet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaSkynet.h; path = ../Classes/LuaSkynet.h; sourceTree = "<group>"; };
 		5B6B3B9A2100669C00E3C7B6 /* luaproc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = luaproc.h; path = ../Classes/luaproc.h; sourceTree = "<group>"; };
 		5B6B3B9D2100669C00E3C7B6 /* luaproc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = luaproc.c; path = ../Classes/luaproc.c; sourceTree = "<group>"; };
 		5B6B3B9E2100669C00E3C7B6 /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Settings.cpp; path = ../Classes/Settings.cpp; sourceTree = "<group>"; };
@@ -324,7 +337,9 @@
 				5023814017EBBCE400990C9B /* OpenAL.framework in Frameworks */,
 				5023814117EBBCE400990C9B /* AudioToolbox.framework in Frameworks */,
 				5023814417EBBCE400990C9B /* Foundation.framework in Frameworks */,
+				5B25A55C21685926001E2CC6 /* StoreKit.framework in Frameworks */,
 				5023814517EBBCE400990C9B /* CoreGraphics.framework in Frameworks */,
+				5B25A55A21685922001E2CC6 /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -335,6 +350,7 @@
 				294D0D721D0D572600F7F5D4 /* CoreText.framework in Frameworks */,
 				9FA3AE4E1BE9BCC900FC9645 /* CFNetwork.framework in Frameworks */,
 				ED545A891B68A23E00C3958E /* libiconv.dylib in Frameworks */,
+				5B25A5552168581C001E2CC6 /* StoreKit.framework in Frameworks */,
 				9FF504871A5E88CE00AFDA55 /* libsimulator iOS.a in Frameworks */,
 				5200BECA1A53D9A500AC45E4 /* Security.framework in Frameworks */,
 				15427CD5198F222200DC375D /* libluacocos2d iOS.a in Frameworks */,
@@ -350,6 +366,7 @@
 				F293B3D515EB7BE500256477 /* AVFoundation.framework in Frameworks */,
 				F293B3D915EB7BE500256477 /* Foundation.framework in Frameworks */,
 				F293B3DB15EB7BE500256477 /* CoreGraphics.framework in Frameworks */,
+				5B25A5572168581F001E2CC6 /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,6 +482,7 @@
 		F293B3BD15EB7BE500256477 = {
 			isa = PBXGroup;
 			children = (
+				5B25A55821685914001E2CC6 /* DouDiZhu-desktop.entitlements */,
 				5BB496E420B413A200199E68 /* protobuf */,
 				9FF504781A5E86D600AFDA55 /* libsimulator.xcodeproj */,
 				C03781AE18BF654500FE4F13 /* cocos2d_lua_bindings.xcodeproj */,
@@ -490,6 +508,10 @@
 		F293B3CB15EB7BE500256477 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5B25A55B21685926001E2CC6 /* StoreKit.framework */,
+				5B25A55921685922001E2CC6 /* GameKit.framework */,
+				5B25A5562168581F001E2CC6 /* GameKit.framework */,
+				5B25A5542168581C001E2CC6 /* StoreKit.framework */,
 				294D0D711D0D572600F7F5D4 /* CoreText.framework */,
 				9FA3AE4D1BE9BCC900FC9645 /* CFNetwork.framework */,
 				ED545A8A1B68A24500C3958E /* libiconv.dylib */,
@@ -525,6 +547,8 @@
 				F293BB7E15EB831F00256477 /* AppDelegate.cpp */,
 				F293BB7F15EB831F00256477 /* AppDelegate.h */,
 				5B6B3BA22100669D00E3C7B6 /* Constants.h */,
+				5B25A55D21685C1C001E2CC6 /* LuaSkynet.cpp */,
+				5B25A55E21685C1C001E2CC6 /* LuaSkynet.h */,
 				5B6B3BA02100669D00E3C7B6 /* LuaCall.cpp */,
 				5B6B3BA12100669D00E3C7B6 /* LuaCall.h */,
 				5B6B3B9D2100669C00E3C7B6 /* luaproc.c */,
@@ -609,8 +633,29 @@
 			attributes = {
 				LastUpgradeCheck = 0940;
 				TargetAttributes = {
+					5023812617EBBCE400990C9B = {
+						SystemCapabilities = {
+							com.apple.GameCenter.Mac = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
+					};
 					F293B3C715EB7BE500256477 = {
 						DevelopmentTeam = 6HM5389T6D;
+						SystemCapabilities = {
+							com.apple.GameCenter.iOS = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -766,6 +811,7 @@
 				5BB4971820B413A200199E68 /* proto.c in Sources */,
 				C07828FA18B4D72E00BD2287 /* SimulatorApp.mm in Sources */,
 				5BB4971420B413A200199E68 /* pbc-lua.c in Sources */,
+				5B25A56021685C1C001E2CC6 /* LuaSkynet.cpp in Sources */,
 				5BB4970C20B413A200199E68 /* stringpool.c in Sources */,
 				5BB4972020B413A200199E68 /* bootstrap.c in Sources */,
 				5BB4971A20B413A200199E68 /* context.c in Sources */,
@@ -796,6 +842,7 @@
 				5B6B3BAA2100673E00E3C7B6 /* YunChengAI.cpp in Sources */,
 				5BB4971320B413A200199E68 /* pbc-lua.c in Sources */,
 				5BB4970B20B413A200199E68 /* stringpool.c in Sources */,
+				5B25A55F21685C1C001E2CC6 /* LuaSkynet.cpp in Sources */,
 				5B6B3BA32100669D00E3C7B6 /* luaproc.c in Sources */,
 				5BB4971F20B413A200199E68 /* bootstrap.c in Sources */,
 				5BB4971920B413A200199E68 /* context.c in Sources */,
@@ -871,6 +918,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_ENTITLEMENTS = "DouDiZhu-desktop.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = ../../../runtime/mac;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -888,7 +936,7 @@
 				);
 				INFOPLIST_FILE = mac/Info.plist;
 				LIBRARY_SEARCH_PATHS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-image_base",
 					100000000,
@@ -900,6 +948,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/external/glfw3/include/mac $(_COCOS_HEADER_MAC_BEGIN) $(_COCOS_HEADER_MAC_END)";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -908,6 +957,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_ENTITLEMENTS = "DouDiZhu-desktop.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = mac/Prefix.pch;
@@ -923,7 +973,7 @@
 				);
 				INFOPLIST_FILE = mac/Info.plist;
 				LIBRARY_SEARCH_PATHS = "";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-image_base",
 					100000000,
@@ -935,6 +985,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../cocos2d-x/external/glfw3/include/mac $(_COCOS_HEADER_MAC_BEGIN) $(_COCOS_HEADER_MAC_END)";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -986,6 +1037,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
@@ -1034,6 +1086,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
@@ -1078,7 +1131,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
 				VALID_ARCHS = "arm64 armv7";
 			};
@@ -1120,7 +1173,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
 				VALID_ARCHS = "arm64 armv7";
 			};

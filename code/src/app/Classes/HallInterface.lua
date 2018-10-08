@@ -1,5 +1,9 @@
 ---! 系统库
-local skynet    = skynet or require "skynet"
+local skynet        = skynet or require "skynet"
+
+-- use skynet.init to determine server or client
+local cluster       = skynet.init and require "skynet.cluster"
+local clsHelper     = skynet.init and require "ClusterHelper"
 
 ---! 依赖库
 local NumSet        = require "NumSet"
@@ -20,8 +24,9 @@ class.mt.__index = class
 ---! proto fields
 class.UserInfo_ProtoName = "CGGame.UserInfo"
 class.UserInfo_Fields = {
-    "FUserCode", "FNickName", "FUserName", "FOSType", "FPassword",
-    "FTotalTime", "FAvatarID", "FAvatarUrl", "FAvatarData",
+    "FUserCode", "FNickName", "FUserName", "FPassword",
+    "FOSType", "FPlatform", "FTotalTime",
+    "FAvatarID", "FAvatarUrl", "FAvatarData",
     "FMobile", "FEmail", "FIDCard", "FLastIP", "FLastLoginTime", "FRegTime",
     "FLongitude", "FLatitude", "FAltitude", "FLocation", "FNetSpeed",
 }
@@ -74,7 +79,7 @@ class.tick = function (self, dt)
 end
 
 class.remoteExecDB = function (self, strSQL)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kDBService)
@@ -91,7 +96,7 @@ class.remoteExecDB = function (self, strSQL)
 end
 
 class.remoteLoadDB = function (self, tableName, keyName, keyValue, noInsert)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kDBService)
@@ -108,7 +113,7 @@ class.remoteLoadDB = function (self, tableName, keyName, keyValue, noInsert)
 end
 
 class.remoteUpdateDB = function (self, tableName, keyName, keyValue, fieldName, fieldValue)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kDBService)
@@ -123,7 +128,7 @@ class.remoteUpdateDB = function (self, tableName, keyName, keyValue, fieldName, 
 end
 
 class.remoteDeltaDB = function (self, tableName, keyName, keyValue, fieldName, deltaValue)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kDBService)
@@ -138,7 +143,7 @@ class.remoteDeltaDB = function (self, tableName, keyName, keyValue, fieldName, d
 end
 
 class.remoteAddAppGameUser = function (self, user)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kMainInfo)
@@ -153,7 +158,7 @@ class.remoteAddAppGameUser = function (self, user)
 end
 
 class.remoteDelAppGameUser = function (self, user)
-    if not cluster then
+    if not skynet.init then
         return
     end
     local app, addr = clsHelper.getMainAppAddr(clsHelper.kMainInfo)
@@ -302,7 +307,7 @@ class.SendUserGift = function (self, fromCode, msgBody)
 
     giftInfo.coinCost = cost
     user.FCounter = user.FCounter - cost
-    if cluster then
+    if skynet.init then
         remoteDeltaDB(self.config.DBTableName, "FUserCode", user.FUserCode, "FCounter", -cost)
     end
 
@@ -392,7 +397,7 @@ end
 
 ---! 增加玩家
 class.addPlayer = function (self, player)
-    if cluster then
+    if skynet.init then
         local user = self:fetchUserFromDB("FUniqueID", player.FUniqueID)
         tabHelper.copyTable(player, user)
     end
@@ -446,11 +451,15 @@ class.SendACLToUser = function(self, aclType, code)
 end
 
 class.agentQuit = function (self, player)
+    if not player then
+        print("agentQuit with nil player")
+        return
+    end
     self:removePlayer(player)
 end
 
 class.hallUserInfo = function (self, code, data)
-    if not cluster then
+    if not skynet.init then
         return
     end
 
@@ -491,7 +500,7 @@ class.getBindBonus = function (self, gameId)
 end
 
 class.hallUserStatus = function (self, code, data)
-    if not cluster then
+    if not skynet.init then
         return
     end
 
@@ -507,9 +516,9 @@ class.hallUserStatus = function (self, code, data)
     local field = "FAgentCode"
     if raw[field] then
         if dest[field] and dest[field] > 0 then
-            self:sendACLToUser(protoTypes.CGGAME_ACL_STATUS_ALREADY)
+            self:SendACLToUser(protoTypes.CGGAME_ACL_STATUS_ALREADY)
         elseif not self:checkAgentValid(raw[field]) then
-            self:sendACLToUser(protoTypes.CGGAME_ACL_STATUS_INVALID_AGENTCODE)
+            self:SendACLToUser(protoTypes.CGGAME_ACL_STATUS_INVALID_AGENTCODE)
         else
             local name = 'FUserCode'
             dest[field] = dbHelper.trimSQL(raw[field])
@@ -588,7 +597,7 @@ class.hallDailyBonus = function (self, code, data)
 end
 
 class.hallBonus = function (self, code, data)
-    if not cluster then
+    if not skynet.init then
     end
 
     local user = self:getUserInfo(code)
@@ -671,8 +680,13 @@ class.sendPacketToUser = function (self, packet, code, api)
         return
     end
 
-    if cluster then
-        skynet.send(user.agent, "lua", "sendProtocolPacket", packet)
+    if skynet.init then
+        local flg = pcall(cluster.send, user.appName, user.agent, "sendProtocolPacket", packet)
+        if not flg then
+            skynet.fork(function ()
+                self:agentQuit(user)
+            end)
+        end
     else
         user.agent:recvPacket(packet)
     end
