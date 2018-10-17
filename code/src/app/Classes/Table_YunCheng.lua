@@ -1,5 +1,7 @@
 local skynet    = skynet or require "skynet"
 
+-- use skynet.init to determine server or client
+
 local const         = require "Const_YunCheng"
 local dbHelper      = require "DBHelper"
 local tableHelper   = require "TableHelper"
@@ -25,6 +27,31 @@ class.create = function (...)
     return self
 end
 
+
+class.extractRoomDetails = function(self, data)
+    local info = packetHelper:decodeMsg("YunCheng.RoomDetails", data)
+    if info.passCount == 16 then
+        info.costCoins = 6
+    else
+        info.passCount = 8
+        info.costCoins = 3
+    end
+    return info
+end
+
+class.canTermTable = function (self)
+    if not self.roomInfo or not self.roomInfo.roomDetails then
+        return
+    end
+
+    local gameCount = self.roomInfo.histInfo.gameCount or 0
+    local passCount = self.roomInfo.roomDetails.passCount or 8
+    if gameCount >= passCount then
+        return true
+    end
+end
+
+
 class.UserStatus_ProtoName = "YunCheng.UserStatus"
 class.UserStatus_Fields = {
     "FUserCode", "FAgentCode", "FCounter",
@@ -42,7 +69,7 @@ class.UpdateUserStatus = function (self, user, code, deltaScore)
         end
     end
 
-    if not cluster then
+    if not skynet.init then
         return
     end
 
@@ -71,9 +98,12 @@ class.getGiftPrice = function (self, giftName)
 end
 
 class.notifyVictory = function (self, user, one)
-    if not cluster then
+    if not skynet.init then
         return
     end
+
+    -- disable it in test env
+    do return end
 
     local feed = snax.uniqueservice("FeedService")
     if not feed then
@@ -169,7 +199,130 @@ class.SendGameInfo = function (self, seatId)
     self:SendGameDataToUser(code, protoTypes.CGGAME_PROTO_SUBTYPE_GAMEINFO, packet)
 end
 
+class.addStartToHist = function (self)
+    local roomInfo = self.roomInfo
+    if not roomInfo then
+        return
+    end
+
+    local histInfo = roomInfo.histInfo
+    if not histInfo then
+        histInfo = {}
+        roomInfo.histInfo = histInfo
+
+        histInfo.roomId     = roomInfo.FRoomID
+        histInfo.passCount  = roomInfo.roomDetails.passCount or 8
+        histInfo.openTime   = self.openTime
+        histInfo.ownerCode  = roomInfo.FOwnerCode
+        histInfo.ownerName  = roomInfo.FOwnerName
+        histInfo.gameOver   = nil
+
+        histInfo.seatScore  = {}
+
+        for seatId = 1, const.YUNCHENG_MAX_PLAYER_NUM do
+            local code = self.playingUsers:getObjectAt(seatId)
+            local userInfo = self.room:getUserInfo(code)
+
+            local one = {}
+            one.name  = userInfo and userInfo.FNickName or ""
+            one.score = 0
+            one.winCount  = 0
+            one.loseCount = 0
+
+            histInfo.seatScore[seatId] = one
+        end
+    end
+
+    histInfo.gameInfo   = {}
+    local thisInfo = histInfo.gameInfo
+    local gameInfo = self.gameInfo
+
+    histInfo.gameCount  = (histInfo.gameCount or 0) + 1
+    thisInfo.gameIndex  = histInfo.gameCount
+
+    thisInfo.startTime  = os.time()
+
+    thisInfo.masterSeatId   = gameInfo.masterSeatId
+    thisInfo.bottomScore    = gameInfo.bottomScore
+    thisInfo.bombCount      = gameInfo.bombCount
+    thisInfo.bombMax        = gameInfo.bombMax
+    thisInfo.same3Bomb      = gameInfo.same3Bomb
+    thisInfo.bottomCards    = {}
+
+    thisInfo.histOperations = {}
+
+    thisInfo.seatInfo = {}
+    for seatId, seatInfo in pairs(gameInfo.seatInfo) do
+        local one = {}
+        one.userCode    = seatInfo.userCode
+        one.seatId      = seatId
+
+        local userInfo  = self.room:getUserInfo(one.userCode)
+        one.name        = userInfo and userInfo.FNickName or ""
+        one.AvatarID    = userInfo and userInfo.FAvatarID
+        one.AvatarUrl   = userInfo and userInfo.FAvatarUrl
+        one.deltaScore  = 0
+        one.multiple    = seatInfo.multiple
+        one.handCards   = {}
+
+        thisInfo.seatInfo[seatId] = one
+    end
+end
+
+class.addHandCardsToHist = function (self, seatId, cards)
+    if not self.roomInfo then
+        return
+    end
+
+    local thisInfo = self.roomInfo.histInfo.gameInfo
+    local seatInfo = thisInfo.seatInfo[seatId]
+
+    for i, v in ipairs(cards) do
+        seatInfo.handCards[i] = v
+    end
+end
+
+--- Landlord: 叫或者不叫, masterSeatId
+--- Multiple: 1, 2 只修改seatInfo[seatId].multiple
+--- Throw:  {-1}, 或者{cards},
+--- BombMult: 修改bombCount
+class.addActionToHist = function (self, action, info)
+    if not self.roomInfo then
+        return
+    end
+
+    local thisInfo = self.roomInfo.histInfo.gameInfo
+    local one = {action = action, info = info}
+
+    table.insert(thisInfo.histOperations, one)
+end
+
+class.addResultScoreToHist = function (self, scores, resType)
+    if not self.roomInfo then
+        return
+    end
+
+    local histInfo = self.roomInfo.histInfo
+    local thisInfo = histInfo.gameInfo
+    thisInfo.bottomCards    = self.gameInfo.bottomCards
+    thisInfo.resType        = resType
+
+    for seatId, score in pairs(scores) do
+        thisInfo.seatInfo[seatId].deltaScore = thisInfo.seatInfo[seatId].deltaScore + score
+
+        local one = histInfo.seatScore[seatId]
+        one.score = one.score + score
+        if score > 0 then
+            one.winCount    = (one.winCount or 0) + 1
+        else
+            one.loseCount   = (one.loseCount or 0) + 1
+        end
+    end
+end
+
 class.gameStart = function (self)
+    local roomDetails = self.roomInfo and self.roomInfo.roomDetails or {}
+
     local info  = self.gameInfo or {}
     self.gameInfo       = info
 
@@ -179,10 +332,23 @@ class.gameStart = function (self)
     info.masterSeatId   = 0
     info.curSeatId      = 0
 
-    info.same3Bomb      = 0
+    roomDetails.playRule = roomDetails.playRule or 0
+    if roomDetails.playRule == 2 then
+        info.same3Bomb      = 1
+    elseif roomDetails.playRule ==1 then
+        info.same3Bomb      = roomDetails.same3Bomb or 0
+    else
+        info.same3Bomb      = 0
+    end
 
-    info.bombMax        = 0
-    info.bottomScore    = 1
+    -- test
+    if not skynet.init then
+        roomDetails.playRule = 2
+        info.same3Bomb = 1
+    end
+
+    info.bombMax        = roomDetails.bombMax or 0
+    info.bottomScore    = roomDetails.bottomScore or 1
 
     info.bombCount      = 0
     info.bottomCards    = nil
@@ -210,10 +376,15 @@ class.gameStart = function (self)
         seatInfo.canCall    = true
         seatInfo.outTimes   = 0
         seatInfo.scoreCard  = 0
+        if self.roomInfo and self.roomInfo.histInfo and self.roomInfo.histInfo.seatScore then
+            local tmp = self.roomInfo.histInfo.seatScore[sid] or {}
+            seatInfo.scoreCard = tmp.score or 0
+        end
 
         info.seatInfo[sid] = seatInfo
     end)
 
+    self:addStartToHist()
     self:SendCurrentGameToTable()
 
     self:dispatchCards()
@@ -266,6 +437,9 @@ class.yunchengGameOver = function (self)
 
         local userInfo = self.room:getUserInfo(code)
         if one then
+            if self.roomInfo then
+                scores[seatId] = one.deltaScore or 0
+            end
             self:UpdateUserStatus(userInfo, code, one.deltaScore or 0)
         end
 
@@ -278,7 +452,21 @@ class.yunchengGameOver = function (self)
     local packet = packetHelper:encodeMsg("YunCheng.GameOver", gameOver)
     self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMEOVER, packet)
 
-    baseClass.GameOver(self)
+    if self.roomInfo ~= nil then
+        self:addResultScoreToHist(scores, gameOver.resType)
+        self.room:roomTablePayBill(self)
+        if self:canTermTable() then
+            self:SendRoomTableResult(true)
+            if baseClass.TermTable(self) then
+                return
+            end
+        else
+            self:SendRoomTableResult()
+            baseClass.GameOver(self, false, true)
+        end
+    else
+        baseClass.GameOver(self)
+    end
 
     self:SendGameWait(0, const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME, const.YUNCHENG_TIMEOUT_WAIT_NEWGAME)
 end
@@ -308,26 +496,30 @@ class.yunchengTimeout = function (self)
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_THROW then
         if self:yunchengCheckFlower() then
-        else
+        elseif not self.roomInfo then
             info.timeoutList[info.curSeatId or 0] = true
             self:yunchengAutoThrow()
         end
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_MULTIPLE then
-        self:groupAction("playingUsers", function (seatId, code)
-            if self:IsWaitSeat(seatId) then
-                info.timeoutList[seatId] = true
-            end
-        end)
-        self.waitMask = 0
-        self:yunchengRequestMultiple()
+        if not self.roomInfo then
+            self:groupAction("playingUsers", function (seatId, code)
+                if self:IsWaitSeat(seatId) then
+                    info.timeoutList[seatId] = true
+                end
+            end)
+            self.waitMask = 0
+            self:yunchengRequestMultiple()
+        end
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_LANDLORD then
-        info.timeoutList[info.curSeatId or 0] = true
-        local callInfo = {}
-        callInfo.seatId = info.curSeatId
-        callInfo.callMult = 1
-        self:yunchengRequestLandlord(callInfo)
+        if not self.roomInfo then
+            info.timeoutList[info.curSeatId or 0] = true
+            local callInfo = {}
+            callInfo.seatId = info.curSeatId
+            callInfo.callMult = 1
+            self:yunchengRequestLandlord(callInfo)
+        end
 
     elseif self.status == const.YUNCHENG_TABLE_STATUS_WAIT_GAMEOVER then
         self:yunchengGameOver()
@@ -376,14 +568,23 @@ local
 _____Table_YunCheng_____ = function () end
 
 class.dispatchCards = function (self)
-    local playRule = 1
+    local roomDetails = self.roomInfo and self.roomInfo.roomDetails or {}
+    local playRule = roomDetails.playRule or 0
+
+    -- test
+    if not skynet.init then
+        playRule = 2
+    end
 
     local tableCards = {}
     local maxCardValue = (playRule >= 1) and 55 or 54
     local index = 0
     for i=1,maxCardValue do
-        index = index + 1
-        tableCards[index] = i
+        if (i == 3 or i == 42) and playRule == 2 then
+        else
+            index = index + 1
+            tableCards[index] = i
+        end
     end
 
     maxCardValue = #tableCards
@@ -396,6 +597,9 @@ class.dispatchCards = function (self)
     local userdata  = info.userdata
     local s = index
     local playerCardNum = const.YUNCHENG_PLAYER_CARD_NUM
+    if playRule == 2 then
+        playerCardNum = playerCardNum - 1
+    end
     self:groupAction("playingUsers", function (sid, code)
         local cards = {}
         for i = 1, playerCardNum do
@@ -417,13 +621,21 @@ class.dispatchCards = function (self)
         local data   = packetHelper:encodeMsg("YunCheng.CardInfo", cardInfo)
         local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_PICKUP, sid, data)
         self:SendGameDataToUser(code, protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+
+        self:addHandCardsToHist(sid, cards)
     end)
 
     local bottomNum = 3 + playRule
     if s ~= bottomNum then
         self:SendACLToTable(const.YUNCHENG_ACL_STATUS_RESTART_NO_MASTER)
 
-        baseClass.GameOver(self, true)
+        if self.roomInfo then
+            local histInfo = self.roomInfo.histInfo
+            histInfo.gameCount = histInfo.gameCount - 1
+            baseClass.GameOver(self, true, true)
+        else
+            baseClass.GameOver(self, true)
+        end
 
         self:SendGameWait(0, const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME, const.YUNCHENG_TIMEOUT_WAIT_NEWGAME)
         return
@@ -465,7 +677,13 @@ class.landlordNext = function (self)
     if not seatInfo.canCall then
         self:SendACLToTable(const.YUNCHENG_ACL_STATUS_RESTART_NO_MASTER)
 
-        baseClass.GameOver(self, true)
+        if self.roomInfo then
+            local histInfo = self.roomInfo.histInfo
+            histInfo.gameCount = histInfo.gameCount - 1
+            baseClass.GameOver(self, true, true)
+        else
+            baseClass.GameOver(self, true)
+        end
 
         self:SendGameWait(0, const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME, const.YUNCHENG_TIMEOUT_WAIT_NEWGAME)
         return
@@ -498,6 +716,9 @@ class.yunchengRequestMultiple = function (self, callInfo)
         self.waitMask = self.waitMask & ~(1 << callInfo.seatId)
 
         local seatInfo = gameInfo.seatInfo[callInfo.seatId]
+        if not seatInfo then
+            return
+        end
         if callInfo.callMult ~= 1 then
             callInfo.callMult = 2
         end
@@ -522,6 +743,8 @@ class.yunchengRequestMultiple = function (self, callInfo)
         local data = packetHelper:encodeMsg("YunCheng.CallInfo", callInfo)
         local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_MULTIPLE, callInfo.seatId, data)
         self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+
+        self:addActionToHist(const.YUNCHENG_GAMETRACE_MULTIPLE, callInfo)
 
         if callInfo.seatId == gameInfo.masterSeatId then
             self:enterThrowStage()
@@ -613,6 +836,8 @@ class.yunchengRequestLandlord = function (self, callInfo)
         local packet    = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_LANDLORD, nil, data)
         self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
 
+        self:addActionToHist(const.YUNCHENG_GAMETRACE_LANDLORD, callInfo)
+
         self:landlordNext()
         return
     end
@@ -627,6 +852,8 @@ class.yunchengRequestLandlord = function (self, callInfo)
     local data      = packetHelper:encodeMsg("YunCheng.CallInfo", callInfo)
     local packet    = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_LANDLORD, nil, data)
     self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+
+    self:addActionToHist(const.YUNCHENG_GAMETRACE_LANDLORD, callInfo)
 
     self:yunchengPostLandlord()
 end
@@ -723,6 +950,8 @@ class.yunchengRequestThrow = function (self, cardInfo)
         local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_THROW, gameInfo.curSeatId, data)
         self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
 
+        self:addActionToHist(const.YUNCHENG_GAMETRACE_THROW, cardInfo)
+
         self:turnToNextSeat(gameInfo.curSeatId)
         return
     end
@@ -754,6 +983,8 @@ class.yunchengRequestThrow = function (self, cardInfo)
     local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_THROW, gameInfo.curSeatId, data)
     self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
 
+    self:addActionToHist(const.YUNCHENG_GAMETRACE_THROW, gameInfo.winCards)
+
     seatInfo.throwCards = cardInfo.cards
 
     table.insert(gameInfo.histCards, cardInfo)
@@ -776,6 +1007,8 @@ class.yunchengRequestThrow = function (self, cardInfo)
         local data   = packetHelper:encodeMsg("YunCheng.CallInfo", callInfo)
         local packet = packetHelper:makeProtoData(const.YUNCHENG_GAMETRACE_BOMBMULT, cardInfo.seatId, data)
         self:SendGameDataToTable(protoTypes.CGGAME_PROTO_SUBTYPE_GAMETRACE, packet)
+
+        self:addActionToHist(const.YUNCHENG_GAMETRACE_BOMBMULT, callInfo)
     end
 
     -- test game over

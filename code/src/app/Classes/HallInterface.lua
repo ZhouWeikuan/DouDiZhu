@@ -208,7 +208,7 @@ class.SendUserStatus = function(self, recvCode, sendCode)
     end
 
     local packet = self:CollectUserStatus(user)
-    self:sendPacketToUser(packet, recvCode)
+    self:hallPacketToUser(packet, recvCode)
 end
 
 ---! 收集用户信息 self.config.DBTableName
@@ -251,8 +251,8 @@ class.SendUserChat = function (self, fromCode, msgBody)
     ---! 日志记录 屏蔽维语藏语
     local chatInfo = packetHelper:decodeMsg("CGGame.ChatInfo", msgBody)
     if chatInfo.chatType ~= 1 then
-        local d = self:FilterText(chatInfo)
-        msgBody = d or msgBody
+        -- local d = self:FilterText(chatInfo)
+        -- msgBody = d or msgBody
     end
 
     local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_HALL,
@@ -320,10 +320,10 @@ class.SendUserGift = function (self, fromCode, msgBody)
 
         if table then
             table:groupAction("playerUsers", function (seatId, code)
-                self:sendPacketToUser(packet, code)
+                self:gamePacketToUser(packet, code)
             end)
             table:groupAction("standbyUsers", function (seatId, code)
-                self:sendPacketToUser(packet, code)
+                self:gamePacketToUser(packet, code)
             end)
             return
         end
@@ -359,7 +359,7 @@ class.getUserInfo = function (self, code, fetchDB)
     if user and type(user.FUserCode) == 'string' then
         print("user.FUserCode", user.FUserCode, debug.traceback())
     end
-    if not user and fetchDB and cluster then
+    if not user and fetchDB and skynet.init then
         user = self:fetchUserFromDB("FUserCode", code)
     end
     if type(user.FUserCode) == 'string' then
@@ -385,8 +385,9 @@ class.clearOldPlayer = function (self, player)
         end
     end
 
+    tabHelper.copyTable(user, player)
     local fields = {
-        "appName", "agent", "gate", "client_fd", "address", "watchdog",
+        "appName", "agent", "gate", "client_fd", "address", "watchdog", "apiLevel"
     }
     for _, key in ipairs(fields) do
         user[key] = player[key]
@@ -412,7 +413,9 @@ class.addPlayer = function (self, player)
     player.FLastLoginTime = dbHelper.timestamp()
     self:remoteUpdateDB(class.DBTableName, "FUniqueID", player["FUniqueID"], 'FLastLoginTime', player.FLastLoginTime)
 
-    self:PlayerContinue(player)
+    if player.apiLevel > 0 then
+        self:PlayerContinue(player)
+    end
 
     return player[keyName]
 end
@@ -468,16 +471,17 @@ class.hallUserInfo = function (self, code, data)
         return
     end
 
-    name = "FUserCode"
-    local user = self:getUserInfo(raw[name], true)
+    name = "FUniqueID"
+    local user = self:getUserInfo(raw.FUserCode, true)
     for _, key in ipairs(raw.fieldNames) do
         user[key] = dbHelper.trimSQL(raw[key])
-        self:remoteUpdateDB(class.DBTableName, name, raw[name], key, user[key])
+        self:remoteUpdateDB(class.DBTableName, name, user[name], key, user[key])
     end
     local key = "FLastIP"
-    self:remoteUpdateDB(class.DBTableName, name, raw[name], key, user[key])
+    self:remoteUpdateDB(class.DBTableName, name, user[name], key, user[key])
 
     self:SendUserInfo(code, code)
+    self:SendUserStatus(code, code)
 end
 
 class.checkAgentValid = function (self, agentCode)
@@ -514,7 +518,7 @@ class.hallUserStatus = function (self, code, data)
     local dest = user or {}
 
     local field = "FAgentCode"
-    if raw[field] then
+    if not strHelper.isNullKey(raw[field]) then
         if dest[field] and dest[field] > 0 then
             self:SendACLToUser(protoTypes.CGGAME_ACL_STATUS_ALREADY)
         elseif not self:checkAgentValid(raw[field]) then
@@ -522,17 +526,16 @@ class.hallUserStatus = function (self, code, data)
         else
             local name = 'FUserCode'
             dest[field] = dbHelper.trimSQL(raw[field])
-            self:remoteUpdateDB(class.config.DBTableName, name, code, field, dest[field])
+            self:remoteUpdateDB(self.config.DBTableName, name, code, field, dest[field])
 
             local count = self:getBindBonus(self.config.GameId)
             field = 'FCounter'
             dest[field] = (dest[field] or 0) + count
-            self:remoteDeltaDB(class.config.DBTableName, name, code, field, count)
+            self:remoteDeltaDB(self.config.DBTableName, name, code, field, count)
 
-            return code
+            self:SendUserStatus(code, code)
         end
     end
-    self:SendUserStatus(code, code)
 end
 
 class.hallShareBonus = function (self, code, data)
@@ -622,6 +625,8 @@ class.handleHallData = function (self, player, hallType, data)
         self:hallUserStatus(player.FUserCode, data)
     elseif hallType == protoTypes.CGGAME_PROTO_SUBTYPE_BONUS then
         self:hallBonus(player.FUserCode, data)
+    elseif hallType == protoTypes.CGGAME_PROTO_SUBTYPE_CHAT then
+        self:SendUserChat(player.FUserCode, data)
     elseif hallType == protoTypes.CGGAME_PROTO_SUBTYPE_USERINFO then
         local info = packetHelper:decodeMsg("CGGame.HallInfo", data)
         self:SendUserInfo(player.FUserCode, info.FUserCode)
@@ -635,12 +640,12 @@ class.handleHallData = function (self, player, hallType, data)
     return true
 end
 
-class.handleClubData = function (self, player, gameType, data)
-    print("HallInterface: handle club data", player, gameType, data)
+class.handleClubData = function (self, player, clubType, data)
+    print("HallInterface: handle club data", player, clubType, data)
 end
 
-class.handleRoomData = function (self, player, gameType, data)
-    print("HallInterface: handle room data", player, gameType, data)
+class.handleRoomData = function (self, player, roomType, data)
+    print("HallInterface: handle room data", player, roomType, data)
 end
 
 class.handleGameData = function (self, player, gameType, data)

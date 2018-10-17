@@ -30,6 +30,7 @@ class.keyPassword   = "com.cronlygames.auth.password"
 class.keyNickname   = "com.cronlygames.auth.nickname"
 class.keyAvatarUrl  = "com.cronlygames.auth.avatarUrl"
 class.keyAvatarId   = "com.cronlygames.auth.avatarId"
+class.keyGenderType = "com.cronlygames.auth.genderType"
 
 class.keyUserCode   = "com.cronlygames.auth.usercode"
 
@@ -90,6 +91,7 @@ class.getAuthInfo = function ()
     ret.nickname    = class.getItem(class.keyNickname)
     ret.avatarUrl   = class.getItem(class.keyAvatarUrl)
     ret.avatarId    = class.getItem(class.keyAvatarId, 0)
+    ret.genderType  = class.getItem(class.keyGenderType, 0)
 
     ret.accessToken = class.getItem(class.keyAccessToken)
     ret.osType      = class.getItem(class.keyOSType)

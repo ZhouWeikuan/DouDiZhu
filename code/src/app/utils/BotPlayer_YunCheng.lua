@@ -2,8 +2,9 @@ local skynet        = skynet or require "skynet"
 
 local protoTypes    = require "ProtoTypes"
 local const         = require "Const_YunCheng"
+
 local packetHelper  = (require "PacketHelper").create("protos/YunCheng.pb")
-local tableHelper   = require "TableHelper"
+local tabHelper     = require "TableHelper"
 local debugHelper   = require "DebugHelper"
 
 local YunCheng     = YunCheng or require "yuncheng"
@@ -20,6 +21,7 @@ setmetatable(class, baseClass.mt)
 class.create = function (delegate, authInfo, handler)
     local self = baseClass.create(delegate, authInfo, handler)
     setmetatable(self, class.mt)
+    self.const = const
 
     self.gameOverInfo = {}
     return self
@@ -90,9 +92,8 @@ class.handle_hall = function (self, args)
 end
 
 class.handle_room = function (self, args)
-    print("unhandled room", args.mainType, args.subType, args.msgBody)
     local typeId = args.subType
-    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_INFO then
+    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_INFO then
         local roomInfo = packetHelper:decodeMsg("CGGame.RoomInfo", args.msgBody)
         roomInfo = tabHelper.cloneTable(roomInfo)
 
@@ -101,7 +102,7 @@ class.handle_room = function (self, args)
 
         self.tableInfo.roomInfo = roomInfo
         roomInfo.roomDetails = roomDetails
-        self.handler:handleRoomInfo(roomInfo)
+        self.handler:handleRoomInfo(roomInfo, roomDetails)
     else
         baseClass.handle_room(self, args)
     end
@@ -182,7 +183,7 @@ class.GameInfo = function (self, data)
     local info = packetHelper:decodeMsg("YunCheng.GameInfo", data)
     packetHelper:extractMsg(info)
 
-    local gameInfo = tableHelper.cloneTable(info)
+    local gameInfo = tabHelper.cloneTable(info)
     self.tableInfo.gameInfo = gameInfo
 
     gameInfo.masterSeatId = gameInfo.masterSeatId or 0
@@ -266,7 +267,7 @@ class.GameTrace = function (self, data)
     elseif info.mainType == const.YUNCHENG_GAMETRACE_REFRESH then
         local cardInfo = packetHelper:decodeMsg("YunCheng.CardInfo", info.msgBody)
         local seatInfo = gameInfo.seatInfo[cardInfo.seatId]
-        seatInfo.handCards = tableHelper.cloneArray(cardInfo.cards)
+        seatInfo.handCards = tabHelper.cloneArray(cardInfo.cards)
         userdata:setHandCards(cardInfo.seatId, seatInfo.handCards)
 
         self.handler:repaintCardsBySeatId(cardInfo.seatId, seatInfo)
@@ -316,7 +317,7 @@ class.GameTrace = function (self, data)
         if #cardInfo.cards > 0 and cardInfo.cards[1] >= 0 then
             userdata:addHistCards(cardInfo.cards);
             self.handler:outCardsAction(cardInfo.cards, cardInfo.seatId)
-            gameInfo.winCards = tableHelper.cloneTable(cardInfo)
+            gameInfo.winCards = tabHelper.cloneTable(cardInfo)
         else
             self.handler:cleanLastCards(cardInfo.seatId)
         end
@@ -522,7 +523,6 @@ class.GameOverHandler = function (self)
     end
     local cnt = self.tableInfo.playerUsers:getCount()
     if cnt >= 3 and math.random() < 0.20 then
-        -- self:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_CHANGETABLE, nil, math.random(1, 2), math.random(2, 4))
         self:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_CHANGETABLE, nil, nil, math.random(2, 4))
         self.isJumped = true
     end
@@ -537,21 +537,15 @@ class.GameWaitHandler = function (self, mask, status, timeout)
 
     if status == protoTypes.CGGAME_TABLE_STATUS_IDLE then
     elseif status == protoTypes.CGGAME_TABLE_STATUS_WAITREADY then
-        --[[
         local cnt = self.tableInfo.playerUsers:getCount()
         if not self.handler.is_offline and cnt <= 1 and not self.isJumped then
-        self:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_CHANGETABLE, math.random(1, 2), math.random(2, 4))
-        self.isJumped = true
-        elseif not self.isJumped then --]]
-        local msg = {
-            mainType    = protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
-            subType     = protoTypes.CGGAME_PROTO_SUBTYPE_READY,
-            msgBody     = nil
-        }
-
-        local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
-        self:sendPacket(packet, math.random(1, 3))
-        -- end
+            self:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_CHANGETABLE, nil, nil, math.random(2, 4))
+            self.isJumped = true
+        elseif not self.isJumped then
+            local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
+                                protoTypes.CGGAME_PROTO_SUBTYPE_READY, nil)
+            self:sendPacket(packet, math.random(1, 3))
+        end
     elseif status == const.YUNCHENG_TABLE_STATUS_WAIT_PICKUP then
         local seatInfo = gameInfo.seatInfo[self.selfSeatId]
         local userdata = gameInfo.userdata

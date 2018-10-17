@@ -18,6 +18,7 @@ function HallScene:onCreate()
     cc.SpriteFrameCache:getInstance():addSpriteFrames("buttons.plist")
 
     self.authInfo = AuthUtils.getAuthInfo()
+    self.userInfo = {}
 
     display.newSprite(CC_DESIGN_RESOLUTION.background)
         :move(display.center)
@@ -29,7 +30,7 @@ function HallScene:onCreate()
 
     self:initBtn()
     self:initTopInfo()
-    -- self:repaintRoomList()
+    self:repaintRoomList()
 
     self:showNotice("【系统公告】", "本游戏仅供亲朋好友间娱乐，请遵守国家法律，禁止赌博，一经发现，终生封号！")
 end
@@ -122,7 +123,7 @@ end
 function HallScene:clickJoinGame()
     SoundApp.playEffect("sounds/main/click.mp3")
 
-    -- Settings.setRoomId(0)
+    Settings.setRoomId(0)
 
     self:toNextScene()
 end
@@ -156,17 +157,17 @@ end
 function HallScene:clickHead()
     SoundApp.playEffect("sounds/main/click.mp3")
 
-    -- local winSize = display.size
-    -- local pos = cc.p(64, winSize.height - 64)
+    local winSize = display.size
+    local pos = cc.p(64, winSize.height - 64)
 
-    -- local HsPlayerInfo = require "HsPlayerInfo"
-    -- local layer = HsPlayerInfo.create(self)
-    -- layer:addTo(self ,Constants.kLayerPopUp)
-    --      :showLayer(pos)
+    local HsPlayerInfo = require "HsPlayerInfo"
+    local layer = HsPlayerInfo.create(self)
+    layer:addTo(self ,Constants.kLayerPopUp)
+         :showLayer(pos)
 
-    -- if self.m_roomList then
-    --     self.m_roomList:setVisible(false)
-    -- end
+    if self.m_roomList then
+        self.m_roomList:setVisible(false)
+    end
 end
 
 function HallScene:makeHead()
@@ -252,6 +253,10 @@ function HallScene:postAuthAction ()
     end
 
     login:tryHall(AuthUtils.getItem(AuthUtils.keyGameMode, 0))
+end
+
+function HallScene:postJoinAction ()
+    print("HallScene postJoinAction", self.authOK)
     self:updateInfo()
 end
 
@@ -310,14 +315,16 @@ end
 
 function HallScene:tickFrame (dt)
     -- self:checkLocation()
+    local now = skynet.time()
 
     local login = self.login
     if login:tickCheck(self) then
         local networkLayer = require "NetworkLayer"
         networkLayer.create(self)
+
+        self.lastUpdate = now
     end
 
-    local now = skynet.time()
     local delta = now - self.lastUpdate
     if delta > 3.0 then
         login:closeSocket()
@@ -342,18 +349,15 @@ function HallScene:tickFrame (dt)
 end
 
 function HallScene:updateInfo()
-    print("updateInfo")
     local login = self.login
     if not login then
         return
     end
 
-    local authInfo = AuthUtils.getAuthInfo()
-
     local info = {
-        FUserCode   = authInfo.userCode,
-        FNickName   = authInfo.nickname,
-        FAvatarUrl  = authInfo.avatarUrl,
+        FUserCode   = self.authInfo.userCode,
+        FNickName   = self.authInfo.nickname,
+        FAvatarUrl  = self.authInfo.avatarUrl,
     }
     info.fieldNames = {"FUserCode", "FNickName", "FAvatarUrl", "FAvatarID"}
 
@@ -361,7 +365,7 @@ function HallScene:updateInfo()
         local gender = Settings.getPlayerGender()
         info.FAvatarID = gender
     else
-        info.FAvatarID  = authInfo.avatarId
+        info.FAvatarID  = self.authInfo.avatarId
     end
 
     local data = packetHelper:encodeMsg("CGGame.UserInfo", info)
@@ -440,7 +444,7 @@ function HallScene:handleACL(aclInfo)
     end
 end
 
-function HallScene:handleRoomInfo (roomInfo)
+function HallScene:handleRoomInfo (roomInfo, roomDetails)
     Settings.setRoomId(roomInfo.roomId)
     Settings.addToRoomList(roomInfo)
 
@@ -459,7 +463,6 @@ function HallScene:handleBuyChip (msg)
 end
 
 function HallScene:UpdateUserStatus (user)
-    print("HallScene UpdateUserStatus")
     local info = self.agent:GetUserInfo(user.FUserCode)
     if not info then
         return
@@ -487,7 +490,7 @@ function HallScene:UpdateUserStatus (user)
 
         -- OSNative.submitScore(info.FScore or 0, "com.cronlygames.yuncheng.score")
 
-        -- self:updateBindInfo(info)
+        self:updateBindInfo(info)
     end
 end
 

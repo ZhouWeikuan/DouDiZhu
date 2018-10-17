@@ -1,7 +1,7 @@
 local class = {}
 
-local SoundApp = require("SoundApp")
-local Constants = require("Constants")
+local SoundApp  = require "SoundApp"
+local Constants = require "Constants"
 
 local winSize = display.size
 
@@ -56,6 +56,88 @@ class.getOutCardPos = function (viewId)
     return playerOutCardPos[viewId]
 end
 
+class.NewRoomCfg = {
+    {opID = "playRule",
+     opName = "rm_txt_wf.png",
+     rdName = {"普通斗地主", "花牌斗地主", "去两个三斗地主"},
+     rdVal = {0, 1, 2},
+     wOffset = 330,
+     dftIdx = 1},
+
+    {opID = "same3Bomb",
+     opName = "rm_txt_gz.png",
+     rdName = {"同色三算炸", "同色三不算炸"},
+     rdVal = {1, 0},
+     wOffset = 520,
+     dftIdx = 0},
+
+    {opID = "bombMax",
+     opName = "rm_txt_bomb.png",
+     rdName = {"不封顶", "3炸封顶", "4炸封顶", "5炸封顶"},
+     rdVal = {0, 3, 4, 5},
+     wOffset = 260,
+     dftIdx = 0},
+
+    {opID = "bottomScore",
+     opName = "rm_txt_df.png",
+     rdName = {"1分", "2分", "5分", "10分"},
+     rdVal = {1, 2, 5, 10},
+     wOffset = 260,
+     dftIdx = 0},
+
+    {opID = "passCount",
+     opName = "rm_txt_js.png",
+     rdName = {"8局/3个元宝", "16局/6个元宝"},
+     rdVal = {8, 16},
+     wOffset = 520,
+     dftIdx = 0},
+
+    {opID = "payType",
+     opName = "rm_txt_ff.png",
+     rdName = {"房主付费", "AA付费", "赢家付费"},
+     rdVal = {0, 1, 2},
+     wOffset = 330,
+     dftIdx = 0}
+}
+
+class.parseRoomDetail = function (roomDetails)
+    local tbID = {"playRule", "same3Bomb", "bombMax", "bottomScore", "passCount", "payType"}
+    local strRet = ""
+    for _,opID in pairs(tbID) do
+        local v = roomDetails[opID]
+        local oneCfg = class.getRoomCfgById(opID)
+        if v and oneCfg then
+            for i,value in ipairs(oneCfg.rdVal) do
+                if v == value then
+                    if opID == "bombMax" then
+                        strRet = strRet .. "炸弹"
+                    elseif opID == "bottomScore" then
+                        strRet = strRet .. "底分"
+                    end
+
+                    strRet = strRet..oneCfg.rdName[i].." "
+                    break
+                end
+            end
+        end
+    end
+
+    return strRet
+end
+
+class.getRoomCfgById = function (opID)
+    local ret = nil
+
+    for k,v in ipairs(class.NewRoomCfg) do
+        if v.opID == opID then
+            ret = v
+            break
+        end
+    end
+
+    return ret
+end
+
 class.makeBaseHead = function ()
     local headBg = Constants.getSprite("bg_role.png")
     local headSize = headBg:getContentSize()
@@ -79,7 +161,7 @@ end
 
 class.doAnimation = function (type, parent)
     if type == 3 then
-        local skeletonNode = sp.SkeletonAnimation:create("eff/plane_out/plane.json","eff/plane_out/plane.atlas")
+        local skeletonNode = sp.SkeletonAnimation:create("eff/plane_out/plane.json", "eff/plane_out/plane.atlas")
         skeletonNode:setAnimation(0, "plane", false)
         skeletonNode:addTo(parent, Constants.kLayerPopUp)
         skeletonNode:setPosition(winSize.width * 0.5, winSize.height * 0.5)
@@ -170,7 +252,7 @@ class.getSoundValue = function (v)
 end
 
 class.parseCardType = function (node, sexStr)
-    local const = require("Const_YunCheng")
+    local const = require "Const_YunCheng"
     local ret = {sound = {}}
 
     if const.isRocket(node) then
@@ -242,8 +324,8 @@ class.parseCardType = function (node, sexStr)
     return ret
 end
 
-class.getUserGender = function (avatarID)
-    if avatarID and avatarID % 2 == 1 then
+class.getUserGender = function (avatarId)
+    if avatarId and avatarId % 2 == 1 then
         return "boy"
     else
         return "girl"
@@ -325,6 +407,55 @@ class.getCardSprite = function (value, pos, parent, zOrder, isMaster)
     return spCardBg
 end
 
+-- class.captureScreen = function ()
+--     local fileName = "game.jpg"
+--     if Constants.isDeviceAndroid() then
+--         fileName = "/mnt/sdcard/game.jpg"
+--     end
+
+--     cc.utils:captureScreen(function(flag, name)
+--         class.showShare(flag, name)
+--     end, fileName)
+-- end
+
+-- class.showShare = function (success, fileName)
+--     if not success then
+--         print ("failed to capture screen")
+--         return
+--     end
+
+--     -- the native airdrop and android share codes
+--     if Constants.isDeviceMac() then
+--         OSNative.shareFile(fileName)
+--         return
+--     end
+
+--     local shareInfo = {
+--         imagePath   = fileName,
+--         mediaType   = 1,
+--         shareTo     = 0,
+--     }
+
+--     local function onSharedResultListener (code, msg )
+--         require "opensdkConst3"
+--         local ShareResultCode = cc.exports.ShareResultCode
+
+--         local title, body
+--         if code == ShareResultCode.kShareSuccess then
+--             title = OSNative.getUTF8LocaleString("msgShareSuccess")
+--             body  = OSNative.getUTF8LocaleString("msgShareOK")
+--         else
+--             title = OSNative.getUTF8LocaleString("msgShareFailed")
+--             body  = OSNative.getUTF8LocaleString("msgShareFailInfo") .. msg
+--         end
+
+--         MessageBox(body, title)
+--     end
+
+--     local sdk = require "OpenSDKWrapper"
+--     sdk.showShare(shareInfo, onSharedResultListener)
+-- end
+
 class.createSceneBg = function (parent)
     local strPath = string.format("all/bg_game%d.png", math.random(1,3))
 
@@ -343,7 +474,7 @@ class.getChatSoundPath = function (str, sexStr)
     for i = 1, 12 do
         if i ~= 2 then
             local msgId = string.format("msgChatMsg%02d", i)
-            local strLocal = OSNative.getUTF8LocaleString(msgId)
+            local strLocal = getUTF8LocaleString(msgId)
 
             if str == strLocal then
                 strPath = string.format("%s%s.mp3", sexStr, msgId)

@@ -777,7 +777,7 @@ class.SendRoomTableResult = function (self, allOver)
     histInfo.gameOver   = allOver
 
     local data = tabHelper.encode(histInfo) or ""
-    self:sendMultiRoomData(nil, protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RESULT, data)
+    self:sendMultiRoomData(nil, protoTypes.CGGAME_PROTO_SUBTYPE_RESULT, data)
 
     local allHistInfo = self.roomInfo.allHistInfo
     if allHistInfo then
@@ -809,7 +809,7 @@ class.SendRoomTableResultAll = function (self, code)
     local allHistInfo = self.roomInfo.allHistInfo
     if allHistInfo then
         local data = tabHelper.encode(allHistInfo) or ""
-        self:sendMultiRoomData(code, protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RESULT_ALL, data)
+        self:sendMultiRoomData(code, protoTypes.CGGAME_PROTO_SUBTYPE_RESULT_ALL, data)
     end
 end
 

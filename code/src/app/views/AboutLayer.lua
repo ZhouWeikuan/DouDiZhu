@@ -93,10 +93,10 @@ end
 
 function class:initLayer()
     local bgSize = self.m_bg:getContentSize()
-    local bg = Constants.get9Sprite("bg_dialog_inner.png", cc.size(1200, 598), cc.p(bgSize.width * 0.5, 488), self.m_bg)
+    local bg = Constants.get9Sprite("bg_dialog_inner.png", cc.size(1200, 600), cc.p(bgSize.width * 0.5, 488), self.m_bg)
 
     -- qr code
-    Constants.getSprite("about_qr.png", cc.p(218.5, 299), bg)
+    Constants.getSprite("about_qr.png", cc.p(218, 300), bg)
 
     -- text
     local str = "        如游戏中遇到问题,请扫描左侧二维码加入客服群向群主咨询,或手动添加客服QQ群号:"

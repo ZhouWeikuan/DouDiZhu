@@ -29,9 +29,15 @@ function OnlineScene:postAuthAction ()
         return
     end
     login:tryGame(AuthUtils.getItem(AuthUtils.keyGameMode, 0))
+end
 
-    -- local tableId  = Settings.getRoomId()
-    local tableId = nil
+function OnlineScene:postJoinAction ()
+    local login = self.login
+    if not login then
+        return
+    end
+
+    local tableId  = Settings.getRoomId()
     self.agent:sendSitDownOptions(tableId)
 end
 

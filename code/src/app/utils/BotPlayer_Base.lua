@@ -219,9 +219,9 @@ class.sendGiftOptions = function(self, giftName, getId)
     giftInfo.dstSeatId  = getId
     giftInfo.srcSeatId  = self.selfSeatId
 
-    local data  = packetHelper:encodeMsg("CGGame.GiftInfo", giftInfo)
-    local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
-                        protoTypes.CGGAME_PROTO_SUBTYPE_GIFT, data)
+    local data      = packetHelper:encodeMsg("CGGame.GiftInfo", giftInfo)
+    local packet    = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
+                            protoTypes.CGGAME_PROTO_SUBTYPE_GIFT, data)
     self:sendPacket(packet)
 end
 
@@ -231,26 +231,22 @@ class.sendMsgOptions = function(self, chatText, chatType)
         return
     end
     local chatInfo = {}
-    chatInfo.gameId         = const.GAMEID
+    chatInfo.gameId         = self.const.GAMEID
     chatInfo.speekerCode    = user.FUserCode
     chatInfo.speakerNick    = user.FNickName
     chatInfo.listenerId     = user.tableId or 0
     chatInfo.chatText       = chatText
     chatInfo.chatType       = chatType or 0
 
-    local data  = packetHelper:encodeMsg("CGGame.ChatInfo", chatInfo)
-    local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
-                        protoTypes.CGGAME_PROTO_SUBTYPE_CHAT, data)
+    local data      = packetHelper:encodeMsg("CGGame.ChatInfo", chatInfo)
+    local packet    = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_HALL,
+                            protoTypes.CGGAME_PROTO_SUBTYPE_CHAT, data)
     self:sendPacket(packet)
 end
 
-class.sendRoomOptions = function(self, subType, body, delay)
-    local msg = {}
-    msg.mainType    = protoTypes.CGGAME_PROTO_MAINTYPE_ROOM
-    msg.subType     = subType
-    msg.msgBody     = body
-
-    local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
+class.sendRoomOptions = function(self, subType, data, delay)
+    local packet    = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_ROOM,
+                            subType, data)
     self:sendPacket(packet, delay)
 end
 
@@ -259,12 +255,10 @@ class.sendTableOptions = function(self, subType, tableId, seatId, delay)
         roomId = tableId,
         seatId = seatId,
     }
-    local msg = {}
-    msg.mainType    = protoTypes.CGGAME_PROTO_MAINTYPE_GAME
-    msg.subType     = subType
-    msg.msgBody     = packetHelper:encodeMsg("CGGame.SeatInfo", info)
+    local data      = packetHelper:encodeMsg("CGGame.SeatInfo", info)
 
-    local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
+    local packet    = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
+                            subType, data)
     self:sendPacket(packet, delay)
 end
 
@@ -273,12 +267,10 @@ class.sendSitDownOptions = function(self, tableId, seatId, delay)
         roomId = tableId,
         seatId = seatId,
     }
-    local msg = {}
-    msg.mainType    = protoTypes.CGGAME_PROTO_MAINTYPE_GAME
-    msg.subType     = protoTypes.CGGAME_PROTO_SUBTYPE_SITDOWN
-    msg.msgBody     = packetHelper:encodeMsg("CGGame.SeatInfo", info)
+    local data      = packetHelper:encodeMsg("CGGame.SeatInfo", info)
 
-    local packet = packetHelper:encodeMsg("CGGame.ProtoInfo", msg)
+    local packet    = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
+                            protoTypes.CGGAME_PROTO_SUBTYPE_SITDOWN, data)
     self:sendPacket(packet, delay)
 end
 
@@ -422,11 +414,11 @@ end
 
 class.handle_room = function (self, args)
     local typeId = args.subType
-    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RELEASE then
+    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_RELEASE then
         local exitInfo = packetHelper:decodeMsg("CGGame.ExitInfo", args.msgBody)
         exitInfo = tabHelper.cloneTable(exitInfo)
 
-        if exitInfo.ownerId == "" then
+        if strHelper.isNullKey(exitInfo.ownerCode) then
             self.tableInfo.roomInfo.exitInfo = nil
         else
             self.tableInfo.roomInfo.exitInfo = exitInfo
@@ -437,7 +429,7 @@ class.handle_room = function (self, args)
         end
 
         self.handler:handleRoomRelease(exitInfo)
-    elseif typeId == protoTypes.CGGAME_PROTO_SUBTYPE_ROOM_RESULT then
+    elseif typeId == protoTypes.CGGAME_PROTO_SUBTYPE_RESULT then
         self.handler:handleRoomResult(args.msgBody, self.selfSeatId)
     else
         skynet.error("unhandled room", args.mainType, args.subType, args.msgBody)
@@ -669,6 +661,9 @@ class.handleUserJoined = function (self, data)
         AuthUtils.setItem(AuthUtils.keyUserCode, hallInfo.FUserCode)
     end
     self.authInfo.userCode = hallInfo.FUserCode
+    if self.delegate.postJoinAction then
+        self.delegate:postJoinAction()
+    end
 end
 
 class.handleACL = function (self, aclInfo)
@@ -679,7 +674,7 @@ class.handleACL = function (self, aclInfo)
 end
 
 ---! 处理room信息的handler
-class.handleRoomInfo = function (self, roomInfo)
+class.handleRoomInfo = function (self, roomInfo, roomDetails)
 end
 
 class.handleRoomRelease = function (self, exitInfo)

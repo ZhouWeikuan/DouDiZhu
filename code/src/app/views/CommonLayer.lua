@@ -2,16 +2,18 @@ local CommonLayer = class("CommonLayer")
 CommonLayer.__index = CommonLayer
 
 local Constants = require "Constants"
+local SoundApp  = require "SoundApp"
 local Settings  = require "Settings"
-local const = require "Const_YunCheng"
-local protoTypes = require "ProtoTypes"
-local NumSet    = require "NumSet"
+
+local ChatLayer     = require "ChatLayer"
+local ClockLayer    = require "ClockLayer"
+local UIHelper      = require "UIHelper"
 
 local packetHelper  = require "PacketHelper"
 
-local SoundApp = require "SoundApp"
-local ClockLayer = require "ClockLayer"
-local UIHelper = require "UIHelper"
+local protoTypes    = require "ProtoTypes"
+local const         = require "Const_YunCheng"
+local NumSet        = require "NumSet"
 
 function CommonLayer.extend(target)
     local t = tolua.getpeer(target)
@@ -44,6 +46,10 @@ function CommonLayer.create(delegate, uid)
         end
         self:registerScriptHandler(onNodeEvent)
     end
+
+    self.chatLayer = ChatLayer.create(self)
+    self.chatLayer:addTo(self)
+
 
     self.clockLayer = ClockLayer.create(self)
     self.clockLayer:addTo(self, Constants.kLayerLock)
@@ -140,6 +146,8 @@ function CommonLayer:initSysMenu()
                          pos = cc.p(60, winSize.height - 55)},
         setting      = {func = function() self:clickSetting() end,
                          pos = cc.p(180, winSize.height - 55)},
+        chat         = {func = function() self:showChatLayer() end,
+                         pos = cc.p(winSize.width - 180, winSize.height - 55)},
     }
 
     for name, one in pairs(btnDefs) do
@@ -196,7 +204,7 @@ function CommonLayer:changeSysMenuStatus(name, visible, enable)
 
     local names = {"invite", "start", "switch", "zhanji"}
     local activeBtns = {}
-    local btnWidth = 0;
+    local btnWidth = 0
     for k,v in ipairs(names) do
         btn = self.m_sysMenu[v]
         if btn and btn:isEnabled() then
@@ -213,7 +221,7 @@ function CommonLayer:changeSysMenuStatus(name, visible, enable)
         posx = posx + btnWidth * 0.5
 
         for k,btn in ipairs(activeBtns) do
-            btn:setPosition(posx, 390);
+            btn:setPosition(posx, 390)
             posx = posx + btnWidth + btnSpace
         end
     end
@@ -388,7 +396,9 @@ function CommonLayer:seatStatusChange (seatId, newStatus)
     self:RepaintPlayerInfo(seatId, newStatus)
 
     if seatId == self.agent.selfSeatId and newStatus == protoTypes.CGGAME_USER_STATUS_STANDUP then
-        if not self.is_offline then
+        if self.agent.tableInfo.roomInfo then
+            self:changeSysMenuStatus("invite", false, false)
+        elseif not self.is_offline then
             self:changeSysMenuStatus("switch", true, true)
         end
     end
@@ -396,7 +406,7 @@ end
 
 function CommonLayer:UpdateUserStatus (user)
     if self.is_offline and user then
-        local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)");
+        local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)")
         if index then
             local AIPlayer = require "AIPlayer"
             AIPlayer.savePlayerAtIndex(user, index)
@@ -504,7 +514,7 @@ function CommonLayer:repaintCardsBySeatId(seatId, seatInfo, runtype, pickup)
                 v:removeFromParent()
             end
         end
-        self.discloseLbl[viewId] = nil;
+        self.discloseLbl[viewId] = nil
     end
     self.player_info[viewId].cards = {}
 
@@ -534,11 +544,11 @@ function CommonLayer:repaintCardsBySeatId(seatId, seatInfo, runtype, pickup)
 
         self.selectCards = {}
     else
-        local k = 1;
-        local card = handCards[k];
+        local k = 1
+        local card = handCards[k]
         local itemPos = UIHelper.getPlayerPosByViewId(viewId)
 
-        local node = cc.Node:create();
+        local node = cc.Node:create()
         node:addTo(self, Constants.kLayerCard)
             :setPosition(itemPos.x + 116, itemPos.y + 10)
 
@@ -562,7 +572,7 @@ function CommonLayer:repaintCardsBySeatId(seatId, seatInfo, runtype, pickup)
         end
 
         if count == 0 then
-            node:setVisible(false);
+            node:setVisible(false)
         end
     end
 end
@@ -720,13 +730,277 @@ function CommonLayer:handleBuyChip (msg)
     UIHelper.popMsg(self, str)
 end
 
+function CommonLayer:showQuitRoomConfirmLayer ()
+    local quitLayer = require "QuitRoomConfirmLayer"
+
+    local hasPlayRecord = false
+    local roomInfKeys = Settings.getRoomResults()
+    for k,v in ipairs(roomInfKeys) do
+        local oneRoomRslt = Settings.getOneRoomResult(v)
+        if oneRoomRslt and oneRoomRslt.roomId == self.m_curRoomId then
+            hasPlayRecord = true
+            break
+        end
+    end
+
+    local gameInfo = self.agent.tableInfo.gameInfo
+    local started = (gameInfo.seatInfo ~= nil) or hasPlayRecord
+
+    local layer = quitLayer.create(self, started)
+    layer:setPosition(cc.p(0, 0))
+        :addTo(self, Constants.kLayerPopUp)
+end
+
+function CommonLayer:voteExit ()
+    SoundApp.playEffect("sounds/main/click.mp3")
+
+    local agent = self.agent
+    local roomInfo = agent.tableInfo.roomInfo
+
+    local info = {}
+    info.roomId         = roomInfo.roomId
+    info.seatId         = agent.selfSeatId
+    info.mask           = 1 << info.seatId
+    info.ownerCode      = agent.selfUserCode
+    local packet  = packetHelper:encodeMsg("CGGame.ExitInfo", info)
+
+    agent:sendRoomOptions(protoTypes.CGGAME_PROTO_SUBTYPE_RELEASE, packet)
+end
+
+function CommonLayer:voteKeep ()
+    SoundApp.playEffect("sounds/main/click.mp3")
+
+    local agent = self.agent
+    local roomInfo = agent.tableInfo.roomInfo
+
+    local info = {}
+    info.roomId         = roomInfo.roomId
+    info.seatId         = agent.selfSeatId
+    info.mask           = 0
+    info.ownerCode      = agent.selfUserCode
+    local packet  = packetHelper:encodeMsg("CGGame.ExitInfo", info)
+
+    agent:sendRoomOptions(protoTypes.CGGAME_PROTO_SUBTYPE_RELEASE, packet)
+end
+
+function CommonLayer:removeQuitRoomWaitLayer ()
+    if self.m_quitRoomWaitLayer then
+        self.m_quitRoomWaitLayer:removeFromParent()
+        self.m_quitRoomWaitLayer = nil
+    end
+end
+
+function CommonLayer:showAllOver()
+    local roomInfKeys = Settings.getRoomResults()
+    local curRoomRslt = nil
+    for k,v in ipairs(roomInfKeys) do
+        local oneRoomRslt = Settings.getOneRoomResult(v)
+        if oneRoomRslt and oneRoomRslt.roomId == self.m_curRoomId then
+            curRoomRslt = oneRoomRslt
+            break
+        end
+    end
+
+    if curRoomRslt then
+        local AllGameOverLayer = require "AllGameOverLayer"
+        self.m_allOverLayer = AllGameOverLayer.create(self)
+        self:addChild(self.m_allOverLayer, Constants.kLayerResult)
+        self.m_allOverLayer:initLayer(curRoomRslt)
+    else
+        self:quitGame()
+    end
+end
+
+function CommonLayer:handleRoomRelease (exitInfo)
+    if exitInfo.timeout and exitInfo.timeout == -1 then
+        Settings.setRoomId(0)
+        Settings.rmvFromRoomList(self.m_curRoomId)
+        self:showAllOver()
+    end
+
+    if (not exitInfo.seatId or exitInfo.seatId == 0) then
+        if not exitInfo.mask or exitInfo.mask == 0 then
+            if self.m_quitRoomWaitLayer then
+                self.m_quitRoomWaitLayer:closeLayer()
+            end
+            return
+        end
+    end
+
+    if not self.m_quitRoomWaitLayer then
+        local quitLayer = require "QuitRoomWaitLayer"
+
+        local layer = quitLayer.create(self)
+        self.m_quitRoomWaitLayer = layer
+
+        layer:setPosition(cc.p(0, 0))
+            :addTo(self, Constants.kLayerPopUp)
+    end
+
+    self.m_quitRoomWaitLayer:update(exitInfo)
+end
+
+function CommonLayer:addRoomResult(msg, seatId)
+    if not msg or msg == "" then
+        return
+    end
+
+    local hp = require "TableHelper"
+    local one = hp.decode(msg)
+
+    -- print("add Room Result")
+    -- local debugHelper = require "DebugHelper"
+    -- debugHelper.printDeepTable(one)
+
+    if one and one.roomId then
+        one.selfSeatId = seatId
+
+        local key = string.format("%d.%d", one.roomId, one.openTime)
+        local  all = Settings.getRoomResults() or {}
+        local last = all[#all]
+        if not last or last ~= key then
+            table.insert(all, key)
+        end
+        Settings.setRoomResults(all)
+
+        local roomInfo = Settings.getOneRoomResult(key)
+        if not roomInfo then
+            roomInfo = one
+            roomInfo.gameInfo = {one.gameInfo}
+        else
+            roomInfo.gameCount = one.gameCount
+            roomInfo.seatScore = one.seatScore
+            table.insert(roomInfo.gameInfo, one.gameInfo)
+        end
+
+        -- print("Room full info is")
+        -- local debugHelper = require "DebugHelper"
+        -- debugHelper.printDeepTable(roomInfo)
+
+        Settings.setOneRoomResult(key, roomInfo)
+    end
+end
+
+function CommonLayer:handleRoomResult (msg, seatId)
+    self:addRoomResult(msg, seatId)
+
+    local hp = require "TableHelper"
+    local curRoomResult = hp.decode(msg)
+
+    if curRoomResult.gameOver then
+        Settings.setRoomId(0)
+
+        self:showGameOverRoomTip("msgAllGameOverTip")
+
+        self:changeSysMenuStatus("zhanji", true, true)
+
+        Settings.rmvFromRoomList(self.m_curRoomId)
+    else
+        self:showGameOverRoomTip("msgDontLeaveTip")
+    end
+
+    if self.m_roomInfoPanel then
+        local gameIndex = curRoomResult.gameInfo.gameIndex + 1
+        if gameIndex > curRoomResult.passCount then
+            gameIndex = curRoomResult.passCount
+        end
+        local strGameCnt = string.format("局数: %d/%d", gameIndex,curRoomResult.passCount)
+        self.lblGameCnt:setString(strGameCnt)
+    end
+end
+
+function CommonLayer:quitAllOverLayer ()
+    self.m_allOverLayer:removeFromParent()
+    self.m_allOverLayer = nil
+
+    self:quitGame()
+end
+
+function CommonLayer:showGameOverRoomTip(msg)
+    local winSize = display.size
+
+    local bgBar = Constants.getSprite("bg_error.png", cc.p(winSize.width * 0.5, winSize.height * 0.08), self)
+    bgBar:setLocalZOrder(Constants.kLayerResult)
+         :setCascadeOpacityEnabled(true)
+
+    local bgSize = bgBar:getContentSize()
+
+    local strMsg = getUTF8LocaleString(msg)
+    local lbMsg = Constants.getLabel(strMsg, Constants.kBoldFontName, 42,
+                            cc.p(bgSize.width * 0.5, bgSize.height * 0.5), bgBar)
+
+    lbMsg:setColor(cc.c3b(255, 193, 47))
+
+    self.m_roomOverTip = bgBar
+end
+
+function CommonLayer:handleRoomInfo (roomInfo, roomDetails)
+    Settings.setRoomId(roomInfo.roomId)
+    Settings.addToRoomList(roomInfo)
+
+    local winSize = display.size
+
+    roomDetails.passCount = roomDetails.passCount or 0
+    roomDetails.costCoins = roomDetails.costCoins or 0
+    roomDetails.payType = roomDetails.payType or 0
+    roomDetails.playRule = roomDetails.playRule or 0
+    roomDetails.same3Bomb = roomDetails.same3Bomb or 0
+    roomDetails.bombMax = roomDetails.bombMax or 0
+    roomDetails.bottomScore = roomDetails.bottomScore or 0
+
+    local strDetails = UIHelper.parseRoomDetail(roomDetails)
+    local lbDetail = Constants.getLabel(strDetails, Constants.kBoldFontName, 40,
+                                        cc.p(winSize.width * 0.5, winSize.height * 0.48),self)
+    lbDetail:setColor(cc.c3b(120, 79, 37))
+
+    self.m_curRoomId = roomInfo.roomId
+    local strRoomId = string.format("房号: %d", roomInfo.roomId)
+
+    local gameIndex = 1
+    local roomInfKeys = Settings.getRoomResults()
+    for k,v in ipairs(roomInfKeys) do
+        local oneRoomRslt = Settings.getOneRoomResult(v)
+        if oneRoomRslt and oneRoomRslt.roomId == roomInfo.roomId then
+            local count = #oneRoomRslt.gameInfo
+            gameIndex = oneRoomRslt.gameInfo[count].gameIndex + 1
+            break
+        end
+    end
+    local strGameCnt = string.format("局数: %d/%d", gameIndex,roomInfo.passCount)
+
+    if not self.m_roomInfoPanel then
+        local bgRoomInfo = Constants.get9Sprite("bg_wifi.png",
+                                    cc.size(490, 0),
+                                    cc.p(winSize.width - 485, winSize.height - 45),
+                                    self)
+        local bgSize = bgRoomInfo:getContentSize()
+
+        self.m_roomInfoPanel = bgRoomInfo
+
+        self.lblRoomId = Constants.getLabel(strRoomId, Constants.kBoldFontNamePF, 36,cc.p(470, bgSize.height * 0.5),bgRoomInfo)
+        self.lblRoomId:setAnchorPoint(1, 0.5)
+
+        self.lblGameCnt = Constants.getLabel(strGameCnt, Constants.kBoldFontNamePF, 36,cc.p(20, bgSize.height * 0.5),bgRoomInfo)
+        self.lblGameCnt:setAnchorPoint(0, 0.5)
+    end
+
+    self.lblRoomId:setString(strRoomId)
+    self.lblGameCnt:setString(strGameCnt)
+
+    self:changeSysMenuStatus("switch", false, false)
+
+    local cnt = self.agent.tableInfo.playerUsers:getCount()
+    local hasSeat = (cnt < Constants.kMaxPlayers)
+    self:changeSysMenuStatus("invite", hasSeat, hasSeat)
+end
+
 function CommonLayer:GameOverHandler()
     local winSize = display.size
     local gameOverInfo = self.agent.gameOverInfo
     for _, site in pairs (gameOverInfo.sites) do
         local user = self.agent:GetUserAtSeat(site.seatId)
         if self.is_offline and user then
-            local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)");
+            local index = user.FUserCode -- string.match(user.FUniqueID, "(%d+)")
             if index then
                 local AIPlayer = require "AIPlayer"
                 AIPlayer.savePlayerAtIndex(user, index)
@@ -902,7 +1176,11 @@ function CommonLayer:GameWaitHandler(mask, status, timeout)
         elseif status == protoTypes.CGGAME_TABLE_STATUS_WAITREADY then
             self:changeSysMenuStatus("start", true, true)
 
-            if not self.is_offline then
+            if self.agent.tableInfo.roomInfo then
+                local cnt = self.agent.tableInfo.playerUsers:getCount()
+                local hasSeat = (cnt < Constants.kMaxPlayers)
+                self:changeSysMenuStatus("invite", hasSeat, hasSeat)
+            elseif not self.is_offline then
                 self:changeSysMenuStatus("switch", true, true)
             end
 
@@ -1038,6 +1316,14 @@ function CommonLayer:RepaintPlayerInfo (seatId, newStatus)
     bg_info.name:setString(name)
 
     local score = user.FScore or 0
+    if self.agent.tableInfo.roomInfo then
+        score = 0
+        local gameInfo = self.agent.tableInfo.gameInfo
+        if gameInfo and gameInfo.seatInfo then
+            local seatInfo = gameInfo.seatInfo[seatId]
+            score = seatInfo and seatInfo.scoreCard or 0
+        end
+    end
 
     bg_info.bgscore:setVisible(true)
     bg_info.bgscore.score:setString(score)
@@ -1188,11 +1474,21 @@ function CommonLayer:repaintBottomCards(topCards)
     end
 end
 
+function CommonLayer:showChatLayer()
+    SoundApp.playEffect("sounds/main/click.mp3")
+
+    self.chatLayer:setLocalZOrder(Constants.kLayerPopUp)
+    self.chatLayer:showChat()
+end
+
 function CommonLayer:backHome()
     SoundApp.playEffect("sounds/main/click.mp3")
 
     if self.is_offline or self:canSwitchTable() then
         self:quitGame()
+
+    elseif self.agent.tableInfo.roomInfo then
+        self:showQuitRoomConfirmLayer()
     else
         UIHelper.popMsg(self, "正在游戏中,请游戏结束后重试")
     end
@@ -1214,7 +1510,7 @@ function CommonLayer:quitGame()
     else
         self.agent:sendTableOptions(protoTypes.CGGAME_PROTO_SUBTYPE_QUITTABLE, nil, self:GetSelfSeatId())
 
-        -- Settings.setRoomId(0)
+        Settings.setRoomId(0)
         view.nextSceneName = "HallScene"
     end
     view:showWithScene()
@@ -1222,6 +1518,11 @@ end
 
 function CommonLayer:canSwitchTable()
     local tableInfo = self.agent.tableInfo
+
+    if tableInfo.roomInfo then
+        return false
+    end
+
     if not tableInfo.status or tableInfo.status <= const.YUNCHENG_TABLE_STATUS_WAIT_NEWGAME then
         return true
     end
@@ -1259,7 +1560,18 @@ function CommonLayer:changeTableHandler()
 end
 
 function CommonLayer:shopInfo()
-    return
+    do return end
+    SoundApp.playEffect("sounds/main/click.mp3")
+    local ShopLayer = require "ShopLayer"
+
+    local shop = ShopLayer.create(self)
+    if shop then
+        shop:setPosition(cc.p(0, 0))
+        shop:addTo(self, Constants.kLayerPopUp)
+
+        local winSize = display.size
+        shop:showShop(cc.p(winSize.width * 0.5, winSize.height * 0.5))
+    end
 end
 
 function CommonLayer:clickStart()
@@ -1303,7 +1615,19 @@ function CommonLayer:quitTableHandler(code, seatId)
                         :setString(tostring(seatId))
     end
 
-    if not self.is_offline then
+    if self.agent.tableInfo.roomInfo then
+        if self.agent.selfSeatId == seatId then
+            self:changeSysMenuStatus("invite", false, false)
+            self:changeSysMenuStatus("start", false, false)
+
+            self:HideAllButton()
+
+            if self.m_roomInfoPanel then
+                self.m_roomInfoPanel:removeFromParent()
+                self.m_roomInfoPanel = nil
+            end
+        end
+    elseif not self.is_offline then
         self:changeSysMenuStatus("switch", true, true)
     end
 
@@ -1350,6 +1674,96 @@ function CommonLayer:repaintSysSay(str)
     end
 end
 
+function CommonLayer:showPlayerChat(seatId, chatInfo)
+    local str = chatInfo.chatText
+    if not str then
+        return
+    end
+    local isText = true
+    local viewId = self:MapSeatToView(seatId)
+    local player = self.player_info[viewId]
+    local pos = cc.p(player:getPosition())
+
+    local chatSp = Constants.getLabel(str, Constants.kBoldFontName, 60)
+    local chatSize = chatSp:getContentSize()
+
+    if chatInfo.chatType == 1 then
+        isText = false
+        if self.m_voiceLayer then
+            self.m_voiceLayer:playVoice(seatId, chatInfo)
+        end
+        return
+    end
+
+    if (string.sub(str,1, 6) == "emoji_") then
+        local spEmoji = Constants.getSprite(str .. ".png", pos, self)
+        if spEmoji then
+            SoundApp.playEffect("sounds/main/chat.mp3")
+            isText = false
+            spEmoji:setLocalZOrder(Constants.kLayerPopUp)
+
+            local act = cc.Sequence:create(cc.DelayTime:create(1.0),
+                                            cc.MoveBy:create(0.3, cc.p(0, 15)),
+                                            cc.MoveBy:create(0.3, cc.p(0, -30)),
+                                            cc.MoveBy:create(0.3, cc.p(0, 30)),
+                                            cc.MoveBy:create(0.3, cc.p(0, -30)),
+                                            cc.MoveBy:create(0.3, cc.p(0, 15)),
+                                            cc.CallFunc:create(function()
+                                                spEmoji:removeFromParent()
+                                            end))
+
+            spEmoji:runAction(act)
+        end
+    elseif (string.sub(str,1, 9) == "[wxvoice:") then
+        isText = false
+    end
+
+    if isText then
+        local sexStr = self:getSexStr(seatId)
+        local strChatSoundPath = UIHelper.getChatSoundPath(str, sexStr)
+        if strChatSoundPath then
+            SoundApp.playEffect(strChatSoundPath)
+        else
+            SoundApp.playEffect("sounds/main/chat.mp3")
+        end
+
+        local chatSp = Constants.getLabel(str, Constants.kBoldFontName, 40)
+        local chatSize = chatSp:getContentSize()
+        local size = player:getContentSize()
+
+        local spTemp = Constants.getSprite("bg_chat_bubble.png")
+        local bg = Constants.get9Sprite("bg_chat_bubble.png",
+                                        cc.size(math.max(chatSize.width + 100, 210), spTemp:getContentSize().height),
+                                        cc.p(pos.x - size.width * 0.2, pos.y + size.height * 0.8),
+                                        self,
+                                        cc.rect(40, 40, 20, 50))
+
+        bg:setLocalZOrder(Constants.kLayerPopUp)
+            :setAnchorPoint(cc.p(1.0, 0.5))
+            :setCascadeOpacityEnabled(true)
+
+        if viewId ~= 2 then
+            bg:setScaleX(-1.0)
+            chatSp:setScaleX(-1.0)
+        end
+        if viewId ~= 1 then
+            bg:setPosition(cc.p(pos.x - size.width * 0.1, pos.y + size.height * 0.4))
+        end
+
+        local bgSize = bg:getContentSize()
+        chatSp:addTo(bg)
+            :setAnchorPoint(cc.p(0.5, 0.5))
+            :setColor(cc.c3b(255,255,255))
+            :setPosition(cc.p(bgSize.width * 0.5 - 9, bgSize.height * 0.62))
+
+        bg:runAction(cc.Sequence:create(cc.DelayTime:create(2.0),
+                cc.FadeTo:create(0.5, 50),
+                cc.CallFunc:create(function() bg:removeFromParent() end)))
+    end
+
+    return isText
+end
+
 function CommonLayer:resetStartGame(type)
     self.selectCards = {}
     self.runHandCards = {}
@@ -1389,6 +1803,68 @@ function CommonLayer:resetStartGame(type)
                                                     self.m_roomOverTip = nil
                                                 end)))
     end
+end
+
+function CommonLayer:sendMsg(str)
+    self.agent:sendMsgOptions(str)
+end
+
+function CommonLayer:recvMsg(chatInfo)
+    if chatInfo.listenerId < 0 then
+        self:repaintSysSay(chatInfo.chatText)
+        return
+    end
+    local isText = true
+    local users = self.agent.tableInfo.playerUsers
+    users:forEach(function (sid, code)
+        if chatInfo.speekerCode == code then
+            isText = self:showPlayerChat(sid, chatInfo)
+            return true
+        end
+    end)
+    local str = string.format("[%s]:%s", chatInfo.speakerNick or "系统通知", chatInfo.chatText)
+
+    if isText then
+        self.chatLayer:updateHistory(chatInfo)
+    end
+end
+
+function CommonLayer:recvNotice(chatInfo)
+    local str = string.format("[%s]:%s", chatInfo.speakerNick or "系统通知", chatInfo.chatText)
+
+    self:showSysNotice(str)
+    self.chatLayer:upDateHistroy(str)
+end
+
+function CommonLayer:showSysNotice(notice)
+    SoundApp.playEffect("sounds/tips.mp3")
+    local winSize = display.size
+    local bg_sys = Constants.get9Sprite("bg_notice.png",
+                                        cc.size(1300, 80),
+                                        cc.p(winSize.width * 0.5, winSize.height),
+                                        self)
+
+    bg_sys:setLocalZOrder(Constants.kLayerPopUp)
+    bg_sys:setAnchorPoint(0.5, 1.0)
+    bg_sys:setOpacity(0)
+    bg_sys:setCascadeOpacityEnabled(true)
+
+    local bg_sysSize = bg_sys:getContentSize()
+
+    local lblsys = Constants.getLabel(notice, Constants.kBoldFontName, 36,
+                    cc.p(bg_sysSize.width * 0.5, bg_sysSize.height * 0.5), bg_sys)
+    lblsys:setColor(cc.c3b(255, 243, 53))
+    lblsys:enableOutline(cc.c4b(0, 0, 0, 255), 1)
+
+    local act = cc.Sequence:create(
+        cc.FadeIn:create(1.0),
+        cc.DelayTime:create(5.0),
+        cc.FadeOut:create(1.0),
+        cc.CallFunc:create(function()
+            bg_sys:removeFromParent()
+            end)
+        )
+    bg_sys:runAction(act)
 end
 
 function CommonLayer:touchChooseBegin(pos)

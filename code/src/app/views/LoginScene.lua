@@ -112,11 +112,15 @@ class.returnBack = returnBack
 function LoginScene:initAuth ()
     print("initAuth")
 
-    AuthUtils.setItem(AuthUtils.keyPlayerId, "G:1293841824")
-    AuthUtils.setItem(AuthUtils.keyPassword, "apple")
-    AuthUtils.setItem(AuthUtils.keyNickname, "test")
-    AuthUtils.setItem(AuthUtils.keyOSType, "client")
-    AuthUtils.setItem(AuthUtils.keyPlatform, "client")
+    local uid = AuthUtils.getItem(AuthUtils.keyPlayerId, "")
+    if uid == "" then
+        local uid = math.random(100000, 999999)
+        AuthUtils.setItem(AuthUtils.keyPlayerId, "G:" .. tostring(uid))
+        AuthUtils.setItem(AuthUtils.keyPassword, "apple")
+        AuthUtils.setItem(AuthUtils.keyNickname, "test" .. tostring(uid))
+        AuthUtils.setItem(AuthUtils.keyOSType, "client")
+        AuthUtils.setItem(AuthUtils.keyPlatform, "client")
+    end
 end
 
 function LoginScene:command_handler (user, packet)
