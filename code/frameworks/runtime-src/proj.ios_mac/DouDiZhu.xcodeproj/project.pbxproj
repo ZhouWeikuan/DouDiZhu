@@ -1041,6 +1041,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -1091,6 +1092,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../cocos2d-x $(SRCROOT)/../../cocos2d-x/cocos/audio/include $(SRCROOT)/../../cocos2d-x/cocos $(SRCROOT)/../../cocos2d-x/extensions $(SRCROOT)/../../cocos2d-x/external $(SRCROOT)/../../cocos2d-x/external/chipmunk/include/chipmunk $(SRCROOT)/../../../3rd/lua $(SRCROOT)/../../cocos2d-x/external/lua $(SRCROOT)/../../cocos2d-x/external/lua/tolua $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib $(SRCROOT)/../../cocos2d-x/tools/simulator/libsimulator/lib/protobuf-lite $(SRCROOT)/../../cocos2d-x/cocos/editor-support";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -1128,7 +1130,7 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.yuncheng;
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1170,7 +1172,7 @@
 					"-image_base",
 					100000000,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.landlord;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cronlygames.yuncheng;
 				SDKROOT = iphoneos;
 				STRIP_PNG_TEXT = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";

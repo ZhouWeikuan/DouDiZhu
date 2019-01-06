@@ -74,15 +74,17 @@ function OnlineScene:onExit_()
 end
 
 function OnlineScene:tickFrame ()
+    local now = skynet.time()
+
     local login = self.login
     if login:tickCheck(self) then
         local networkLayer = require "NetworkLayer"
         networkLayer.create(self)
 
         self.comLayer:handleOffline()
+        self.lastUpdate = now
     end
 
-    local now = skynet.time()
     local delta = now - self.lastUpdate
     if delta > 3.0 then
         login:closeSocket()

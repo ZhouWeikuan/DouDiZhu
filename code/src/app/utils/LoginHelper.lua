@@ -88,7 +88,7 @@ class.releaseFromLayer = function (self, delegate)
 end
 
 ---! agent list, maybe better two host:port for each site
-local def_agent_list = {"192.168.0.121:8201", "192.168.0.122:8201"}
+local def_agent_list = {"115.29.174.67:8200", "115.29.174.67:8201"}
 
 ---! check for all agents, find the best one if doCheck
 class.checkAllLoginServers = function (self, doCheck)

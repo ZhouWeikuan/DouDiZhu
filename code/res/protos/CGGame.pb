@@ -1,5 +1,5 @@
 
-³
+Æ
 CGGame.protoCGGame"?
 	ProtoInfo
 mainType (
@@ -43,7 +43,7 @@ noticeText ("˜
 gameVersion (
 gameMode (
 	FUserCode (
-appName ("«
+appName ("¾
 UserInfo
 
 fieldNames (
@@ -52,7 +52,8 @@ fieldNames (
 	FPassword (
 	FNickName (
 FOSType (
-	FPlatform (
+	FPlatform (
+	FUserName (
 FMobile
  (
 FIDCard (

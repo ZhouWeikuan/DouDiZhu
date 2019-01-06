@@ -177,7 +177,7 @@ class.sendAuthOptions = function (self, authType)
             packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_AUTH, authType, nil)
         else
             info.authIndex = info.authIndex or 0
-            -- print("try old auth", info.authIndex)
+            -- print("try old auth", info.authIndex, "challenge:", crypt.hexencode(info.challenge), "secret:", crypt.hexencode(info.secret))
 
             local ret = {}
             ret.playerId    = info.playerId
