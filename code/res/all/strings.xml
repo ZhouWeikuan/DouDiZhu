@@ -32,6 +32,8 @@
     <string>正在解析之前的登录服务器...</string>
     <key>msgTryLoginServers</key>
     <string>正在逐一尝试登录服务器</string>
+    <key>msgUserAskAuthResume</key>
+    <string>用户账号验证中...</string>
 
     <key>msgLackCounter</key>
     <string>元宝用光了</string>
@@ -129,6 +131,8 @@
     <string>超出每日最大分享次数</string>
     <key>msgErr1007</key>
     <string>版本太旧</string>
+    <key>msgErr1008</key>
+    <string>本节点即将关闭，在线用户还可以正常使用，也可退出连接到其它节点</string>
     <key>msgErr1010</key>
     <string>代理码无效</string>
 

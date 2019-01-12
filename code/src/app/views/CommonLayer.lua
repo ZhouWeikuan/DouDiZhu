@@ -657,6 +657,10 @@ function CommonLayer:handleACL(aclInfo)
     elseif aclType == protoTypes.CGGAME_ACL_STATUS_INVALID_INFO then
         UIHelper.popMsg(self, "invalid command, acl invalid")
     elseif aclType == protoTypes.CGGAME_ACL_STATUS_AUTH_FAILED then
+    elseif aclType == protoTypes.CGGAME_ACL_STATUS_NODE_OFF then
+        local chatInfo = {}
+        chatInfo.chatText = Constants.getAclErrText(aclType)
+        self:recvNotice(chatInfo)
     else
         local strErr = Constants.getAclErrText(aclType)
         if strErr == nil then

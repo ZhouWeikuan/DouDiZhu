@@ -428,6 +428,10 @@ function HallScene:handleACL(aclInfo)
 
         UIHelper.popMsg(self, title..","..body)
     elseif aclType == protoTypes.CGGAME_ACL_STATUS_AUTH_FAILED then
+    elseif aclType == protoTypes.CGGAME_ACL_STATUS_NODE_OFF then
+        local chatInfo = {}
+        chatInfo.chatText = Constants.getAclErrText(aclType)
+        self:recvNotice(chatInfo)
     else
         if aclType == protoTypes.CGGAME_ACL_STATUS_ROOM_FIND_FAILED then
             Settings.rmvFromRoomList(self.m_roomList:getRoomId())

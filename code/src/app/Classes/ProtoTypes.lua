@@ -131,23 +131,24 @@ class.CGGAME_ACL_STATUS_ALREADY					            =   1
 --- 100 ~ 999 for each game
 
 ---- 1000 for common handler
-class.CGGAME_ACL_STATUS_SERVER_BUSY						    =   1000
-class.CGGAME_ACL_STATUS_INVALID_INFO						=   1001
-class.CGGAME_ACL_STATUS_INVALID_COMMAND						=   1002
-class.CGGAME_ACL_STATUS_AUTH_FAILED			                =   1003
-class.CGGAME_ACL_STATUS_COUNTER_FAILED                      =   1004
+class.CGGAME_ACL_STATUS_SERVER_BUSY						    =   1000        -- 服务器繁忙
+class.CGGAME_ACL_STATUS_INVALID_INFO						=   1001        -- 提供的信息有误
+class.CGGAME_ACL_STATUS_INVALID_COMMAND						=   1002        -- 未知或不合法的命令
+class.CGGAME_ACL_STATUS_AUTH_FAILED			                =   1003        -- 授权失败
+class.CGGAME_ACL_STATUS_COUNTER_FAILED                      =   1004        --
 class.CGGAME_ACL_STATUS_SERVER_ERROR						=   1005
 class.CGGAME_ACL_STATUS_SHARE_EXCEED						=   1006
-class.CGGAME_ACL_STATUS_OLDVERSION						    =   1007
+class.CGGAME_ACL_STATUS_OLDVERSION						    =   1007        -- 版本过旧
+class.CGGAME_ACL_STATUS_NODE_OFF						    =   1008        -- 所在服务器的节点即将关闭
 
-class.CGGAME_ACL_STATUS_INVALID_AGENTCODE			        =   1010
+class.CGGAME_ACL_STATUS_INVALID_AGENTCODE			        =   1010        -- 代理号有误
 
-class.CGGAME_ACL_STATUS_ROOM_DB_FAILED					    =   1020
-class.CGGAME_ACL_STATUS_ROOM_CREATE_FAILED					=   1021
-class.CGGAME_ACL_STATUS_ROOM_FIND_FAILED					=   1022
-class.CGGAME_ACL_STATUS_ROOM_JOIN_FULL						=   1023
-class.CGGAME_ACL_STATUS_ROOM_NOT_SUPPORT					=   1024
-class.CGGAME_ACL_STATUS_ROOM_NO_SUCH_PAYTYPE                =   1025
+class.CGGAME_ACL_STATUS_ROOM_DB_FAILED					    =   1020        -- 房间创建时数据库有误
+class.CGGAME_ACL_STATUS_ROOM_CREATE_FAILED					=   1021        -- 房间创建失败
+class.CGGAME_ACL_STATUS_ROOM_FIND_FAILED					=   1022        -- 找不到房间号
+class.CGGAME_ACL_STATUS_ROOM_JOIN_FULL						=   1023        -- 房间已满，无法加入
+class.CGGAME_ACL_STATUS_ROOM_NOT_SUPPORT					=   1024        -- 尚不支持房号功能
+class.CGGAME_ACL_STATUS_ROOM_NO_SUCH_PAYTYPE                =   1025        -- 支付方式不支持
 
 
 class.isACLSuccess = function (status)
