@@ -21,9 +21,12 @@ setmetatable(class, baseClass.mt)
 class.create = function (delegate, authInfo, handler)
     local self = baseClass.create(delegate, authInfo, handler)
     setmetatable(self, class.mt)
-    self.const = const
 
+    self:resetTableInfo()
+
+    self.const = const
     self.gameOverInfo = {}
+
     return self
 end
 
@@ -121,17 +124,7 @@ class.handle_game = function (self, args)
 end
 
 class.UpdateUserInfo = function (self, info, typeId)
-    local list = self.allUsers[info.FUserCode] or {}
-    for k, v in pairs(info) do
-        list[k] = v
-    end
-    list.FCounter = list.FCounter or 0
-    list.FAvatarID = list.FAvatarID or 0
-    self.allUsers[info.FUserCode] = list
-
-    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_USERSTATUS then
-        self.handler:UpdateUserStatus(list)
-    end
+    baseClass.UpdateUserInfo(self, info, typeId)
 
     local seatUsers = self.tableInfo.playerUsers
     seatUsers:forEach(function (seatId, code)

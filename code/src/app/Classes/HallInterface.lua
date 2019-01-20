@@ -151,7 +151,7 @@ class.remoteAddAppGameUser = function (self, user)
         return
     end
 
-    local flg = pcall(cluster.send, app, addr, "addAppGameUser", user.FUniqueID, self.config.GameId)
+    local flg = pcall(cluster.send, app, addr, "addAppGameUser", user.FUniqueID, self.config.GameId, user.appName)
     if not flg then
         print("Failed to addAppGameUser", user.FUniqueID, self.config.GameId)
     end
@@ -241,36 +241,58 @@ class.SendGameText = function(self, code)
     self:gamePacketToUser(packet, code)
 end
 
----! @brief 发送用户聊天
-class.SendUserChat = function (self, fromCode, msgBody)
+---! @brief 把从用户fromCode产生的包发生给别的玩家
+class.SendUserPacket = function (self, fromCode, packet, sendFunc)
+    print("HallInterface: SendUserPacket", fromCode, packet, sendFunc)
+end
+
+---! 日志记录 屏蔽单字节非拉丁文(你懂的)
+class.FilterText = function (self, chatInfo)
+    local ForbiddenTxt = require "ForbiddenTxt"
+    chatInfo.chatText = ForbiddenTxt.purify(chatInfo.chatText)
+
+    debugHelper.cclog("[%d:%s]%s", chatInfo.speekerCode, chatInfo.speakerNick, chatInfo.chatText)
+
+    local text = ""
+    local flag = true
+    for p, c in utf8.codes(chatInfo.chatText) do
+        if c > 256 and c < 8192 then
+            text = text .. " "
+        else
+            text = text .. utf8.char(c)
+        end
+    end
+    if flag then
+        chatInfo.chatText = text
+        return packetHelper:encodeMsg("CGGame.ChatInfo", chatInfo)
+    end
+end
+
+class.genUserChatPacket = function (self, fromCode, msgBody)
     local user = self:getUserInfo(fromCode)
     if not user or not msgBody then
         return
     end
 
-    ---! 日志记录 屏蔽维语藏语
+    ---! 日志记录 屏蔽部分文字
     local chatInfo = packetHelper:decodeMsg("CGGame.ChatInfo", msgBody)
     if chatInfo.chatType ~= 1 then
-        -- local d = self:FilterText(chatInfo)
-        -- msgBody = d or msgBody
+        local d = self:FilterText(chatInfo)
+        msgBody = d or msgBody
     end
 
     local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_HALL,
                         protoTypes.CGGAME_PROTO_SUBTYPE_CHAT, msgBody)
 
-    if user.tableId then
-        local table = self.allTables[user.tableId]
+    return packet
+end
 
-        if table then
-            table:groupAction("playerUsers", function (seatId, code)
-                self:hallPacketToUser(packet, code)
-            end)
-
-            return
-        end
+---! @brief 发送用户聊天
+class.SendUserChat = function (self, fromCode, msgBody)
+    local packet = self:genUserChatPacket(fromCode, msgBody)
+    if packet then
+        self:SendUserPacket(fromCode, packet, self.hallPacketToUser)
     end
-
-    self:hallPacketToUser(packet, fromCode)
 end
 
 ---! @brief 发送礼物
@@ -314,22 +336,7 @@ class.SendUserGift = function (self, fromCode, msgBody)
     msgBody = packetHelper:encodeMsg("CGGame.GiftInfo", giftInfo)
     local packet = packetHelper:makeProtoData(protoTypes.CGGAME_PROTO_MAINTYPE_GAME,
                         protoTypes.CGGAME_PROTO_SUBTYPE_GIFT, msgBody)
-
-    if user.tableId then
-        local table = self.allTables[user.tableId]
-
-        if table then
-            table:groupAction("playerUsers", function (seatId, code)
-                self:gamePacketToUser(packet, code)
-            end)
-            table:groupAction("standbyUsers", function (seatId, code)
-                self:gamePacketToUser(packet, code)
-            end)
-            return
-        end
-    end
-
-    self:gamePacketToUser(packet, fromCode)
+    self:SendUserPacket(fromCode, packet, self.gamePacketToUser)
 end
 
 class.fetchUserFromDB = function (self, keyName, keyValue)

@@ -28,9 +28,7 @@ class.create = function (delegate, authInfo, handler)
     self.selfUserCode   = nil
     self.selfSeatId     = nil
 
-    self.tableInfo   = {}
     self.allUsers    = {}
-    self:resetTableInfo()
 
     self.handler = handler or self
 
@@ -39,6 +37,13 @@ class.create = function (delegate, authInfo, handler)
     self.direct_list = Queue.create()
 
     return self
+end
+
+class.resetStageInfo  = function(self)
+    local stageInfo = self.stageInfo or {}
+    self.stageInfo  = stageInfo
+
+    stageInfo.gameInfo      = {}
 end
 
 class.resetTableInfo  = function(self)
@@ -640,6 +645,19 @@ class.GameChat = function (self, data)
     self.handler:recvMsg(chatInfo)
 end
 
+class.UpdateUserInfo = function (self, info, typeId)
+    local list = self.allUsers[info.FUserCode] or {}
+    for k, v in pairs(info) do
+        list[k] = v
+    end
+    list.FCounter = list.FCounter or 0
+    list.FAvatarID = list.FAvatarID or 0
+    self.allUsers[info.FUserCode] = list
+
+    if typeId == protoTypes.CGGAME_PROTO_SUBTYPE_USERSTATUS then
+        self.handler:UpdateUserStatus(list)
+    end
+end
 ---------------------------- handler's handle function ------------------
 class.switchScene = function (self)
     if skynet.init then

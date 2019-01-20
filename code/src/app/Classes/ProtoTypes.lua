@@ -95,7 +95,7 @@ class.CGGAME_PROTO_MAINTYPE_GAME    = 50                        -- 游戏
     class.CGGAME_PROTO_SUBTYPE_QUITTABLE    =  17               -- for card/board game
     class.CGGAME_PROTO_SUBTYPE_QUITSTAGE    =  18               -- for strategy game
 
-    -- class.CGGAME_PROTO_SUBTYPE_USER_DEFINE  = 100    -- each game's subtype data start from 100
+    class.CGGAME_PROTO_SUBTYPE_USER_DEFINE  = 100               -- each game's subtype data start from 100
 
 
 ---! 房卡支付

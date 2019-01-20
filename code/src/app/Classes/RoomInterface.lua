@@ -102,28 +102,6 @@ class.CollectUserStatus = function (self, user)
     return packet
 end
 
----! 日志记录 屏蔽维语藏语
-class.FilterText = function (self, chatInfo)
-    local ForbiddenTxt = require "ForbiddenTxt"
-    chatInfo.chatText = ForbiddenTxt.purify(chatInfo.chatText)
-
-    debugHelper.cclog("[%s:%s]%s", chatInfo.speekerId, chatInfo.speakerNick, chatInfo.chatText)
-
-    local text = ""
-    local flag = true
-    for p, c in utf8.codes(chatInfo.chatText) do
-        if c > 256 and c < 8192 then
-            text = text .. " "
-        else
-            text = text .. utf8.char(c)
-        end
-    end
-    if flag then
-        chatInfo.chatText = text
-        return packetHelper:encodeMsg("CGGame.ChatInfo", chatInfo)
-    end
-end
-
 ---! 恢复之前的桌子
 class.resumeOldTable = function (self, player)
     local table = self.allTables[player.tableId]
@@ -209,7 +187,7 @@ class.PlayerBreak = function(self, player)
     player.FTotalTime = (player.FTotalTime or 0) + delay
 
     local keyName = "FUserCode"
-    self:remoteUpdateDB(class.DBTableName, keyName, player[keyName], "FTotalTime", player.FTotalTime)
+    self:remoteUpdateDB(self.config.DBTableName, keyName, player[keyName], "FTotalTime", player.FTotalTime)
 
     local fields = {
         "appName", "agent", "gate", "client_fd", "address", "watchdog",
@@ -268,6 +246,30 @@ class.updateTableTimeout = function (self, table, newTimeout)
     self.eventTables:removeObject(table)
     table.timeout = newTimeout + skynet.time()
     self.eventTables:addObject(table)
+end
+
+---! @brief 发送用户包
+class.SendUserPacket = function (self, fromCode, packet, sendFunc)
+    local user = self:getUserInfo(fromCode)
+    if not user then
+        return
+    end
+
+    if user.tableId then
+        local table = self.allTables[user.tableId]
+
+        if table then
+            table:groupAction("playerUsers", function (seatId, code)
+                sendFunc(self, packet, code)
+            end)
+            table:groupAction("standbyUsers", function (seatId, code)
+                sendFunc(self, packet, code)
+            end)
+            return
+        end
+    end
+
+    sendFunc(self, packet, fromCode)
 end
 
 class.handleClubData = function (self, player, clubType, data)
@@ -697,7 +699,7 @@ end
 ---! @param gameType      游戏协议
 ---! @param data          数据
 class.handleGameData = function (self, player, gameType, data)
-    local user = self:getUserInfo(player.FUserCode)
+    local user = player and self:getUserInfo(player.FUserCode)
     if user then
         player = user
     end
